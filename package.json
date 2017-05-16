@@ -1,0 +1,44 @@
+{
+  "name": "graphistry-js",
+  "version": "1.0.0",
+  "description": "API for controlling and reacting to embedded visualizations",
+  "main": "index.js",
+  "scripts": {
+    "lerna": "lerna",
+    "bootstrap": "lerna bootstrap --hoist",
+    "commit": "git-cz",
+    "commitmsg": "validate-commit-msg",
+    "deploy": "lerna publish --conventional-commits",
+    "build": "lerna run build",
+    "build:umd": "lerna run build:umd",
+    "build:prod": "lerna run build:prod",
+    "build:examples": "lerna run build:examples",
+    "lint": "lerna run lint",
+    "test": "lerna run test",
+    "test:chrome": "lerna run test:chrome",
+    "test:coverage": "lerna run test:coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/graphistry/graphistry-js.git"
+  },
+  "author": "Graphistry, Inc",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/graphistry/graphistry-js/issues"
+  },
+  "homepage": "https://github.com/graphistry/graphistry-js#readme",
+  "dependencies": {
+    "lerna": "^2.0.0-rc.4"
+  },
+  "devDependencies": {
+    "commitizen": "~2.9.6",
+    "cz-conventional-changelog": "~2.0.0",
+    "validate-commit-msg": "~2.12.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
+}
