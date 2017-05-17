@@ -1,0 +1,55 @@
+{
+  "name": "@graphistry/client-api-react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "jsnext:main": "es/index.js",
+  "entry": {
+    "Graphistry": [
+      "./src/index.js", "./assets/index.less"
+    ]
+  },
+  "scripts": {
+    "build": "npm run build:umd && npm run build:prod && npm run build:examples",
+    "build:umd": "rc-tools run dist",
+    "build:prod": "rc-tools run compile",
+    "build:examples": "rc-tools run build",
+    "build:watch": "rc-tools run watch",
+    "build:docs": "rimraf docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
+    "prebuild:docs": "rimraf docs",
+    "commit": "git-cz",
+    "commitmsg": "validate-commit-msg",
+    "test": "rc-tools run test",
+    "test:chrome": "rc-tools run chrome-test",
+    "test:coverage": "rc-tools run coverage",
+    "start": "rc-tools run server",
+    "start:docs": "rc-tools run server",
+    "lint": "rc-tools run lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@graphistry/client-api": "1.0.0",
+    "prop-types": "^15.5.10",
+    "react": "^15.5.4",
+    "recompose": "^0.23.4"
+  },
+  "peerDependencies": {
+    "react-dom": "^15.5.4"
+  },
+  "devDependencies": {
+    "commitizen": "~2.9.6",
+    "cz-conventional-changelog": "~2.0.0",
+    "jsdoc": "~3.4.3",
+    "jsdoc-babel": "~0.3.0",
+    "rc-tools": "~6.1.8",
+    "rimraf": "~2.6.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
+}
