@@ -10,6 +10,10 @@
       "./src/index.js"
     ]
   },
+  "output": {
+    "library": null,
+    "umdNamedDefine": true
+  },
   "scripts": {
     "build": "npm run build:umd && npm run build:prod && npm run build:docs && npm run build:examples",
     "build:umd": "rc-tools run dist",

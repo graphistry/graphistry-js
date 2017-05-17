@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import shallowEqual from 'recompose/shallowEqual';
 import mapPropsStream from 'recompose/mapPropsStream';
 import createEventHandler from 'recompose/createEventHandler';
-import { Observable, GraphistryJS } from '@graphistry/client-api';
-
+import { GraphistryJS } from '@graphistry/client-api';
+const { Observable } = GraphistryJS;
 const loadingNavLogoStyle = {
     top: `5px`,
     width: `100%`,
@@ -204,4 +204,3 @@ Graphistry = withClientAPI(handleETLUpload(Graphistry));
 Graphistry.propTypes = propTypes;
 
 export { Graphistry };
-export default Graphistry;

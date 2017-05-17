@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Graphistry from '@graphistry/client-api-react';
+import {Graphistry} from '@graphistry/client-api-react';
 import '@graphistry/client-api-react/assets/index.less';
 
 const container = document.getElementById('__react-content');
@@ -9,7 +9,7 @@ container.style['height'] = `400px`;
 ReactDOM.render(
     <Graphistry backgroundColor='#fff'
                 showPointsOfInterest={false}
-                apiKey='< your API Key here>'
+                apiKey='<your API Key here>'
                 style={{ border: `1px solid #ccc` }}
                 graphistryHost='https://labs.graphistry.com'
                 nodes={[

@@ -802,9 +802,14 @@ function GraphistryJS(iFrame) {
 
 Graphistry = wrapStaticObservableMethods(Observable, Graphistry);
 
-export * from './rxjs';
+GraphistryJS.Subject = Subject;
+GraphistryJS.Scheduler = Scheduler;
+GraphistryJS.Observable = Observable;
+GraphistryJS.AsyncSubject = AsyncSubject;
+GraphistryJS.ReplaySubject = ReplaySubject;
+GraphistryJS.$$observable = $$observable;
+
 export { GraphistryJS };
-// export default GraphistryJS;
 
 function wrapStaticObservableMethods(Observable, Graphistry) {
     function createStaticWrapper(staticMethodName) {
