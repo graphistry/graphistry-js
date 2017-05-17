@@ -1,0 +1,73 @@
+{
+  "name": "@graphistry/client-api",
+  "version": "1.0.0",
+  "description": "Client-side API for interacting with a Graphistry embedded visualization.",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "jsnext:main": "es/index.js",
+  "entry": {
+    "GraphistryJS": [
+      "./src/index.js"
+    ]
+  },
+  "scripts": {
+    "build": "npm run build:umd && npm run build:prod && npm run build:docs && npm run build:examples",
+    "build:umd": "rc-tools run dist",
+    "build:prod": "rc-tools run compile",
+    "build:examples": "rc-tools run build",
+    "build:docs": "rimraf docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
+    "prebuild:docs": "rimraf docs",
+    "commit": "git-cz",
+    "commitmsg": "validate-commit-msg",
+    "test": "rc-tools run test",
+    "test:chrome": "rc-tools run chrome-test",
+    "test:coverage": "rc-tools run coverage",
+    "start": "rc-tools run server",
+    "start:docs": "rc-tools run server",
+    "lint": "rc-tools run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/graphistry/graphistry-js.git"
+  },
+  "keywords": [
+    "graphistry",
+    "graph-viz"
+  ],
+  "files": [
+    "dist",
+    "es",
+    "lib",
+    "docs"
+  ],
+  "author": "Graphistry, Inc <https://graphistry.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/graphistry/graphistry-js/issues"
+  },
+  "homepage": "https://github.com/graphistry/graphistry-js#readme",
+  "devDependencies": {
+    "commitizen": "~2.9.6",
+    "cz-conventional-changelog": "~2.0.0",
+    "http-server": "~0.10.0",
+    "jsdoc": "~3.4.3",
+    "jsdoc-babel": "~0.3.0",
+    "rc-tools": "~6.1.8",
+    "react": "~15.5.4",
+    "react-dom": "~15.5.4",
+    "rimraf": "~2.6.1"
+  },
+  "dependencies": {
+    "@graphistry/falcor-json-graph": "~2.8.0",
+    "@graphistry/falcor-model-rxjs": "~2.9.3",
+    "@graphistry/falcor-socket-datasource": "~2.9.3",
+    "recompose": "~0.23.4",
+    "rxjs": "~5.4.0",
+    "symbol-observable": "~1.0.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  }
+}

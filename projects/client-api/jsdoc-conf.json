@@ -1,0 +1,20 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc"]
+    },
+    "source": {
+        "include": ["src/index.js"]
+    },
+    "plugins": [
+      "node_modules/jsdoc-babel"
+    ],
+    "opts": {
+        "encoding": "utf8",
+        "private": false,
+        "recurse": true
+    },
+    "babel": {
+        "presets": ["es2015", "stage-0"]
+    }
+}
