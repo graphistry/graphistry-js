@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lerna": "lerna",
-    "bootstrap": "lerna bootstrap --hoist",
+    "bootstrap": "lerna bootstrap",
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
     "deploy": "lerna publish --conventional-commits",

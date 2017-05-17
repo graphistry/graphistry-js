@@ -45,7 +45,7 @@
   "bugs": {
     "url": "https://github.com/graphistry/graphistry-js/issues"
   },
-  "homepage": "https://github.com/graphistry/graphistry-js#readme",
+  "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api#readme",
   "devDependencies": {
     "commitizen": "~2.9.6",
     "cz-conventional-changelog": "~2.0.0",

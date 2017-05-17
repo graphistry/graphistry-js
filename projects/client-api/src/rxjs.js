@@ -19,6 +19,7 @@ export const Scheduler = {
     animationFrame: animationFrameScheduler,
 };
 
+import 'rxjs/add/observable/dom/ajax';
 import 'rxjs/add/observable/bindCallback';
 import 'rxjs/add/observable/bindNodeCallback';
 import 'rxjs/add/observable/combineLatest';

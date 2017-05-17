@@ -563,7 +563,7 @@ class Graphistry extends Observable {
             'labelBackground': ['view', 'labels.background.color'],
 
             //models/layout.js => viz-worker/simulator/layout.config.js:
-            'precisionVsSpeed': ['view', 'layout.options.tau.value']
+            'precisionVsSpeed': ['view', 'layout.options[0].value']
 
         };
 
@@ -802,6 +802,7 @@ function GraphistryJS(iFrame) {
 
 Graphistry = wrapStaticObservableMethods(Observable, Graphistry);
 
+export * from './rxjs';
 export { GraphistryJS };
 // export default GraphistryJS;
 

@@ -63,3 +63,4 @@ docs
 assets/**/*.css
 build
 lib
+es
