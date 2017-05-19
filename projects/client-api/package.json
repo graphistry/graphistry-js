@@ -5,14 +5,20 @@
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
-  "entry": {
-    "GraphistryJS": [
-      "./src/index.js"
-    ]
-  },
-  "output": {
-    "library": null,
-    "umdNamedDefine": true
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    },
+    "port": 8000,
+    "entry": {
+      "GraphistryJS": [
+        "./src/index.js"
+      ]
+    },
+    "output": {
+      "library": null,
+      "umdNamedDefine": true
+    }
   },
   "scripts": {
     "build": "npm run build:umd && npm run build:prod && npm run build:docs && npm run build:examples",
@@ -56,7 +62,7 @@
     "http-server": "~0.10.0",
     "jsdoc": "~3.4.3",
     "jsdoc-babel": "~0.3.0",
-    "rc-tools": "~6.1.8",
+    "rc-tools": "^6.2.1",
     "react": "~15.5.4",
     "react-dom": "~15.5.4",
     "rimraf": "~2.6.1"
@@ -68,10 +74,5 @@
     "recompose": "~0.23.4",
     "rxjs": "~5.4.0",
     "symbol-observable": "~1.0.4"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
   }
 }

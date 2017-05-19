@@ -5,15 +5,21 @@
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
-  "entry": {
-    "Graphistry": [
-      "./src/index.js",
-      "./assets/index.less"
-    ]
-  },
-  "output": {
-    "library": null,
-    "umdNamedDefine": true
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    },
+    "port": 8000,
+    "entry": {
+      "Graphistry": [
+        "./assets/index.less",
+        "./src/index.js"
+      ]
+    },
+    "output": {
+      "library": null,
+      "umdNamedDefine": true
+    }
   },
   "scripts": {
     "build": "npm run build:umd && npm run build:prod && npm run build:examples",
@@ -49,13 +55,8 @@
     "cz-conventional-changelog": "~2.0.0",
     "jsdoc": "~3.4.3",
     "jsdoc-babel": "~0.3.0",
-    "rc-tools": "~6.1.8",
+    "rc-tools": "^6.2.1",
     "react-dom": "~15.5.4",
     "rimraf": "~2.6.1"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
   }
 }

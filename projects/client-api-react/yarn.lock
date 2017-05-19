@@ -2,6 +2,54 @@
 # yarn lockfile v1
 
 
+"@graphistry/client-api@^2.12.1":
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/@graphistry/client-api/-/client-api-2.12.1.tgz#d44dd78b5cb09bb8441ef84b64480b2ca3e59e0a"
+  dependencies:
+    "@graphistry/falcor-json-graph" "~2.8.0"
+    "@graphistry/falcor-model-rxjs" "~2.9.3"
+    "@graphistry/falcor-socket-datasource" "~2.9.3"
+    recompose "~0.23.4"
+    rxjs "~5.4.0"
+    symbol-observable "~1.0.4"
+
+"@graphistry/falcor-json-graph@~2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor-json-graph/-/falcor-json-graph-2.8.0.tgz#935bb3ebdd73b4c68613fa71b091904d4e04a654"
+  dependencies:
+    "@graphistry/falcor-path-syntax" "^2.8.0"
+
+"@graphistry/falcor-model-rxjs@~2.9.3":
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor-model-rxjs/-/falcor-model-rxjs-2.9.3.tgz#2d79f8bb62fa00dd0c9d9af22ac574352ed7159a"
+  dependencies:
+    "@graphistry/falcor" "^2.9.3"
+    "@graphistry/falcor-path-syntax" "^2.8.0"
+    babel-plugin-transform-runtime "~6.23.0"
+    rxjs "~5.4.0"
+
+"@graphistry/falcor-path-syntax@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor-path-syntax/-/falcor-path-syntax-2.8.0.tgz#72db2b1ab684cffaa43ebbc97fd478f505962bb2"
+
+"@graphistry/falcor-path-utils@^2.9.1":
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor-path-utils/-/falcor-path-utils-2.9.1.tgz#5576bc1b792a4c1b4ee6a433c94bee66f2271972"
+
+"@graphistry/falcor-socket-datasource@~2.9.3":
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor-socket-datasource/-/falcor-socket-datasource-2.9.3.tgz#928b42891bbe46c27d21d2a93df27a7b68cc1ed3"
+  dependencies:
+    babel-plugin-transform-runtime "~6.23.0"
+    uuid "~3.0.1"
+
+"@graphistry/falcor@^2.9.3":
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/@graphistry/falcor/-/falcor-2.9.3.tgz#db810bcf0a2b60b4d2ace3cf2f85812005734e77"
+  dependencies:
+    "@graphistry/falcor-path-utils" "^2.9.1"
+    symbol-observable "1.0.4"
+
 abbrev@1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.0.tgz#d0554c2256636e2f56e7c2e5ad183f859428d81f"
@@ -223,10 +271,6 @@ ast-traverse@~0.1.1:
 ast-types@0.8.12:
   version "0.8.12"
   resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.8.12.tgz#a0d90e4351bb887716c83fd637ebf818af4adfcc"
-
-ast-types@0.8.15:
-  version "0.8.15"
-  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.8.15.tgz#8eef0827f04dff0ec8857ba925abe3fea6194e52"
 
 ast-types@0.9.6:
   version "0.9.6"
@@ -941,7 +985,7 @@ babel-plugin-transform-regenerator@^6.24.1:
   dependencies:
     regenerator-transform "0.9.11"
 
-babel-plugin-transform-runtime@6.x:
+babel-plugin-transform-runtime@6.x, babel-plugin-transform-runtime@~6.23.0:
   version "6.23.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-runtime/-/babel-plugin-transform-runtime-6.23.0.tgz#88490d446502ea9b8e7efb0fe09ec4d99479b1ee"
   dependencies:
@@ -1141,7 +1185,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^2.9.33:
+bluebird@^2.9.33, bluebird@^2.9.34:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
 
@@ -1538,7 +1582,7 @@ combined-stream@^1.0.5, combined-stream@~1.0.5:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@2.8.x, commander@^2.5.0, commander@~2.8.1:
+commander@2.8.x, commander@^2.5.0, commander@^2.8.1, commander@~2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.8.1.tgz#06be367febfda0c330aa1e2a072d3dc9762425d4"
   dependencies:
@@ -2661,7 +2705,7 @@ fstream-ignore@^1.0.5:
     inherits "2"
     minimatch "^3.0.0"
 
-fstream@^1.0.0, fstream@^1.0.10, fstream@^1.0.2:
+fstream@^1.0.0, fstream@^1.0.10, fstream@^1.0.2, fstream@^1.0.8:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/fstream/-/fstream-1.0.11.tgz#5c1fb1f117477114f0632a0eb4b71b3cb0fd3171"
   dependencies:
@@ -4267,17 +4311,13 @@ lodash.uniq@^4.3.0, lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@4.17.2:
+lodash@4.17.2, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.2.0, lodash@^4.3.0:
   version "4.17.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
 
 lodash@^3.10.0, lodash@^3.3.1, lodash@^3.9.3:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
-
-lodash@^4.13.1, lodash@^4.14.0, lodash@^4.2.0, lodash@^4.3.0:
-  version "4.17.4"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
 lodash@~1.0.1:
   version "1.0.2"
@@ -4499,6 +4539,10 @@ minimist@1.2.0, minimist@1.x, minimist@^1.1.0, minimist@^1.1.3, minimist@^1.2.0:
 modulex-util@^1.1.9:
   version "1.1.10"
   resolved "https://registry.yarnpkg.com/modulex-util/-/modulex-util-1.1.10.tgz#1ec022c30be05355d5952301a4ab14a791d87d12"
+
+mout@^0.11.0:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/mout/-/mout-0.11.1.tgz#ba3611df5f0e5b1ffbfd01166b8f02d1f5fa2b99"
 
 ms@0.6.2:
   version "0.6.2"
@@ -5266,7 +5310,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.10, prop-types@^15.5.7:
+prop-types@^15.5.10, prop-types@^15.5.7, prop-types@~15.5.7:
   version "15.5.10"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.10.tgz#2797dfc3126182e3a95e3dfbb2e893ddd7456154"
   dependencies:
@@ -5364,9 +5408,9 @@ raw-body@^2.2.0:
     iconv-lite "0.4.15"
     unpipe "1.0.0"
 
-rc-tools@~6.1.8:
-  version "6.1.8"
-  resolved "https://registry.yarnpkg.com/rc-tools/-/rc-tools-6.1.8.tgz#dbcd4859e862699fe70609781ca4277dc6928116"
+rc-tools@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/rc-tools/-/rc-tools-6.2.1.tgz#207468b2618b087c00d1b740b2e105b8a1921c63"
   dependencies:
     autoprefixer "^6.x"
     babel-core "^6.5.2"
@@ -5424,9 +5468,11 @@ rc-tools@~6.1.8:
     object-assign "4.x"
     postcss-loader "^1.2.2"
     progress-bar-webpack-plugin "^1.9.3"
+    request "^2.81.0"
     shelljs "0.3.x"
     style-loader "^0.13.1"
     svg-sprite-loader "^0.3.0"
+    tar.gz "^1.0.5"
     through2 "^0.6.5"
     ts-loader "2.x"
     tslint "4.x"
@@ -5444,6 +5490,15 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     ini "~1.3.0"
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
+
+react-dom@~15.5.4:
+  version "15.5.4"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.5.4.tgz#ba0c28786fd52ed7e4f2135fe0288d462aef93da"
+  dependencies:
+    fbjs "^0.8.9"
+    loose-envify "^1.1.0"
+    object-assign "^4.1.0"
+    prop-types "~15.5.7"
 
 react@^15.5.4:
   version "15.5.4"
@@ -5516,20 +5571,11 @@ readline2@^1.0.1:
     is-fullwidth-code-point "^1.0.0"
     mute-stream "0.0.5"
 
-recast@0.10.33:
+recast@0.10.33, recast@^0.10.10:
   version "0.10.33"
   resolved "https://registry.yarnpkg.com/recast/-/recast-0.10.33.tgz#942808f7aa016f1fa7142c461d7e5704aaa8d697"
   dependencies:
     ast-types "0.8.12"
-    esprima-fb "~15001.1001.0-dev-harmony-fb"
-    private "~0.1.5"
-    source-map "~0.5.0"
-
-recast@^0.10.10:
-  version "0.10.43"
-  resolved "https://registry.yarnpkg.com/recast/-/recast-0.10.43.tgz#b95d50f6d60761a5f6252e15d80678168491ce7f"
-  dependencies:
-    ast-types "0.8.15"
     esprima-fb "~15001.1001.0-dev-harmony-fb"
     private "~0.1.5"
     source-map "~0.5.0"
@@ -5549,7 +5595,7 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
-recompose@^0.23.4:
+recompose@^0.23.4, recompose@~0.23.4:
   version "0.23.4"
   resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.23.4.tgz#af09e4e08424effa449c9b793037166f7b30644a"
   dependencies:
@@ -5804,6 +5850,12 @@ rx-lite@^3.1.2:
 rx@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
+
+rxjs@~5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.4.0.tgz#a7db14ab157f9d7aac6a56e655e7a3860d39bf26"
+  dependencies:
+    symbol-observable "^1.0.1"
 
 safe-buffer@^5.0.1:
   version "5.0.1"
@@ -6161,7 +6213,7 @@ svgo@^0.7.0:
     sax "~1.2.1"
     whet.extend "~0.9.9"
 
-symbol-observable@^1.0.4:
+symbol-observable@1.0.4, symbol-observable@^1.0.1, symbol-observable@^1.0.4, symbol-observable@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.0.4.tgz#29bf615d4aa7121bdd898b22d4b3f9bc4e2aa03d"
 
@@ -6186,7 +6238,17 @@ tar-pack@^3.4.0:
     tar "^2.2.1"
     uid-number "^0.0.6"
 
-tar@^2.2.1:
+tar.gz@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/tar.gz/-/tar.gz-1.0.5.tgz#e1ada7e45ef2241b4b1ee58123c8f40b5d3c1bc4"
+  dependencies:
+    bluebird "^2.9.34"
+    commander "^2.8.1"
+    fstream "^1.0.8"
+    mout "^0.11.0"
+    tar "^2.1.1"
+
+tar@^2.1.1, tar@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/tar/-/tar-2.2.1.tgz#8e4d2a256c0e2185c6b18ad694aec968b83cb1d1"
   dependencies:
@@ -6504,7 +6566,7 @@ util@0.10.3, util@^0.10.3:
   dependencies:
     inherits "2.0.1"
 
-uuid@^3.0.0:
+uuid@^3.0.0, uuid@~3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
 

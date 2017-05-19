@@ -1174,7 +1174,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^2.9.33:
+bluebird@^2.9.33, bluebird@^2.9.34:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
 
@@ -1575,7 +1575,7 @@ combined-stream@^1.0.5, combined-stream@~1.0.5:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@2.8.x, commander@^2.5.0, commander@~2.8.1:
+commander@2.8.x, commander@^2.5.0, commander@^2.8.1, commander@~2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.8.1.tgz#06be367febfda0c330aa1e2a072d3dc9762425d4"
   dependencies:
@@ -2715,7 +2715,7 @@ fstream-ignore@^1.0.5:
     inherits "2"
     minimatch "^3.0.0"
 
-fstream@^1.0.0, fstream@^1.0.10, fstream@^1.0.2:
+fstream@^1.0.0, fstream@^1.0.10, fstream@^1.0.2, fstream@^1.0.8:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/fstream/-/fstream-1.0.11.tgz#5c1fb1f117477114f0632a0eb4b71b3cb0fd3171"
   dependencies:
@@ -4345,17 +4345,13 @@ lodash.uniq@^4.3.0, lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@4.17.2:
+lodash@4.17.2, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.2.0, lodash@^4.3.0:
   version "4.17.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.2.tgz#34a3055babe04ce42467b607d700072c7ff6bf42"
 
 lodash@^3.10.0, lodash@^3.3.1, lodash@^3.9.3:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
-
-lodash@^4.13.1, lodash@^4.14.0, lodash@^4.2.0, lodash@^4.3.0:
-  version "4.17.4"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
 lodash@~1.0.1:
   version "1.0.2"
@@ -4577,6 +4573,10 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
 modulex-util@^1.1.9:
   version "1.1.10"
   resolved "https://registry.yarnpkg.com/modulex-util/-/modulex-util-1.1.10.tgz#1ec022c30be05355d5952301a4ab14a791d87d12"
+
+mout@^0.11.0:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/mout/-/mout-0.11.1.tgz#ba3611df5f0e5b1ffbfd01166b8f02d1f5fa2b99"
 
 ms@0.6.2:
   version "0.6.2"
@@ -5458,9 +5458,9 @@ raw-body@^2.2.0:
     iconv-lite "0.4.15"
     unpipe "1.0.0"
 
-rc-tools@~6.1.8:
-  version "6.1.8"
-  resolved "https://registry.yarnpkg.com/rc-tools/-/rc-tools-6.1.8.tgz#dbcd4859e862699fe70609781ca4277dc6928116"
+rc-tools@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/rc-tools/-/rc-tools-6.2.1.tgz#207468b2618b087c00d1b740b2e105b8a1921c63"
   dependencies:
     autoprefixer "^6.x"
     babel-core "^6.5.2"
@@ -5518,9 +5518,11 @@ rc-tools@~6.1.8:
     object-assign "4.x"
     postcss-loader "^1.2.2"
     progress-bar-webpack-plugin "^1.9.3"
+    request "^2.81.0"
     shelljs "0.3.x"
     style-loader "^0.13.1"
     svg-sprite-loader "^0.3.0"
+    tar.gz "^1.0.5"
     through2 "^0.6.5"
     ts-loader "2.x"
     tslint "4.x"
@@ -6290,7 +6292,17 @@ tar-pack@^3.4.0:
     tar "^2.2.1"
     uid-number "^0.0.6"
 
-tar@^2.2.1:
+tar.gz@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/tar.gz/-/tar.gz-1.0.5.tgz#e1ada7e45ef2241b4b1ee58123c8f40b5d3c1bc4"
+  dependencies:
+    bluebird "^2.9.34"
+    commander "^2.8.1"
+    fstream "^1.0.8"
+    mout "^0.11.0"
+    tar "^2.1.1"
+
+tar@^2.1.1, tar@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/tar/-/tar-2.2.1.tgz#8e4d2a256c0e2185c6b18ad694aec968b83cb1d1"
   dependencies:
