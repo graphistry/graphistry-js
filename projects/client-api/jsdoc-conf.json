@@ -7,6 +7,7 @@
         "include": ["src/index.js"]
     },
     "plugins": [
+      "plugins/markdown",
       "node_modules/jsdoc-babel"
     ],
     "opts": {

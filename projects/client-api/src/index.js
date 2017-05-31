@@ -46,6 +46,9 @@ class Graphistry extends Observable {
         return observable;
     }
 
+    /**
+     * @private
+     */
     static _getIds(componentType, name, dataType, values = []) {
         const { view } = this;
         return new this(view
@@ -94,7 +97,7 @@ class Graphistry extends Observable {
     }
 
 
-     /**
+    /**
      * Change colors based on an attribute
      * @method Graphistry.encodeColor
      * @param {GraphType} [graphType] - 'point' or 'edge'
@@ -120,7 +123,7 @@ class Graphistry extends Observable {
             .toPromise());
     }
 
-     /**
+    /**
      * Reset color to value at page load
      * @method Graphistry.resetColor
      * @param {GraphType} [graphType] - 'point' or 'edge'
@@ -143,10 +146,7 @@ class Graphistry extends Observable {
             .toPromise());
     }
 
-//=========
-
-
-     /**
+    /**
      * Change icons based on an attribute
      * @method Graphistry.encodeIcons
      * @param {GraphType} [graphType] - 'point' or 'edge'
@@ -170,7 +170,7 @@ class Graphistry extends Observable {
             .toPromise());
     }
 
-     /**
+    /**
      * Reset icons to value at page load
      * @method Graphistry.resetIcons
      * @param {GraphType} [graphType] - 'point' or 'edge'
@@ -192,10 +192,6 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
-
-//=========
-
-
 
     /**
      * Change size based on an attribute
@@ -245,7 +241,7 @@ class Graphistry extends Observable {
             .toPromise());
     }
 
-     /**
+    /**
      * Toggle a leftside panel
      * @method Graphistry.togglePanel
      * @param {string} [panel] - Name of panel: filters, exclusions, scene, labels, layout
@@ -394,6 +390,7 @@ class Graphistry extends Observable {
     /**
      * Center the view of the graph
      * @method Graphistry.autocenter
+     * @todo Implement this function
      * @static
      * @param {number} percentile - Controls sensitivity to outliers
      * @param {function} [cb] - Callback function of type callback(error, result)
@@ -525,9 +522,28 @@ class Graphistry extends Observable {
     }
 
     /**
+     * @description
      * Modify a settings value in the visualization
-     * Key settings: showArrows, pruneOrphans, edgeOpacity, edgeSize, pointOpacity,
-     * pointSize, labelOpacity, labelEnabled, labelPOI, labelHighlightEnabled, zoom
+     *
+     * | Available Settings | Value Type |
+     * | ------------------ | ---------- |
+     * | `showToolbar` | `boolean` |
+     * | `pruneOrphans` | `boolean` |
+     * | `showArrows` | `boolean` |
+     * | `background` | color as hex or rgba `string` |
+     * | `edgeOpacity` | `number` (0 to 1) |
+     * | `edgeSize` | `number` (0.1 to 10) |
+     * | `pointOpacity` | `number` (0 to 1) |
+     * | `pointSize` | `number` (0.1 to 10) |
+     * | `zoom` | `uint` |
+     * | `center` | `const 0` |
+     * | `labelOpacity` | `boolean` |
+     * | `labelEnabled` | `boolean` |
+     * | `labelPOI` | `boolean` |
+     * | `labelHighlightEnabled` | `boolean` |
+     * | `labelColor` | color as hex or rgba `string` |
+     * | `labelBackground` | color as hex or rgba `string` |
+     * | `precisionVsSpeed` | `int` (-5 to +5) |
      * @method Graphistry.updateSetting
      * @static
      * @param {string} name - the name of the setting to change
@@ -579,7 +595,7 @@ class Graphistry extends Observable {
      * Update the camera zoom level
      * @method Graphistry.updateZoom
      * @static
-     * @param {string} level - Controls how far to zoom in or out.
+     * @param {number} level - Controls how far to zoom in or out.
      * @param {string} val - the value to set the setting to.
      * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
      */
