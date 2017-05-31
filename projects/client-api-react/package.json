@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api-react",
-  "version": "2.12.2",
+  "version": "2.12.3",
   "description": "",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -42,7 +42,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@graphistry/client-api": "^2.12.2",
+    "@graphistry/client-api": "^2.12.3",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
     "recompose": "^0.23.4"
