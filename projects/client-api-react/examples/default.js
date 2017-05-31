@@ -10,6 +10,7 @@ ReactDOM.render(
     <Graphistry play={5}
                 showInfo={false}
                 pruneOrphans={true}
+                showSplashScreen={true}
                 dataset='Miserables'
                 backgroundColor='#fff'
                 precisionVsSpeed={-2}

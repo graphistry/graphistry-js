@@ -20,7 +20,7 @@ ReactDOM.render(
             scrolling='no'
             allowFullScreen='true'
             ref={initializeClientAPI}
-            src='https://labs.graphistry.com/graph/graph.html?dataset=Miserables'
+            src='https://labs.graphistry.com/graph/graph.html?dataset=Miserables&splashAfter=true'
             style={{ width: `100%`, height: `100%`, border: `1px solid #ccc` }}/>,
     container
 );

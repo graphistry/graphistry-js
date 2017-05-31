@@ -36,6 +36,7 @@ const propTypes = {
     showToolbar: PropTypes.bool,
     showInspector: PropTypes.bool,
     showHistograms: PropTypes.bool,
+    showSplashScreen: PropTypes.bool,
     pruneOrphans: PropTypes.bool,
     loadingMessage: PropTypes.string,
     showLabelOnHover: PropTypes.bool,
@@ -73,6 +74,7 @@ const defaultProps = {
     showToolbar: true,
     showInspector: false,
     showHistograms: false,
+    showSplashScreen: false,
     pruneOrphans: false,
     showLabelOnHover: true,
     showPointsOfInterest: true,
@@ -158,6 +160,7 @@ function Graphistry({
         style, className, vizStyle, vizClassName, allowFullScreen,
         play, showMenu = true, showInfo = true, showToolbar, backgroundColor,
         graphistryHost, dataset, loading, loadingMessage = '', iFrameRefHandler,
+        showSplashScreen = false
     }) {
     const children = [];
     if (loading) {
@@ -192,6 +195,7 @@ function Graphistry({
                         }?play=${play
                         }&info=${!!showInfo
                         }&menu=${!!showMenu
+                        }&splashAfter=${!!showSplashScreen
                         }&dataset=${encodeURIComponent(dataset)
                         }&bg=${encodeURIComponent(backgroundColor)}`}/>
         );

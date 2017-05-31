@@ -8,6 +8,7 @@ container.style['height'] = `400px`;
 
 ReactDOM.render(
     <Graphistry backgroundColor='#fff'
+                showSplashScreen={true}
                 showPointsOfInterest={false}
                 apiKey='<your API Key here>'
                 style={{ border: `1px solid #ccc` }}
