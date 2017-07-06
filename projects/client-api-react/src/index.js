@@ -114,7 +114,7 @@ const handleETLUpload = mapPropsStream((props) => {
                 return Observable.of({ ...next, loading: false, dataset: null });
             }
             const type = 'edgelist', name = uuidv4();
-            return Observable.ajax.post(`${graphistryHost}/etl${''
+            return Observable.ajax.post(`${graphistryHost || ''}/etl${''
                 }?key=${apiKey
                 }&apiversion=1${''
                 }&agent=${encodeURIComponent(`'client-api-react'`)}`,
@@ -122,7 +122,7 @@ const handleETLUpload = mapPropsStream((props) => {
                 { 'Content-Type': 'application/json' }
             )
             .map(({ response }) => response && response.success
-                ? { ...defaultProps, ...next, loading: true, ...response }
+                ? { ...defaultProps, ...next, loading: !next.showSplashScreen, ...response }
                 : { ...defaultProps, ...next, loading: true, loadingMessage: 'Error Uploading Graph', dataset: null }).catch(() => Observable.of(
                   { ...defaultProps, ...next, loading: true, loadingMessage: 'Error Uploading Graph', dataset: null }))
             .startWith({ ...next, loading: true, loadingMessage: 'Uploading Graph', dataset: null })
@@ -152,7 +152,7 @@ const withClientAPI = mapPropsStream((props) => {
             if ('showPointsOfInterest' in props) g.updateSetting('labelPOI', props.showPointsOfInterest);
         })
         .mapTo({ ...props, loading: false, iFrameRefHandler })
-        .startWith({ ...props, loading: true, iFrameRefHandler })
+        .startWith({ ...props, loading: !props.showSplashScreen, iFrameRefHandler })
     )
 });
 
@@ -181,7 +181,7 @@ function Graphistry({
             </div>
         );
     }
-    if (graphistryHost && dataset) {
+    if (dataset) {
         play = typeof play === 'boolean' ? play : (play | 0) * 1000;
         const iFrameClassNames = 'graphistry-iframe' + (vizClassName ? ' ' + vizClassName : '');
         children.push(
@@ -191,7 +191,7 @@ function Graphistry({
                     ref={iFrameRefHandler}
                     className={iFrameClassNames}
                     allowFullScreen={!!allowFullScreen}
-                    src={`${graphistryHost}/graph/graph.html${''
+                    src={`${graphistryHost || ''}/graph/graph.html${''
                         }?play=${play
                         }&info=${!!showInfo
                         }&menu=${!!showMenu
