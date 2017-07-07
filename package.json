@@ -1,8 +1,8 @@
 {
   "name": "graphistry-js",
   "version": "1.0.0",
-  "description": "API for controlling and reacting to embedded visualizations",
-  "main": "index.js",
+  "description": "Libraries for embedding, controlling, and reacting to Graphistry visualizations",
+  "main": "",
   "scripts": {
     "lerna": "lerna",
     "bootstrap": "lerna bootstrap",
@@ -28,10 +28,8 @@
     "url": "https://github.com/graphistry/graphistry-js/issues"
   },
   "homepage": "https://github.com/graphistry/graphistry-js#readme",
-  "dependencies": {
-    "lerna": "^2.0.0-rc.4"
-  },
   "devDependencies": {
+    "lerna": "^2.0.0",
     "commitizen": "~2.9.6",
     "cz-conventional-changelog": "~2.0.0",
     "validate-commit-msg": "~2.12.1"

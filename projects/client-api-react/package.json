@@ -1,7 +1,7 @@
 {
   "name": "@graphistry/client-api-react",
   "version": "2.12.5",
-  "description": "",
+  "description": "Embed a Graphistry visualization via React",
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
@@ -61,7 +61,7 @@
     "jsdoc": "~3.4.3",
     "jsdoc-babel": "~0.3.0",
     "rc-tools": "^6.2.1",
-    "react-dom": "~15.5.4",
+    "react-dom": "~15.6.1",
     "rimraf": "~2.6.1"
   }
 }
