@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api",
-  "version": "2.12.6",
+  "version": "2.13.0",
   "description": "Client-side API for interacting with a Graphistry embedded visualization.",
   "main": "lib/index.js",
   "module": "es/index.js",
