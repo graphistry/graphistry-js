@@ -147,6 +147,55 @@ class Graphistry extends Observable {
     }
 
     /**
+     * Change axis
+     * @method Graphistry.encodeAxis
+     * @param {Array} array of strings
+     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .flatMap(function (g) {
+     *         window.g = g;
+     *         return g.encodeAxis({})
+     *     })
+     *     .subscribe();
+     */
+    static encodeAxis(axis) {
+        const { view } = this;
+
+        return new this(view.set(
+            $value(`encodings.point.axis`,
+                {   reset: false, name: 'user_' + Math.random(),
+                    encodingType: 'axis', graphType: 'point', attribute: 'degree', variation: 'categorical',
+                    rows: axis }))
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+    }
+
+    /**
+     * Reset axis to value at page load
+     * @method Graphistry.resetAxis
+     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .flatMap(function (g) {
+     *         window.g = g;
+     *         return g.encodeAxis()
+     *         return g.resetAxis()
+     *     })
+     *     .subscribe();
+     */
+    static resetAxis() {
+        const { view } = this;
+        return new this(view.set(
+            $value(`encodings.point.axis`,
+                {   reset: true, encodingType: 'axis' }))
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+    }
+
+
+
+    /**
      * Change icons based on an attribute
      * @method Graphistry.encodeIcons
      * @param {GraphType} [graphType] - 'point' or 'edge'
