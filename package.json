@@ -8,7 +8,7 @@
     "bootstrap": "lerna bootstrap",
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
-    "deploy": "lerna publish --conventional-commits",
+    "deploy": "lerna publish --independent --conventional-commits",
     "build": "lerna run build",
     "build:umd": "lerna run build:umd",
     "build:prod": "lerna run build:prod",
@@ -29,9 +29,10 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js#readme",
   "devDependencies": {
-    "lerna": "^2.0.0",
     "commitizen": "~2.9.6",
     "cz-conventional-changelog": "~2.0.0",
+    "husky": "~0.14.3",
+    "lerna": "^2.0.0",
     "validate-commit-msg": "~2.12.1"
   },
   "config": {
