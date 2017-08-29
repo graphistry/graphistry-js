@@ -8,7 +8,7 @@
     "bootstrap": "lerna bootstrap",
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
-    "deploy": "lerna publish --independent --conventional-commits",
+    "deploy": "lerna publish --conventional-commits",
     "build": "lerna run build",
     "build:umd": "lerna run build:umd",
     "build:prod": "lerna run build:prod",
