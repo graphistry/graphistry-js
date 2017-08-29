@@ -57,6 +57,12 @@ const propTypes = {
         sourceField: PropTypes.string.isRequired,
         destinationField:  PropTypes.string.isRequired,
     }),
+
+    type: PropTypes.string,
+    axes: PropTypes.array,
+    controls: PropTypes.string,
+    logo: PropTypes.bool,
+    layoutTweaks: PropTypes.array
 };
 
 const defaultProps = {
@@ -137,8 +143,9 @@ const withClientAPI = mapPropsStream((props) => {
         .from(iFrames)
         .switchMap((iFrame) => iFrame ? GraphistryJS(iFrame) : Observable.empty())
         .do((g) => {
-            if (props.showIcons) g.encodeIcons('point', 'pointIcon');
+            if (props.showIcons || 'pointIcon' in props) g.encodeIcons('point', 'pointIcon');
             if ('pointSize' in props) g.updateSetting('pointSize', props.pointSize);
+            if ('layoutTweaks' in props) (props.layoutTweaks || []).forEach(([fn,...params]) => g[fn](...params))
             if ('edgeOpacity' in props) g.updateSetting('edgeOpacity', props.edgeOpacity);
             if ('pointOpacity' in props) g.updateSetting('pointOpacity', props.pointOpacity);
             if ('showArrows' in props) g.updateSetting('showArrows', props.showArrows);
@@ -150,6 +157,7 @@ const withClientAPI = mapPropsStream((props) => {
             if ('precisionVsSpeed' in props) g.updateSetting('precisionVsSpeed', props.precisionVsSpeed);
             if ('showLabelOnHover' in props) g.updateSetting('labelHighlightEnabled', props.showLabelOnHover);
             if ('showPointsOfInterest' in props) g.updateSetting('labelPOI', props.showPointsOfInterest);
+            if ('axes' in props) g.encodeAxis(props.axes)
         })
         .mapTo({ ...props, loading: false, iFrameRefHandler })
         .startWith({ ...props, loading: !props.showSplashScreen, iFrameRefHandler })
@@ -160,8 +168,9 @@ function Graphistry({
         style, className, vizStyle, vizClassName, allowFullScreen,
         play, showMenu = true, showInfo = true, showToolbar, backgroundColor,
         graphistryHost, dataset, loading, loadingMessage = '', iFrameRefHandler,
-        showSplashScreen = false
+        showSplashScreen = false, type, layoutTweaks, axes, controls, logo
     }) {
+        
     const children = [];
     if (loading) {
         const showHeader = showMenu && showToolbar;
@@ -181,6 +190,7 @@ function Graphistry({
             </div>
         );
     }
+    
     if (dataset) {
         play = typeof play === 'boolean' ? play : (play | 0) * 1000;
         const iFrameClassNames = 'graphistry-iframe' + (vizClassName ? ' ' + vizClassName : '');
@@ -197,7 +207,11 @@ function Graphistry({
                         }&menu=${!!showMenu
                         }&splashAfter=${!!showSplashScreen
                         }&dataset=${encodeURIComponent(dataset)
-                        }&bg=${encodeURIComponent(backgroundColor)}`}/>
+                        }&bg=${encodeURIComponent(backgroundColor)
+                        }&type=${type
+                        }&controls=${controls
+                        }&logo=${logo}`}
+            />
         );
     }
     return <div style={style} className={`graphistry-container ${className || ''}`}>{children}</div>;
