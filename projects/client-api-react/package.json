@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api-react",
-  "version": "2.13.1",
+  "version": "2.13.2",
   "description": "Embed a Graphistry visualization via React",
   "main": "lib/index.js",
   "module": "es/index.js",
