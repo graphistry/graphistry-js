@@ -47,7 +47,8 @@
     "dist",
     "es",
     "lib",
-    "docs"
+    "docs",
+    "assets"
   ],
   "keywords": [],
   "author": "",
