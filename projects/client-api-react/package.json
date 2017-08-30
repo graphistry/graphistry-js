@@ -43,6 +43,12 @@
     "start:docs": "rc-tools run server",
     "lint": "rc-tools run lint"
   },
+  "files": [
+    "dist",
+    "es",
+    "lib",
+    "docs"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
