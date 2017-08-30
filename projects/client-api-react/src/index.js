@@ -30,6 +30,7 @@ const propTypes = {
 
     showInfo: PropTypes.bool,
     showMenu: PropTypes.bool,
+    showLogo: PropTypes.bool,
     showIcons: PropTypes.bool,
     showArrows: PropTypes.bool,
     showLabels: PropTypes.bool,
@@ -40,6 +41,7 @@ const propTypes = {
     pruneOrphans: PropTypes.bool,
     loadingMessage: PropTypes.string,
     showLabelOnHover: PropTypes.bool,
+    showLoadingIndicator: PropTypes.bool,
     showPointsOfInterest: PropTypes.bool,
     precisionVsSpeed: PropTypes.oneOf([
         -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5
@@ -60,9 +62,7 @@ const propTypes = {
 
     type: PropTypes.string,
     axes: PropTypes.array,
-    controls: PropTypes.string,
-    logo: PropTypes.bool,
-    layoutTweaks: PropTypes.array
+    controls: PropTypes.string
 };
 
 const defaultProps = {
@@ -74,6 +74,7 @@ const defaultProps = {
 
     showInfo: true,
     showMenu: true,
+    showLogo: true,
     showIcons: true,
     showArrows: true,
     showLabels: true,
@@ -83,6 +84,7 @@ const defaultProps = {
     showSplashScreen: false,
     pruneOrphans: false,
     showLabelOnHover: true,
+    showLoadingIndicator: true,
     showPointsOfInterest: true,
     loadingMessage: 'Herding stray GPUs',
 
@@ -137,40 +139,46 @@ const handleETLUpload = mapPropsStream((props) => {
         .distinctUntilChanged(shallowEqual);
 });
 
-const withClientAPI = mapPropsStream((props) => {
+const withClientAPI = mapPropsStream((propsStream) => {
     const { handler: iFrameRefHandler, stream: iFrames } = createEventHandler();
-    return Observable.from(props).switchMap((props) => Observable
-        .from(iFrames)
-        .switchMap((iFrame) => iFrame ? GraphistryJS(iFrame) : Observable.empty())
-        .do((g) => {
-            if (props.showIcons || 'pointIcon' in props) g.encodeIcons('point', 'pointIcon');
-            if ('pointSize' in props) g.updateSetting('pointSize', props.pointSize);
-            if ('layoutTweaks' in props) (props.layoutTweaks || []).forEach(([fn,...params]) => g[fn](...params))
-            if ('edgeOpacity' in props) g.updateSetting('edgeOpacity', props.edgeOpacity);
-            if ('pointOpacity' in props) g.updateSetting('pointOpacity', props.pointOpacity);
-            if ('showArrows' in props) g.updateSetting('showArrows', props.showArrows);
-            if ('showLabels' in props) g.updateSetting('labelEnabled', props.showLabels);
-            if ('showToolbar' in props) g.updateSetting('showToolbar', props.showToolbar);
-            if ('showInspector' in props) g.toggleInspector(props.showInspector);
-            if ('showHistograms' in props) g.toggleHistograms(props.showHistograms);
-            if ('pruneOrphans' in props) g.updateSetting('pruneOrphans', props.pruneOrphans);
-            if ('precisionVsSpeed' in props) g.updateSetting('precisionVsSpeed', props.precisionVsSpeed);
-            if ('showLabelOnHover' in props) g.updateSetting('labelHighlightEnabled', props.showLabelOnHover);
-            if ('showPointsOfInterest' in props) g.updateSetting('labelPOI', props.showPointsOfInterest);
-            if ('axes' in props) g.encodeAxis(props.axes)
+    return Observable
+        .from(iFrames).startWith(null)
+        .switchMap((iFrame) => iFrame ? GraphistryJS(iFrame) : Observable.of(null))
+        .combineLatest(propsStream)
+        .switchMap(([g, props]) => {
+            if (!g) {
+                return Observable.of({ ...props, loading: !props.showSplashScreen, iFrameRefHandler });
+            }
+            let operations = [];
+            if (props.showIcons                ) operations.push(g.encodeIcons('point', 'pointIcon'));
+            if ('pointSize'            in props) operations.push(g.updateSetting('pointSize', props.pointSize));
+            if ('edgeOpacity'          in props) operations.push(g.updateSetting('edgeOpacity', props.edgeOpacity));
+            if ('pointOpacity'         in props) operations.push(g.updateSetting('pointOpacity', props.pointOpacity));
+            if ('showArrows'           in props) operations.push(g.updateSetting('showArrows', props.showArrows));
+            if ('showLabels'           in props) operations.push(g.updateSetting('labelEnabled', props.showLabels));
+            if ('showToolbar'          in props) operations.push(g.updateSetting('showToolbar', props.showToolbar));
+            if ('showInspector'        in props) operations.push(g.toggleInspector(props.showInspector));
+            if ('showHistograms'       in props) operations.push(g.toggleHistograms(props.showHistograms));
+            if ('pruneOrphans'         in props) operations.push(g.updateSetting('pruneOrphans', props.pruneOrphans));
+            if ('precisionVsSpeed'     in props) operations.push(g.updateSetting('precisionVsSpeed', props.precisionVsSpeed));
+            if ('showLabelOnHover'     in props) operations.push(g.updateSetting('labelHighlightEnabled', props.showLabelOnHover));
+            if ('showPointsOfInterest' in props) operations.push(g.updateSetting('labelPOI', props.showPointsOfInterest));
+            if ('axes'                 in props) operations.push(g.encodeAxis(props.axes));
+            return Observable
+                .merge(...operations)
+                .takeLast(1).startWith(null)
+                .mapTo({ ...props, loading: false, iFrameRefHandler })
         })
-        .mapTo({ ...props, loading: false, iFrameRefHandler })
-        .startWith({ ...props, loading: !props.showSplashScreen, iFrameRefHandler })
-    )
+        .distinctUntilChanged(shallowEqual);
 });
 
 function Graphistry({
         style, className, vizStyle, vizClassName, allowFullScreen,
-        play, showMenu = true, showInfo = true, showToolbar, backgroundColor,
-        graphistryHost, dataset, loading, loadingMessage = '', iFrameRefHandler,
-        showSplashScreen = false, type, layoutTweaks, axes, controls, logo
+        play, showMenu = true, showLogo = true, showInfo = true, showToolbar = true,
+        showLoadingIndicator = true, showSplashScreen = false, loading, loadingMessage = '',
+        backgroundColor, graphistryHost, iFrameRefHandler, dataset, type = 'vgraph', controls = '',
     }) {
-        
+
     const children = [];
     if (loading) {
         const showHeader = showMenu && showToolbar;
@@ -183,17 +191,20 @@ function Graphistry({
                 </div> || undefined}
                 <div className='graphistry-loading-placeholder-content' style={showHeader ? undefined : { height: `100%` }}>
                     <div className='graphistry-loading-placeholder-message'>
-                        <span className='graphistry-loading-placeholder-spinner'/>
+                        {showLoadingIndicator &&
+                        <span className='graphistry-loading-placeholder-spinner'/> || undefined}
                         <p>{loadingMessage || ''}</p>
                     </div>
                 </div>
             </div>
         );
     }
-    
+
     if (dataset) {
         play = typeof play === 'boolean' ? play : (play | 0) * 1000;
         const iFrameClassNames = 'graphistry-iframe' + (vizClassName ? ' ' + vizClassName : '');
+        const optionalParams = (type ? `&type=${type}` : ``) +
+                               (controls ? `&controls=${controls}` : ``);
         children.push(
             <iframe scrolling='no'
                     key='vizframe'
@@ -208,9 +219,7 @@ function Graphistry({
                         }&splashAfter=${!!showSplashScreen
                         }&dataset=${encodeURIComponent(dataset)
                         }&bg=${encodeURIComponent(backgroundColor)
-                        }&type=${type
-                        }&controls=${controls
-                        }&logo=${logo}`}
+                        }&logo=${showLogo}${optionalParams}`}
             />
         );
     }
