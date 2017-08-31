@@ -62,7 +62,8 @@ const propTypes = {
 
     type: PropTypes.string,
     axes: PropTypes.array,
-    controls: PropTypes.string
+    controls: PropTypes.string,
+    workbook: PropTypes.string,
 };
 
 const defaultProps = {
@@ -164,6 +165,7 @@ const withClientAPI = mapPropsStream((propsStream) => {
             if ('showLabelOnHover'     in props) operations.push(g.updateSetting('labelHighlightEnabled', props.showLabelOnHover));
             if ('showPointsOfInterest' in props) operations.push(g.updateSetting('labelPOI', props.showPointsOfInterest));
             if ('axes'                 in props) operations.push(g.encodeAxis(props.axes));
+            if ('workbook'             in props) operations.push(g.saveWorkbook())
             return Observable
                 .merge(...operations)
                 .takeLast(1).startWith(null)
@@ -176,7 +178,8 @@ function Graphistry({
         style, className, vizStyle, vizClassName, allowFullScreen,
         play, showMenu = true, showLogo = true, showInfo = true, showToolbar = true,
         showLoadingIndicator = true, showSplashScreen = false, loading, loadingMessage = '',
-        backgroundColor, graphistryHost, iFrameRefHandler, dataset, type = 'vgraph', controls = '',
+        backgroundColor, graphistryHost, iFrameRefHandler, dataset, type = 'vgraph', 
+        controls = '', workbook
     }) {
 
     const children = [];
@@ -204,7 +207,8 @@ function Graphistry({
         play = typeof play === 'boolean' ? play : (play | 0) * 1000;
         const iFrameClassNames = 'graphistry-iframe' + (vizClassName ? ' ' + vizClassName : '');
         const optionalParams = (type ? `&type=${type}` : ``) +
-                               (controls ? `&controls=${controls}` : ``);
+                               (controls ? `&controls=${controls}` : ``) +
+                               (workbook ? `&workbook=${workbook}` : ``);
         children.push(
             <iframe scrolling='no'
                     key='vizframe'
