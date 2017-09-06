@@ -104,6 +104,10 @@ const defaultProps = {
 };
 
 const handleETLUpload = mapPropsStream((props) => {
+	const keysThatCanTriggerReRender = [
+		'dataset', 'graphistryHost',
+		'loading', 'loadingMessage',
+	];
     return Observable.from(props).startWith({}).pairwise()
         .switchMap(([curr, next]) => {
             if (typeof next.dataset === 'string' || (
@@ -131,13 +135,14 @@ const handleETLUpload = mapPropsStream((props) => {
                 { 'Content-Type': 'application/json' }
             )
             .map(({ response }) => response && response.success
-                ? { ...defaultProps, ...next, loading: !next.showSplashScreen, ...response }
-                : { ...defaultProps, ...next, loading: true, loadingMessage: 'Error Uploading Graph', dataset: null }).catch(() => Observable.of(
-                  { ...defaultProps, ...next, loading: true, loadingMessage: 'Error Uploading Graph', dataset: null }))
+                ? {      ...next, loading: !next.showSplashScreen, ...response }
+                : {      ...next, loading: true, loadingMessage: 'Error Uploading Graph', dataset: null }).catch(() => Observable.of(
+                  {      ...next, loading: true, loadingMessage: 'Error Uploading Graph', dataset: null }))
             .startWith({ ...next, loading: true, loadingMessage: 'Uploading Graph', dataset: null })
         })
-        .scan((curr, next) => ({ ...curr, ...next }), defaultProps)
-        .distinctUntilChanged(shallowEqual);
+        .map((props) => ({ ...defaultProps, ...props }))
+        .distinctUntilChanged((prev, curr) =>
+    		keysThatCanTriggerReRender.every((key) => shallowEqual(prev[key], curr[key])));
 });
 
 const withClientAPI = mapPropsStream((propsStream) => {
