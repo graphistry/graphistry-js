@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api",
-  "version": "2.13.6",
+  "version": "2.13.7",
   "description": "Client-side API for interacting with a Graphistry embedded visualization.",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -71,7 +71,7 @@
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-model-rxjs": "^2.9.10",
     "@graphistry/falcor-socket-datasource": "^2.9.10",
-    "recompose": "^0.23.5",
+    "recompose": ">=0.23.5",
     "rxjs": "^5.4.2",
     "symbol-observable": "^1.0.4"
   }
