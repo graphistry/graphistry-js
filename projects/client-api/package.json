@@ -63,16 +63,16 @@
     "jsdoc": "~3.4.3",
     "jsdoc-babel": "~0.3.0",
     "rc-tools": "^6.2.1",
-    "react": "~15.6.1",
-    "react-dom": "~15.6.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "rimraf": "~2.6.1"
   },
   "dependencies": {
-    "@graphistry/falcor-json-graph": "~2.9.5",
-    "@graphistry/falcor-model-rxjs": "~2.9.5",
-    "@graphistry/falcor-socket-datasource": "~2.9.5",
-    "recompose": "~0.23.5",
+    "@graphistry/falcor-json-graph": "^2.9.10",
+    "@graphistry/falcor-model-rxjs": "^2.9.10",
+    "@graphistry/falcor-socket-datasource": "^2.9.10",
+    "recompose": "^0.23.5",
     "rxjs": "^5.4.2",
-    "symbol-observable": "~1.0.4"
+    "symbol-observable": "^1.0.4"
   }
 }
