@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api-react",
-  "version": "2.13.5",
+  "version": "2.13.6",
   "description": "Embed a Graphistry visualization via React",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -54,7 +54,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@graphistry/client-api": "^2.13.0",
+    "@graphistry/client-api": "^2.13.6",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
