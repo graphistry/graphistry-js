@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.14.0"></a>
+# [2.14.0](https://github.com/graphistry/graphistry-js/compare/v2.13.7...v2.14.0) (2017-09-26)
+
+
+### Features
+
+* **client-api:** add layout settings and default props to client-api and client-api-react ([5edade2](https://github.com/graphistry/graphistry-js/commit/5edade2))
+
+
+
+
 <a name="2.13.7"></a>
 ## [2.13.7](https://github.com/graphistry/graphistry-js/compare/v2.13.6...v2.13.7) (2017-09-10)
 
