@@ -616,20 +616,27 @@ class Graphistry extends Observable {
             'pointSize':    ['view', 'scene.renderer.points.scaling'],
 
             //models/camera.js
-            'zoom': ['view', 'camera.zoom'],
+            'zoom':   ['view', 'camera.zoom'],
             'center': ['view', 'camera.center["x", "y", "z"]'],
 
             //models/label.js
-            'labelOpacity': ['view', 'labels.opacity'],
-            'labelEnabled': ['view', 'labels.enabled'],
-            'labelPOI': ['view', 'labels.poiEnabled'],
+            'labelOpacity':          ['view', 'labels.opacity'],
+            'labelEnabled':          ['view', 'labels.enabled'],
+            'labelPOI':              ['view', 'labels.poiEnabled'],
             'labelHighlightEnabled': ['view', 'labels.highlightEnabled'],
-            'labelColor': ['view', 'labels.foreground.color'],
-            'labelBackground': ['view', 'labels.background.color'],
+            'labelColor':            ['view', 'labels.foreground.color'],
+            'labelBackground':       ['view', 'labels.background.color'],
 
-            //models/layout.js => viz-worker/simulator/layout.config.js:
-            'precisionVsSpeed': ['view', 'layout.options[0].value']
-
+            //models/layout.js
+            'precisionVsSpeed': ['view', 'layout.options.forceatlas2barnes[0].value'],
+            'gravity':          ['view', 'layout.options.forceatlas2barnes[1].value'],
+            'scalingRatio':     ['view', 'layout.options.forceatlas2barnes[2].value'],
+            'edgeInfluence':    ['view', 'layout.options.forceatlas2barnes[3].value'],
+            'strongGravity':    ['view', 'layout.options.forceatlas2barnes[4].value'],
+            'dissuadeHubs':     ['view', 'layout.options.forceatlas2barnes[5].value'],
+            'linLog':           ['view', 'layout.options.forceatlas2barnes[6].value'],
+            'lockedX':          ['view', 'layout.options.forceatlas2barnes[7].value'],
+            'lockedY':          ['view', 'layout.options.forceatlas2barnes[8].value'],
         };
 
         const [model, path] = lookup[name];

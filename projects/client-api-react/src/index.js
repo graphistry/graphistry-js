@@ -5,7 +5,7 @@ import shallowEqual from 'recompose/shallowEqual';
 import mapPropsStream from 'recompose/mapPropsStream';
 import createEventHandler from 'recompose/createEventHandler';
 import { GraphistryJS } from '@graphistry/client-api';
-const { Observable } = GraphistryJS;
+const { Observable, Subject } = GraphistryJS;
 const loadingNavLogoStyle = {
     top: `5px`,
     width: `100%`,
@@ -43,9 +43,37 @@ const propTypes = {
     showLabelOnHover: PropTypes.bool,
     showLoadingIndicator: PropTypes.bool,
     showPointsOfInterest: PropTypes.bool,
-    precisionVsSpeed: PropTypes.oneOf([
-        -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5
-    ]),
+    linLog: PropTypes.bool,
+    lockedX: PropTypes.bool,
+    lockedY: PropTypes.bool,
+    strongGravity: PropTypes.bool,
+    dissuadeHubs: PropTypes.bool,
+    edgeInfluence: PropTypes.oneOf([0, 1, 2, 3, 4, 5]),
+    precisionVsSpeed: PropTypes.oneOf([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]),
+    gravity: PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)),
+    scalingRatio: PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)),
+
+    defaultPointSize: PropTypes.number,
+    defaultEdgeOpacity: PropTypes.number,
+    defaultPointOpacity: PropTypes.number,
+    defaultShowIcons: PropTypes.bool,
+    defaultShowArrows: PropTypes.bool,
+    defaultShowLabels: PropTypes.bool,
+    defaultShowToolbar: PropTypes.bool,
+    defaultShowInspector: PropTypes.bool,
+    defaultShowHistograms: PropTypes.bool,
+    defaultPruneOrphans: PropTypes.bool,
+    defaultShowLabelOnHover: PropTypes.bool,
+    defaultShowPointsOfInterest: PropTypes.bool,
+    defaultLinLog: PropTypes.bool,
+    defaultLockedX: PropTypes.bool,
+    defaultLockedY: PropTypes.bool,
+    defaultStrongGravity: PropTypes.bool,
+    defaultDissuadeHubs: PropTypes.bool,
+    defaultEdgeInfluence: PropTypes.oneOf([0, 1, 2, 3, 4, 5]),
+    defaultPrecisionVsSpeed: PropTypes.oneOf([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]),
+    defaultGravity: PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)),
+    defaultScalingRatio: PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)),
 
     vizStyle: PropTypes.object,
     vizClassName: PropTypes.string,
@@ -67,48 +95,26 @@ const propTypes = {
 };
 
 const defaultProps = {
-
-    play: 5,
-    pointSize: 1,
-    edgeOpacity: 1,
-    pointOpacity: 1,
-
-    showInfo: true,
-    showMenu: true,
-    showLogo: true,
-    showIcons: true,
-    showArrows: true,
-    showLabels: true,
-    showToolbar: true,
-    showInspector: false,
-    showHistograms: false,
-    showSplashScreen: false,
-    pruneOrphans: false,
-    showLabelOnHover: true,
-    showLoadingIndicator: true,
-    showPointsOfInterest: true,
-    loadingMessage: 'Herding stray GPUs',
-
     vizStyle: {},
     vizClassName: '',
     allowFullScreen: true,
     backgroundColor: '#333339',
-
-    nodes: [],
-    edges: [],
-    bindings: {
-        idField: 'node',
-        sourceField: 'src',
-        destinationField: 'dst'
-    }
+    play: 5,
+    showInfo: true,
+    showMenu: true,
+    showLogo: true,
+    showToolbar: true,
+    showSplashScreen: false,
+    showLoadingIndicator: true,
+    loadingMessage: 'Herding stray GPUs',
 };
 
-const handleETLUpload = mapPropsStream((props) => {
+const handleETLUpload = mapPropsStream((propsStream) => {
 	const keysThatCanTriggerReRender = [
 		'dataset', 'graphistryHost',
 		'loading', 'loadingMessage',
 	];
-    return Observable.from(props).startWith({}).pairwise()
+    return Observable.from(propsStream).startWith({}).pairwise()
         .switchMap(([curr, next]) => {
             if (typeof next.dataset === 'string' || (
                 shallowEqual(curr.edges, next.edges) &&
@@ -150,27 +156,63 @@ const withClientAPI = mapPropsStream((propsStream) => {
     return Observable
         .from(iFrames).startWith(null)
         .switchMap((iFrame) => iFrame ? GraphistryJS(iFrame) : Observable.of(null))
-        .combineLatest(propsStream)
+        .combineLatest(Observable
+            .from(propsStream)
+            .multicast(() => new Subject(), (xs) => xs.merge(
+                xs.take(1).map((props) => ({
+                    pointSize: props.defaultPointSize,
+                    edgeOpacity: props.defaultEdgeOpacity,
+                    pointOpacity: props.defaultPointOpacity,
+                    showIcons: props.defaultShowIcons,
+                    showArrows: props.defaultShowArrows,
+                    showLabels: props.defaultShowLabels,
+                    showToolbar: props.defaultShowToolbar,
+                    showInspector: props.defaultShowInspector,
+                    showHistograms: props.defaultShowHistograms,
+                    pruneOrphans: props.defaultPruneOrphans,
+                    showLabelOnHover: props.defaultShowLabelOnHover,
+                    showPointsOfInterest: props.defaultShowPointsOfInterest,
+                    linLog: props.defaultLinLog,
+                    lockedX: props.defaultLockedX,
+                    lockedY: props.defaultLockedY,
+                    strongGravity: props.defaultStrongGravity,
+                    dissuadeHubs: props.defaultDissuadeHubs,
+                    edgeInfluence: props.defaultEdgeInfluence,
+                    precisionVsSpeed: props.defaultPrecisionVsSpeed,
+                    gravity: props.defaultGravity,
+                    scalingRatio: props.defaultScalingRatio,
+                    ...props
+                }))
+            ))
+        )
         .switchMap(([g, props]) => {
             if (!g) {
                 return Observable.of({ ...props, loading: !props.showSplashScreen, iFrameRefHandler });
             }
             let operations = [];
-            if (props.showIcons                ) operations.push(g.encodeIcons('point', 'pointIcon'));
-            if ('pointSize'            in props) operations.push(g.updateSetting('pointSize', props.pointSize));
-            if ('edgeOpacity'          in props) operations.push(g.updateSetting('edgeOpacity', props.edgeOpacity));
-            if ('pointOpacity'         in props) operations.push(g.updateSetting('pointOpacity', props.pointOpacity));
-            if ('showArrows'           in props) operations.push(g.updateSetting('showArrows', props.showArrows));
-            if ('showLabels'           in props) operations.push(g.updateSetting('labelEnabled', props.showLabels));
-            if ('showToolbar'          in props) operations.push(g.updateSetting('showToolbar', props.showToolbar));
-            if ('showInspector'        in props) operations.push(g.toggleInspector(props.showInspector));
-            if ('showHistograms'       in props) operations.push(g.toggleHistograms(props.showHistograms));
-            if ('pruneOrphans'         in props) operations.push(g.updateSetting('pruneOrphans', props.pruneOrphans));
-            if ('precisionVsSpeed'     in props) operations.push(g.updateSetting('precisionVsSpeed', props.precisionVsSpeed));
-            if ('showLabelOnHover'     in props) operations.push(g.updateSetting('labelHighlightEnabled', props.showLabelOnHover));
-            if ('showPointsOfInterest' in props) operations.push(g.updateSetting('labelPOI', props.showPointsOfInterest));
-            if ('axes'                 in props) operations.push(g.encodeAxis(props.axes));
-            if ('workbook'             in props) operations.push(g.saveWorkbook())
+            if (props.showIcons                                  ) operations.push(g.encodeIcons('point', 'pointIcon'));
+            if (typeof props.pointSize            !== 'undefined') operations.push(g.updateSetting('pointSize', props.pointSize));
+            if (typeof props.edgeOpacity          !== 'undefined') operations.push(g.updateSetting('edgeOpacity', props.edgeOpacity));
+            if (typeof props.pointOpacity         !== 'undefined') operations.push(g.updateSetting('pointOpacity', props.pointOpacity));
+            if (typeof props.showArrows           !== 'undefined') operations.push(g.updateSetting('showArrows', props.showArrows));
+            if (typeof props.showLabels           !== 'undefined') operations.push(g.updateSetting('labelEnabled', props.showLabels));
+            if (typeof props.showToolbar          !== 'undefined') operations.push(g.updateSetting('showToolbar', props.showToolbar));
+            if (typeof props.showInspector        !== 'undefined') operations.push(g.toggleInspector(props.showInspector));
+            if (typeof props.showHistograms       !== 'undefined') operations.push(g.toggleHistograms(props.showHistograms));
+            if (typeof props.pruneOrphans         !== 'undefined') operations.push(g.updateSetting('pruneOrphans', props.pruneOrphans));
+            if (typeof props.showLabelOnHover     !== 'undefined') operations.push(g.updateSetting('labelHighlightEnabled', props.showLabelOnHover));
+            if (typeof props.showPointsOfInterest !== 'undefined') operations.push(g.updateSetting('labelPOI', props.showPointsOfInterest));
+            if (typeof props.linLog               !== 'undefined') operations.push(g.updateSetting('linLog', props.linLog));
+            if (typeof props.lockedX              !== 'undefined') operations.push(g.updateSetting('lockedX', props.lockedX));
+            if (typeof props.lockedY              !== 'undefined') operations.push(g.updateSetting('lockedY', props.lockedY));
+            if (typeof props.strongGravity        !== 'undefined') operations.push(g.updateSetting('strongGravity', props.strongGravity));
+            if (typeof props.dissuadeHubs         !== 'undefined') operations.push(g.updateSetting('dissuadeHubs', props.dissuadeHubs));
+            if (typeof props.edgeInfluence        !== 'undefined') operations.push(g.updateSetting('edgeInfluence', props.edgeInfluence));
+            if (typeof props.precisionVsSpeed     !== 'undefined') operations.push(g.updateSetting('precisionVsSpeed', props.precisionVsSpeed));
+            if (typeof props.gravity              !== 'undefined') operations.push(g.updateSetting('gravity', props.gravity));
+            if (typeof props.scalingRatio         !== 'undefined') operations.push(g.updateSetting('scalingRatio', props.scalingRatio));
+            if (typeof props.axes                 !== 'undefined') operations.push(g.encodeAxis(props.axes));
+            if (typeof props.workbook             !== 'undefined') operations.push(g.saveWorkbook());
             return Observable
                 .merge(...operations)
                 .takeLast(1).startWith(null)
@@ -183,7 +225,7 @@ function Graphistry({
         style, className, vizStyle, vizClassName, allowFullScreen,
         play, showMenu = true, showLogo = true, showInfo = true, showToolbar = true,
         showLoadingIndicator = true, showSplashScreen = false, loading, loadingMessage = '',
-        backgroundColor, graphistryHost, iFrameRefHandler, dataset, type = 'vgraph', 
+        backgroundColor, graphistryHost, iFrameRefHandler, dataset, type = 'vgraph',
         controls = '', workbook
     }) {
 
