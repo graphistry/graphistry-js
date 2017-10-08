@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api-react#readme",
   "scripts": {
-    "build": "npm run build:umd && npm run build:prod && npm run build:examples",
+    "build": "rc-tools run build",
     "build:umd": "rc-tools run dist",
     "build:prod": "rc-tools run compile",
     "build:examples": "rc-tools run build",
@@ -41,7 +41,10 @@
     "test:coverage": "rc-tools run coverage",
     "start": "rc-tools run server",
     "start:docs": "rc-tools run server",
-    "lint": "rc-tools run lint"
+    "lint": "rc-tools run lint",
+    "gh-pages": "rc-tools run gh-pages",
+    "pub": "rc-tools run update-self && rc-tools run pub",
+    "prepublish": "rc-tools run guard"
   },
   "files": [
     "dist",
@@ -55,18 +58,17 @@
   "license": "ISC",
   "dependencies": {
     "@graphistry/client-api": "^2.14.0",
-    "prop-types": "^15.5.10",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
-    "recompose": ">=0.23.4"
+    "prop-types": "15.6.0",
+    "react": "16.0.0",
+    "recompose": "0.26.0"
   },
   "devDependencies": {
     "commitizen": "~2.9.6",
     "cz-conventional-changelog": "~2.0.0",
-    "jsdoc": "~3.4.3",
+    "jsdoc": "3.5.5",
     "jsdoc-babel": "~0.3.0",
-    "rc-tools": "^6.2.1",
-    "react-dom": "^15.6.1",
-    "rimraf": "~2.6.1"
+    "rc-tools": "7.0.0",
+    "react-dom": "16.0.0",
+    "rimraf": "2.6.2"
   }
 }
