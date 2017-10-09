@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.15.0"></a>
+# [2.15.0](https://github.com/graphistry/graphistry-js/compare/v2.14.0...v2.15.0) (2017-10-09)
+
+
+### Features
+
+* **client-api-react:** add onClientAPIConnected callback to client-api-react ([d2bcaec](https://github.com/graphistry/graphistry-js/commit/d2bcaec))
+
+
+
+
 <a name="2.14.0"></a>
 # [2.14.0](https://github.com/graphistry/graphistry-js/compare/v2.13.7...v2.14.0) (2017-09-26)
 
