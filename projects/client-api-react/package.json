@@ -43,8 +43,7 @@
     "start:docs": "rc-tools run server",
     "lint": "rc-tools run lint",
     "gh-pages": "rc-tools run gh-pages",
-    "pub": "rc-tools run update-self && rc-tools run pub",
-    "prepublish": "rc-tools run guard"
+    "pub": "rc-tools run update-self && rc-tools run pub"
   },
   "files": [
     "dist",
