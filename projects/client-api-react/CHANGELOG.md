@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.15.1"></a>
+## [2.15.1](https://github.com/graphistry/graphistry-js/compare/v2.15.0...v2.15.1) (2017-10-12)
+
+
+
+
+**Note:** Version bump only for package @graphistry/client-api-react
+
 <a name="2.15.0"></a>
 # [2.15.0](https://github.com/graphistry/graphistry-js/compare/v2.14.0...v2.15.0) (2017-10-09)
 
