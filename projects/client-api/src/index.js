@@ -113,7 +113,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeColor(graphType, attribute, variation, colors) {
+    static encodeColor(graphType, attribute, variation, colors, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.color`,
@@ -200,6 +200,7 @@ class Graphistry extends Observable {
      * @method Graphistry.encodeIcons
      * @param {GraphType} [graphType] - 'point' or 'edge'
      * @param {Attribute} [attribute] - name of data column, e.g., 'icon'
+     * @param {Mapping} [object] - optional value mapping, e.g., {categorical: {fixed: {ip: 'laptop', alert: 'alaram'}, other: 'question'}}
      * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
@@ -209,12 +210,12 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeIcons(graphType, attribute) {
+    static encodeIcons(graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.icon`,
                 {   reset: false, name: 'user_' + Math.random(),
-                    encodingType: 'icon', graphType, attribute }))
+                    encodingType: 'icon', graphType, attribute, mapping }))
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
@@ -256,12 +257,12 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeSize(graphType, attribute) {
+    static encodeSize(graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.size`,
                 {   reset: false, name: 'user_' + Math.random(),
-                    encodingType: 'size', graphType, attribute }))
+                    encodingType: 'size', graphType, attribute, mapping }))
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
