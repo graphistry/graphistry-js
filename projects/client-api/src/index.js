@@ -103,7 +103,7 @@ class Graphistry extends Observable {
      * @param {GraphType} [graphType] - 'point' or 'edge'
      * @param {Attribute} [attribute] - name of data column, e.g., 'degree'
      * @param {Variant} [variation] - If there are more bins than colors, use 'categorical' to repeat colors and 'continuous' to interpolate
-     * @param {Array} [colors] - array of color name or hex codes
+     * @param {Array} [mapping] - array of color name or hex codes
      * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
@@ -113,12 +113,12 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeColor(graphType, attribute, variation, colors, mapping) {
+    static encodeColor(graphType, attribute, variation, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.color`,
                 {   reset: false, variation, name: 'user_' + Math.random(),
-                    encodingType: 'color', colors, graphType, attribute }))
+                    encodingType: 'color', graphType, attribute, mapping }))
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
@@ -356,12 +356,12 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
-    static encodeDefaultColor(graphType, attribute, variation, colors, mapping) {
+    static encodeDefaultColor(graphType, attribute, variation, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.defaults.${graphType}.color`,
                 {   reset: false, variation, name: 'user_' + Math.random(),
-                    encodingType: 'color', colors, graphType, attribute }))
+                    encodingType: 'color', graphType, attribute, mapping }))
             .map(({ json }) => json.toJSON())
             .toPromise());
     }    
