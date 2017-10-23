@@ -338,6 +338,35 @@ class Graphistry extends Observable {
         }
     }
 
+    static encodeDefaultIcons(graphType, attribute, mapping) {
+        const { view } = this;
+        return new this(view.set(
+            $value(`encodings.defaults.${graphType}.icon`,
+                {   reset: false, name: 'user_' + Math.random(),
+                    encodingType: 'icon', graphType, attribute, mapping }))
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+    }
+    static encodeDefaultSize(graphType, attribute, mapping) {
+        const { view } = this;
+        return new this(view.set(
+            $value(`encodings.defaults.${graphType}.size`,
+                {   reset: false, name: 'user_' + Math.random(),
+                    encodingType: 'size', graphType, attribute, mapping }))
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+    }
+    static encodeDefaultColor(graphType, attribute, variation, colors, mapping) {
+        const { view } = this;
+        return new this(view.set(
+            $value(`encodings.defaults.${graphType}.color`,
+                {   reset: false, variation, name: 'user_' + Math.random(),
+                    encodingType: 'color', colors, graphType, attribute }))
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+    }    
+
+
     /**
      * Toggle inspector panel
      * @method Graphistry.toggleInspector
