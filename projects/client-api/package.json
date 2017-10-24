@@ -74,7 +74,7 @@
     "@graphistry/falcor-model-rxjs": "2.9.11",
     "@graphistry/falcor-socket-datasource": "2.9.11",
     "recompose": "0.26.0",
-    "rxjs": "^5.4.2",
+    "rxjs": "5.4.2",
     "symbol-observable": "^1.0.4"
   }
 }
