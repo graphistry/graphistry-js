@@ -31,10 +31,70 @@ const propTypes = {
 
     onClientAPIConnected: PropTypes.func,
 
+    pointColorEncoding:
+    		PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      variation: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),
+    pointColorEncodingDefault:
+    		PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      variation: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),    
+    pointSizeEncoding:
+    		PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),
+    pointSizeEncodingDefault:
+    		PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),
+    pointIconEncoding: 
+			PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),
+    pointIconEncodingDefault:
+		PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),
+    edgeColorEncoding:
+    		PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      variation: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),    
+    edgeColorEncodingDefault:
+    		PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      variation: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),    
+    //edgeSizeEncoding: PropTypes.object,
+    //edgeSizeEncodingDefault: PropTypes.object,
+    //edgeWeightEncoding: PropTypes.object,
+    //edgeWeightEncodingDefault: PropTypes.object,
+    edgeIconEncoding:
+			PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),    
+    edgeIconEncodingDefault:
+			PropTypes.shape({
+		      attribute: PropTypes.string.isRequired,
+		      mapping: PropTypes.object
+		    }),    
+    
+    nodes: PropTypes.arrayOf(),
+
     showInfo: PropTypes.bool,
     showMenu: PropTypes.bool,
     showLogo: PropTypes.bool,
-    showIcons: PropTypes.bool,
     showArrows: PropTypes.bool,
     showLabels: PropTypes.bool,
     showToolbar: PropTypes.bool,
@@ -59,7 +119,6 @@ const propTypes = {
     defaultPointSize: PropTypes.number,
     defaultEdgeOpacity: PropTypes.number,
     defaultPointOpacity: PropTypes.number,
-    defaultShowIcons: PropTypes.bool,
     defaultShowArrows: PropTypes.bool,
     defaultShowLabels: PropTypes.bool,
     defaultShowToolbar: PropTypes.bool,

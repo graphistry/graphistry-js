@@ -98,12 +98,12 @@ class Graphistry extends Observable {
 
 
     /**
-     * Change colors based on an attribute
+     * Change colors based on an attribute. Pass null for attribute, mapping to clear.
      * @method Graphistry.encodeColor
      * @param {GraphType} [graphType] - 'point' or 'edge'
      * @param {Attribute} [attribute] - name of data column, e.g., 'degree'
      * @param {Variant} [variation] - If there are more bins than colors, use 'categorical' to repeat colors and 'continuous' to interpolate
-     * @param {Array} [colors] - array of color name or hex codes
+     * @param {Array} [mapping] - array of color name or hex codes
      * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
@@ -113,38 +113,16 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeColor(graphType, attribute, variation, colors) {
+    static encodeColor(graphType, attribute, variation, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.color`,
-                {   reset: false, variation, name: 'user_' + Math.random(),
-                    encodingType: 'color', colors, graphType, attribute }))
+                {   reset: attribute === undefined, variation, name: 'user_' + Math.random(),
+                    encodingType: 'color', graphType, attribute, mapping }))
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
 
-    /**
-     * Reset color to value at page load
-     * @method Graphistry.resetColor
-     * @param {GraphType} [graphType] - 'point' or 'edge'
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
-     * @example
-     *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         return g.encodeColor('point', 'degree', 'categorical', ['black', 'white'])
-     *         return g.resetColor('point')
-     *     })
-     *     .subscribe();
-     */
-    static resetColor(graphType) {
-        const { view } = this;
-        return new this(view.set(
-            $value(`encodings.${graphType}.color`,
-                {   reset: true, encodingType: 'color' }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-    }
 
     /**
      * Change axis
@@ -164,42 +142,21 @@ class Graphistry extends Observable {
 
         return new this(view.set(
             $value(`encodings.point.axis`,
-                {   reset: false, name: 'user_' + Math.random(),
+                {   reset: axis === undefined, name: 'user_' + Math.random(),
                     encodingType: 'axis', graphType: 'point', attribute: 'degree', variation: 'categorical',
                     rows: axis }))
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
 
-    /**
-     * Reset axis to value at page load
-     * @method Graphistry.resetAxis
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
-     * @example
-     *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         return g.encodeAxis()
-     *         return g.resetAxis()
-     *     })
-     *     .subscribe();
-     */
-    static resetAxis() {
-        const { view } = this;
-        return new this(view.set(
-            $value(`encodings.point.axis`,
-                {   reset: true, encodingType: 'axis' }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-    }
-
 
 
     /**
-     * Change icons based on an attribute
+     * Change icons based on an attribute. Pass undefined for attribute, mapping to clear.
      * @method Graphistry.encodeIcons
      * @param {GraphType} [graphType] - 'point' or 'edge'
      * @param {Attribute} [attribute] - name of data column, e.g., 'icon'
+     * @param {Mapping} [object] - optional value mapping, e.g., {categorical: {fixed: {ip: 'laptop', alert: 'alaram'}, other: 'question'}}
      * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
@@ -209,41 +166,20 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeIcons(graphType, attribute) {
+    static encodeIcons(graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.icon`,
-                {   reset: false, name: 'user_' + Math.random(),
-                    encodingType: 'icon', graphType, attribute }))
+                {   reset: attribute === undefined, name: 'user_' + Math.random(),
+                    encodingType: 'icon', graphType, attribute, mapping }))
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
 
-    /**
-     * Reset icons to value at page load
-     * @method Graphistry.resetIcons
-     * @param {GraphType} [graphType] - 'point' or 'edge'
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
-     * @example
-     *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         return g.encodeIcons('point', 'icon')
-     *         return g.resetIcons('point')
-     *     })
-     *     .subscribe();
-     */
-    static resetIcons(graphType) {
-        const { view } = this;
-        return new this(view.set(
-            $value(`encodings.${graphType}.icon`,
-                {   reset: true, encodingType: 'icon' }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-    }
+    
 
     /**
-     * Change size based on an attribute
+     * Change size based on an attribute. Pass null for attribute, mapping to clear.
      * @method Graphistry.encodeSize
      * @param {GraphType} [graphType] - 'point'
      * @param {Attribute} [attribute] - name of data column, e.g., 'degree'
@@ -256,39 +192,16 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeSize(graphType, attribute) {
+    static encodeSize(graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.size`,
-                {   reset: false, name: 'user_' + Math.random(),
-                    encodingType: 'size', graphType, attribute }))
+                {   reset: attribute === undefined, name: 'user_' + Math.random(),
+                    encodingType: 'size', graphType, attribute, mapping }))
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
-
-
-    /**
-     * Reset size to value at page load
-     * @method Graphistry.resetSize
-     * @param {GraphType} [graphType] - 'point'
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
-     * @example
-     *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         return g.encodeSize('point', 'community_infomap')
-     *         return g.resetSize('point')
-     *     })
-     *     .subscribe();
-     */
-    static resetSize(graphType) {
-        const { view } = this;
-        return new this(view.set(
-            $value(`encodings.${graphType}.size`,
-                {   reset: true, encodingType: 'size' }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-    }
+    
 
     /**
      * Toggle a leftside panel
@@ -336,6 +249,35 @@ class Graphistry extends Observable {
             .toPromise());
         }
     }
+
+    static encodeDefaultIcons(graphType, attribute, mapping) {
+        const { view } = this;
+        return new this(view.set(
+            $value(`encodings.defaults.${graphType}.icon`,
+                {   reset: attribute === undefined, name: 'user_' + Math.random(),
+                    encodingType: 'icon', graphType, attribute, mapping }))
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+    }
+    static encodeDefaultSize(graphType, attribute, mapping) {
+        const { view } = this;
+        return new this(view.set(
+            $value(`encodings.defaults.${graphType}.size`,
+                {   reset: attribute === undefined, name: 'user_' + Math.random(),
+                    encodingType: 'size', graphType, attribute, mapping }))
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+    }
+    static encodeDefaultColor(graphType, attribute, variation, mapping) {
+        const { view } = this;
+        return new this(view.set(
+            $value(`encodings.defaults.${graphType}.color`,
+                {   reset: attribute === undefined, variation, name: 'user_' + Math.random(),
+                    encodingType: 'color', graphType, attribute, mapping }))
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+    }    
+
 
     /**
      * Toggle inspector panel
