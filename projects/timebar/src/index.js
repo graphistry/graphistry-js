@@ -11,8 +11,9 @@ export default class Timebar extends React.Component {
 
     onSelection(_, { x: [from, to] }) {
         this.setState({ selection: { from, to } });
-        if (this.props.selectionChanged) {
-            this.props.selectionChanged(from, to);
+        if (this.props.setSelection) {
+            const selection = []; // TODO this should individually select each bar within the range
+            this.props.setSelection(selection);
         }
     }
 
@@ -23,9 +24,24 @@ export default class Timebar extends React.Component {
         }
     }
 
+    onBarClicked() {
+        // TODO allow toggle of individual bars - add/remove bar from selection.
+    }
+
+    onBarHover() {
+        // TODO expose 'onBarHover' - consuming app should choose what to do with that knowledge.
+    }
+
+    play() {
+        // TODO - this should setState( { selection: { from, to }}) on an interval, where `from`
+        // is always 0 and `to` advanced one step per interval until the whole bar is selected.
+        // then it should stop and garbage collect itself.
+    }
+
+    // this should be used with buttons that control zoom/position,
+    // not added to UI yet
     onZoomDomainChange(domain) {
         this.setState({ zoomDomain: domain });
-        console.log(domain);
         if (this.props.zoomChanged) {
             this.props.zoomChanged(domain);
         }
@@ -34,7 +50,7 @@ export default class Timebar extends React.Component {
     render() {
         const bins = this.props.bins.map(bin => ({
             y: bin.count,
-            x: parseInt(bin.values[0])
+            x: parseInt(bin.values[0]) // we use the START TIME of a bin as its time.
         }));
 
         return (
@@ -42,7 +58,7 @@ export default class Timebar extends React.Component {
                 <VictoryChart
                     width={800}
                     height={150}
-                    scale={{ x: 'time', y: this.props.yScale }}
+                    scale={{ x: 'time' }}
                     containerComponent={
                         <ZoomSelectionContainer
                             allowPan={false}
