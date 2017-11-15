@@ -1,0 +1,165 @@
+{
+    "id": "419bf3e254b4fc93",
+    "name": "startTime",
+    "yScale": "none",
+    "dataType": "date",
+    "componentType": "edge",
+    "bins": {
+        "length": 30,
+        "0": {
+            "count": 1,
+            "values": [1394015437000],
+            "exclude": false
+        },
+        "1": {
+            "count": 0,
+            "values": [1394098508000, 1394181579000],
+            "exclude": false
+        },
+        "2": {
+            "count": 0,
+            "values": [1394181579000, 1394264650000],
+            "exclude": false
+        },
+        "3": {
+            "count": 0,
+            "values": [1394264650000, 1394347721000],
+            "exclude": false
+        },
+        "4": {
+            "count": 0,
+            "values": [1394347721000, 1394430792000],
+            "exclude": false
+        },
+        "5": {
+            "count": 0,
+            "values": [1394430792000, 1394513863000],
+            "exclude": false
+        },
+        "6": {
+            "count": 0,
+            "values": [1394513863000, 1394596934000],
+            "exclude": false
+        },
+        "7": {
+            "count": 0,
+            "values": [1394596934000, 1394680005000],
+            "exclude": false
+        },
+        "8": {
+            "count": 0,
+            "values": [1394680005000, 1394763076000],
+            "exclude": false
+        },
+        "9": {
+            "count": 0,
+            "values": [1394763076000, 1394846147000],
+            "exclude": false
+        },
+        "10": {
+            "count": 0,
+            "values": [1394846147000, 1394929218000],
+            "exclude": false
+        },
+        "11": {
+            "count": 0,
+            "values": [1394929218000, 1395012289000],
+            "exclude": false
+        },
+        "12": {
+            "count": 0,
+            "values": [1395012289000, 1395095360000],
+            "exclude": false
+        },
+        "13": {
+            "count": 0,
+            "values": [1395095360000, 1395178431000],
+            "exclude": false
+        },
+        "14": {
+            "count": 2,
+            "values": [1395237819000, 1395260642000],
+            "exclude": false
+        },
+        "15": {
+            "count": 1,
+            "values": [1395280889000],
+            "exclude": false
+        },
+        "16": {
+            "count": 0,
+            "values": [1395344573000, 1395427644000],
+            "exclude": false
+        },
+        "17": {
+            "count": 0,
+            "values": [1395427644000, 1395510715000],
+            "exclude": false
+        },
+        "18": {
+            "count": 0,
+            "values": [1395510715000, 1395593786000],
+            "exclude": false
+        },
+        "19": {
+            "count": 0,
+            "values": [1395593786000, 1395676857000],
+            "exclude": false
+        },
+        "20": {
+            "count": 0,
+            "values": [1395676857000, 1395759928000],
+            "exclude": false
+        },
+        "21": {
+            "count": 0,
+            "values": [1395759928000, 1395842999000],
+            "exclude": false
+        },
+        "22": {
+            "count": 0,
+            "values": [1395842999000, 1395926070000],
+            "exclude": false
+        },
+        "23": {
+            "count": 0,
+            "values": [1395926070000, 1396009141000],
+            "exclude": false
+        },
+        "24": {
+            "count": 0,
+            "values": [1396009141000, 1396092212000],
+            "exclude": false
+        },
+        "25": {
+            "count": 0,
+            "values": [1396092212000, 1396175283000],
+            "exclude": false
+        },
+        "26": {
+            "count": 0,
+            "values": [1396175283000, 1396258354000],
+            "exclude": false
+        },
+        "27": {
+            "count": 25912,
+            "values": [1396277586000, 1396341424000],
+            "exclude": false
+        },
+        "28": {
+            "count": 80576,
+            "values": [1396341425000, 1396420798000],
+            "exclude": false
+        },
+        "29": {
+            "count": 1,
+            "values": [1396424496000],
+            "exclude": false
+        }
+    },
+    "numElements": 13031,
+    "maxElements": 80576,
+    "binType": "histogram",
+    "binWidth": 83071000,
+    "numBins": 30
+}
