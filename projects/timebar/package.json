@@ -6,6 +6,8 @@
     "scripts": {
         "test": "jest",
         "prepublish": "npm run build",
+        "prebuild": "clean",
+        "clean": "rm -rf lib",
         "build": "babel src --out-dir lib",
         "dev": "webpack-dev-server"
     },
@@ -13,9 +15,7 @@
         "type": "git",
         "url": "git+ssh://git@github.com/graphistry/timebar.git"
     },
-    "keywords": [
-        "timebar"
-    ],
+    "keywords": ["timebar"],
     "author": "@mykola",
     "license": "ISC",
     "bugs": {
