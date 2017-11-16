@@ -5,9 +5,9 @@
     "main": "lib/index.js",
     "scripts": {
         "test": "jest",
-        "prepublish": "npm run build",
-        "prebuild": "clean",
-        "clean": "rm -rf lib",
+        "prepublishOnly": "npm run build",
+        "prebuild": "npm run clean",
+        "clean": "rimraf lib",
         "build": "babel src --out-dir lib",
         "dev": "webpack-dev-server"
     },

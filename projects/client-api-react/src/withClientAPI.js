@@ -37,7 +37,7 @@ function applyPropsToClientAPI(iFrameRefHandler) {
             return Observable.of({ ...props, loading: !props.showSplashScreen, iFrameRefHandler });
         }
         const operations = [];
-        
+
         if (typeof props.pointSize            !== 'undefined') operations.push(g.updateSetting('pointSize', props.pointSize));
         if (typeof props.edgeOpacity          !== 'undefined') operations.push(g.updateSetting('edgeOpacity', props.edgeOpacity));
         if (typeof props.pointOpacity         !== 'undefined') operations.push(g.updateSetting('pointOpacity', props.pointOpacity));
@@ -60,39 +60,45 @@ function applyPropsToClientAPI(iFrameRefHandler) {
         if (typeof props.scalingRatio         !== 'undefined') operations.push(g.updateSetting('scalingRatio', props.scalingRatio));
         if (typeof props.axes                 !== 'undefined') operations.push(g.encodeAxis(props.axes));
 
-        
-        ['point', 'edge'].forEach((graphType) => {       
+        function setEncoding(name, ...args) {
+            return g.defer(() => g[name](...args).do({
+                next(x) { console.log(`set encoding ${name}`); },
+                error(e) { console.log(`${name} failed, retrying`); }
+            })).retry();
+        }
+
+        ['point', 'edge'].forEach((graphType) => {
             ['', 'Default'].forEach((suffix) => {
                 const prop = props[`${graphType}IconEncoding${suffix}`];
                 if (typeof prop !== 'undefined') {
-                    const { attribute, mapping } = prop;                    
-                    operations.push(g[`encode${suffix}Icons`](graphType, attribute, mapping));
+                    const { attribute, mapping } = prop;
+                    operations.push(setEncoding(`encode${suffix}Icons`, graphType, attribute, mapping));
                 } else {
-                    operations.push(g[`encode${suffix}Icons`](graphType));
-                }
-            });
-        });
-        
-        ['point', 'edge'].forEach((graphType) => {       
-            ['', 'Default'].forEach((suffix) => {
-                const prop = props[`${graphType}SizeEncoding${suffix}`];
-                if (typeof prop !== 'undefined') {
-                    const { attribute, mapping } = prop;                    
-                    operations.push(g[`encode${suffix}Size`](graphType, attribute, mapping));
-                } else {
-                    operations.push(g[`encode${suffix}Size`](graphType));
+                    operations.push(setEncoding(`encode${suffix}Icons`, graphType));
                 }
             });
         });
 
-        ['point', 'edge'].forEach((graphType) => {       
+        ['point', 'edge'].forEach((graphType) => {
+            ['', 'Default'].forEach((suffix) => {
+                const prop = props[`${graphType}SizeEncoding${suffix}`];
+                if (typeof prop !== 'undefined') {
+                    const { attribute, mapping } = prop;
+                    operations.push(setEncoding(`encode${suffix}Size`, graphType, attribute, mapping));
+                } else {
+                    operations.push(setEncoding(`encode${suffix}Size`, graphType));
+                }
+            });
+        });
+
+        ['point', 'edge'].forEach((graphType) => {
             ['', 'Default'].forEach((suffix) => {
                 const prop = props[`${graphType}ColorEncoding${suffix}`];
                 if (typeof prop !== 'undefined') {
-                    const { attribute, variation, mapping } = prop;                    
-                    operations.push(g[`encode${suffix}Color`](graphType, attribute, variation, mapping));
+                    const { attribute, variation, mapping } = prop;
+                    operations.push(setEncoding(`encode${suffix}Color`, graphType, attribute, variation, mapping));
                 } else {
-                    operations.push(g[`encode${suffix}Color`](graphType));
+                    operations.push(setEncoding(`encode${suffix}Color`, graphType));
                 }
             });
         });
