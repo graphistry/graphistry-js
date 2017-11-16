@@ -23,6 +23,8 @@
     },
     "homepage": "https://github.com/graphistry/graphistry-js#readme",
     "dependencies": {
+        "babel-plugin-transform-object-rest-spread": "^6.26.0",
+        "babel-preset-env": "^1.6.1",
         "react-dom": "^16.1.0",
         "victory": "^0.24.1"
     },

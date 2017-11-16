@@ -1,35 +1,58 @@
 import React from 'react';
-import { VictoryChart, createContainer, VictoryBar } from 'victory';
+import { VictoryChart, createContainer, VictoryZoomContainer, VictoryBar, Bar } from 'victory';
 
 const ZoomSelectionContainer = createContainer('zoom', 'selection');
+
+const extractBins = props =>
+    props.bins.map(bin => ({
+        y: bin.count,
+        x: parseInt(bin.values[0]) // we use the START TIME of a bin as its time.,
+    }));
 
 export default class Timebar extends React.Component {
     constructor() {
         super();
-        this.state = {};
+        this.state = { allowPan: false };
+    }
+
+    getBinsInRange(from, to) {
+        return this.props.bins.filter(bin => {
+            const binStart = parseInt(bin.values[0]);
+            return from <= binStart && binStart <= to;
+        });
     }
 
     onSelection(_, { x: [from, to] }) {
-        this.setState({ selection: { from, to } });
         if (this.props.setSelection) {
-            const selection = []; // TODO this should individually select each bar within the range
+            const selection = this.getBinsInRange(from, to);
             this.props.setSelection(selection);
         }
     }
 
     onSelectionCleared() {
-        this.setState({ selection: null });
-        if (this.props.selectionCleared) {
-            this.props.selectionCleared();
+        if (this.props.setSelection) {
+            this.props.setSelection([]);
         }
     }
 
-    onBarClicked() {
-        // TODO allow toggle of individual bars - add/remove bar from selection.
+    onBarClick(index) {
+        // not currently enabled
     }
 
-    onBarHover() {
-        // TODO expose 'onBarHover' - consuming app should choose what to do with that knowledge.
+    onBarMouseOver(index) {
+        if (this.props.onHighlight) {
+            this.props.onHighlight(this.props.bins[index]);
+        }
+    }
+
+    onBarMouseOut(index) {
+        if (this.props.onHighlight) {
+            this.props.onHighlight(null);
+        }
+    }
+
+    togglePan() {
+        this.setState({ allowPan: !this.state.allowPan });
     }
 
     play() {
@@ -48,39 +71,70 @@ export default class Timebar extends React.Component {
     }
 
     render() {
-        const bins = this.props.bins.map(bin => ({
-            y: bin.count,
-            x: parseInt(bin.values[0]) // we use the START TIME of a bin as its time.
-        }));
+        const Container = this.state.allowPan
+            ? <VictoryZoomContainer
+                  allowPan={true}
+                  zoomDimension="x"
+                  zoomDomain={this.state.zoomDomain}
+              />
+            : <ZoomSelectionContainer
+                  allowPan={false}
+                  zoomDimension="x"
+                  zoomDomain={this.state.zoomDomain}
+                  selectionDimension="x"
+                  onSelection={this.onSelection.bind(this)}
+                  onSelectionCleared={this.onSelectionCleared.bind(this)}
+              />;
 
         return (
             <div>
                 <VictoryChart
-                    width={800}
-                    height={150}
+                    width={this.props.width}
+                    height={this.props.height}
                     scale={{ x: 'time' }}
-                    containerComponent={
-                        <ZoomSelectionContainer
-                            allowPan={false}
-                            zoomDimension="x"
-                            zoomDomain={this.state.zoomDomain}
-                            selectionDimension="x"
-                            selectionStyle={{
-                                fill: 'tomato',
-                                fillOpacity: 0.3,
-                                stroke: 'black',
-                                strokeWidth: 1
-                            }}
-                            onSelection={this.onSelection.bind(this)}
-                            onSelectionCleared={this.onSelectionCleared.bind(this)}
-                        />
-                    }>
+                    domainPadding={{ x: 20 }}
+                    containerComponent={Container}>
                     <VictoryBar
                         style={{ data: { stroke: 'red', fill: 'green' } }}
-                        data={bins}
+                        data={this.props.bins}
+                        y="count"
+                        x={datum => parseInt(datum.values[0])}
+                        labels={datum => datum.y}
                         style={{ data: { fill: (d, active) => (active ? 'tomato' : 'gray') } }}
+                        events={[
+                            {
+                                target: 'data',
+                                eventHandlers: {
+                                    onMouseOver: (_, __, dataIndex) => {
+                                        this.onBarMouseOver(dataIndex);
+                                        return [
+                                            {
+                                                mutation: props => ({ ...props, hovered: true })
+                                            }
+                                        ];
+                                    },
+                                    onMouseOut: (_, __, dataIndex) => {
+                                        this.onBarMouseOut(dataIndex);
+                                        return [
+                                            {
+                                                mutation: props => ({ ...props, hovered: false })
+                                            }
+                                        ];
+                                    },
+                                    onClick: (_, __, dataIndex) => {
+                                        this.onBarClick(dataIndex);
+                                    }
+                                }
+                            }
+                        ]}
                     />
                 </VictoryChart>
+                <div>
+                    <button onClick={this.play.bind(this)}>Play</button>
+                    <button onClick={this.togglePan.bind(this)}>
+                        {this.state.allowPan ? 'Disable Panning' : 'Enable Panning'}
+                    </button>
+                </div>
             </div>
         );
     }
