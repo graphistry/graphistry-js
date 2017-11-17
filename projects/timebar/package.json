@@ -15,9 +15,7 @@
         "type": "git",
         "url": "git+ssh://git@github.com/graphistry/graphistry-js.git"
     },
-    "keywords": [
-        "timebar"
-    ],
+    "keywords": ["timebar"],
     "author": "@mykola",
     "license": "ISC",
     "bugs": {
@@ -25,12 +23,13 @@
     },
     "homepage": "https://github.com/graphistry/graphistry-js#readme",
     "dependencies": {
-        "babel-plugin-transform-object-rest-spread": "^6.26.0",
-        "babel-preset-env": "^1.6.1",
+        "react": "^16.1.1",
         "react-dom": "^16.1.0",
         "victory": "^0.24.1"
     },
     "devDependencies": {
+        "babel-plugin-transform-object-rest-spread": "^6.26.0",
+        "babel-preset-env": "^1.6.1",
         "babel-cli": "^6.26.0",
         "babel-core": "^6.26.0",
         "babel-jest": "^21.2.0",
@@ -39,7 +38,6 @@
         "babel-preset-react": "^6.24.1",
         "file-loader": "^1.1.5",
         "jest": "^21.2.1",
-        "react": "^16.1.1",
         "react-test-renderer": "^16.1.1",
         "webpack": "^3.8.1",
         "webpack-dev-server": "^2.9.4"
