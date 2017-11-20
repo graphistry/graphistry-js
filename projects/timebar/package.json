@@ -8,16 +8,14 @@
         "prepublishOnly": "npm run build",
         "prebuild": "npm run clean",
         "clean": "rimraf lib",
-        "build": "babel src --out-dir lib",
+        "build": "webpack --config webpack.prod.config.js",
         "dev": "webpack-dev-server"
     },
     "repository": {
         "type": "git",
         "url": "git+ssh://git@github.com/graphistry/graphistry-js.git"
     },
-    "keywords": [
-        "timebar"
-    ],
+    "keywords": ["timebar"],
     "author": "@mykola",
     "license": "ISC",
     "bugs": {
