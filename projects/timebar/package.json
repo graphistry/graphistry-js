@@ -1,6 +1,6 @@
 {
     "name": "@graphistry/timebar",
-    "version": "2.15.6",
+    "version": "2.15.7",
     "description": "A timebar component for the graphistry experience",
     "main": "lib/index.js",
     "scripts": {
@@ -15,7 +15,9 @@
         "type": "git",
         "url": "git+ssh://git@github.com/graphistry/graphistry-js.git"
     },
-    "keywords": ["timebar"],
+    "keywords": [
+        "timebar"
+    ],
     "author": "@mykola",
     "license": "ISC",
     "bugs": {
