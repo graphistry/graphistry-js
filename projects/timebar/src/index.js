@@ -6,20 +6,33 @@ const ZoomSelectionContainer = createContainer('zoom', 'selection');
 const extractBins = props =>
     props.bins.map(bin => ({
         y: bin.count,
-        x: parseInt(bin.values[0]) // we use the START TIME of a bin as its time.,
+        x: new Date(bin.values[0]) // we use the START TIME of a bin as its time.,
     }));
 
 export default class Timebar extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = { allowPan: false };
     }
 
     getBinsInRange(from, to) {
         return this.props.bins.filter(bin => {
-            const binStart = parseInt(bin.values[0]);
+            const binStart = new Date(bin.values[0]);
             return from <= binStart && binStart <= to;
         });
+    }
+
+    getBinsAsArray() {
+        if (Array.isArray(this.props.bins)) {
+            return this.props.bins;
+        } else {
+            const retVal = [];
+            for (var i = 0; i < this.props.bins.length; i++) {
+                retVal.push(this.props.bins[i]);
+            }
+
+            return retVal;
+        }
     }
 
     onSelection(_, { x: [from, to] }) {
@@ -71,20 +84,16 @@ export default class Timebar extends React.Component {
     }
 
     render() {
-        const Container = this.state.allowPan
-            ? <VictoryZoomContainer
-                  allowPan={true}
-                  zoomDimension="x"
-                  zoomDomain={this.state.zoomDomain}
-              />
-            : <ZoomSelectionContainer
-                  allowPan={false}
-                  zoomDimension="x"
-                  zoomDomain={this.state.zoomDomain}
-                  selectionDimension="x"
-                  onSelection={this.onSelection.bind(this)}
-                  onSelectionCleared={this.onSelectionCleared.bind(this)}
-              />;
+        const Container = (
+            <ZoomSelectionContainer
+                allowPan={false}
+                zoomDimension="x"
+                zoomDomain={this.state.zoomDomain}
+                selectionDimension="x"
+                onSelection={this.onSelection.bind(this)}
+                onSelectionCleared={this.onSelectionCleared.bind(this)}
+            />
+        );
 
         return (
             <div>
@@ -96,9 +105,9 @@ export default class Timebar extends React.Component {
                     containerComponent={Container}>
                     <VictoryBar
                         style={{ data: { stroke: 'red', fill: 'green' } }}
-                        data={this.props.bins}
+                        data={this.getBinsAsArray()}
                         y="count"
-                        x={datum => parseInt(datum.values[0])}
+                        x={datum => datum.values[0]}
                         labels={datum => datum.y}
                         style={{ data: { fill: (d, active) => (active ? 'tomato' : 'gray') } }}
                         events={[
