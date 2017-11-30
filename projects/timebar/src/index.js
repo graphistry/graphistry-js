@@ -98,6 +98,7 @@ export default class Timebar extends React.Component {
         return (
             <div>
                 <VictoryChart
+                    theme={this.props.theme}
                     width={this.props.width}
                     height={this.props.height}
                     scale={{ x: 'time' }}
