@@ -1,7 +1,18 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
-See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+<a name="2.16.0"></a>
+# [2.16.0](https://github.com/graphistry/graphistry-js/compare/v2.15.12...v2.16.0) (2017-12-01)
+
+
+### Features
+
+* **$compile:** add support for theme injection ([26d79d4](https://github.com/graphistry/graphistry-js/commit/26d79d4))
+
+
+
 
 <a name="2.15.12"></a>
 ## 2.15.12 (2017-11-20)

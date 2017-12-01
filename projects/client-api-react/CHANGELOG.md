@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="2.16.0"></a>
+# [2.16.0](https://github.com/graphistry/graphistry-js/compare/v2.15.12...v2.16.0) (2017-12-01)
+
+
+### Bug Fixes
+
+* **client-api-react:** disable encodings via react until race condition is fixed ([3199e34](https://github.com/graphistry/graphistry-js/commit/3199e34))
+
+
+
+
 <a name="2.15.6"></a>
 ## [2.15.6](https://github.com/graphistry/graphistry-js/compare/v2.15.3...v2.15.6) (2017-11-17)
 
