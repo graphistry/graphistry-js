@@ -13,7 +13,7 @@ for (var i = 0; i < data.bins.length; i++) {
 
 ReactDOM.render(
     <Timebar
-        width={800}
+        width={900}
         height={125}
         bins={bins}
         theme={theme}

@@ -1,5 +1,12 @@
 import React from 'react';
-import { VictoryChart, createContainer, VictoryZoomContainer, VictoryBar, Bar } from 'victory';
+import {
+    VictoryChart,
+    VictoryAxis,
+    createContainer,
+    VictoryZoomContainer,
+    VictoryBar,
+    Bar
+} from 'victory';
 
 const ZoomSelectionContainer = createContainer('zoom', 'selection');
 
@@ -84,16 +91,13 @@ export default class Timebar extends React.Component {
     }
 
     render() {
-        const Container = (
-            <ZoomSelectionContainer
-                allowPan={false}
-                zoomDimension="x"
-                zoomDomain={this.state.zoomDomain}
-                selectionDimension="x"
-                onSelection={this.onSelection.bind(this)}
-                onSelectionCleared={this.onSelectionCleared.bind(this)}
-            />
-        );
+        const bins = this.getBinsAsArray();
+        bins.forEach((bin, i) => {
+            const startTime = bin.values.length > 1 ? bin.values[0] : 0;
+            const endTime = bin.values[1];
+            const size = bin.values[0] - (bin.values[1] || 0) * -1;
+            console.log(`${i} - ${size / 1000}`);
+        });
 
         return (
             <div>
@@ -102,15 +106,27 @@ export default class Timebar extends React.Component {
                     width={this.props.width}
                     height={this.props.height}
                     scale={{ x: 'time' }}
-                    domainPadding={{ x: 20 }}
-                    containerComponent={Container}>
+                    domainPadding={{ x: [20, 10], y: 20 }}
+                    containerComponent={
+                        <ZoomSelectionContainer
+                            allowPan={false}
+                            zoomDimension="x"
+                            zoomDomain={this.state.zoomDomain}
+                            selectionDimension="x"
+                            onSelection={this.onSelection.bind(this)}
+                            onSelectionCleared={this.onSelectionCleared.bind(this)}
+                        />
+                    }>
+                    <VictoryAxis dependentAxis offsetX={40} />
                     <VictoryBar
-                        style={{ data: { stroke: 'red', fill: 'green'} }}
                         data={this.getBinsAsArray()}
+                        alignment="middle"
                         y="count"
                         x={datum => datum.values[0]}
                         labels={datum => datum.y}
-                        style={{ data: { fill: (d, active) => (active ? 'darkslategrey' : 'lightgrey') } }}
+                        style={{
+                            data: { fill: (d, active) => (active ? 'darkslategrey' : 'lightgrey') }
+                        }}
                         events={[
                             {
                                 target: 'data',
@@ -138,10 +154,36 @@ export default class Timebar extends React.Component {
                             }
                         ]}
                     />
+                    <VictoryAxis />
                 </VictoryChart>
-                <div style={{backgroundColor: '#494949'}}>
-                    <button style={{paddingLeft: '10px', paddingRight: '10px', border: 'none', borderRight: '1px solid black', borderRadius: '0', height: '20px', color: 'DeepSkyBlue', backgroundColor: '#323232'}} onClick={this.play.bind(this)}>►</button>
-                    <button style={{paddingLeft: '15px', paddingRight: '15px', border: 'none', borderLeft: '1px solid black', borderRadius: '0', height: '20px', color: 'white', backgroundColor: '#323232', float: 'right'}} onClick={this.togglePan.bind(this)}>
+                <div style={{ backgroundColor: '#494949' }}>
+                    <button
+                        style={{
+                            paddingLeft: '10px',
+                            paddingRight: '10px',
+                            border: 'none',
+                            borderRight: '1px solid black',
+                            borderRadius: '0',
+                            height: '20px',
+                            color: 'DeepSkyBlue',
+                            backgroundColor: '#323232'
+                        }}
+                        onClick={this.play.bind(this)}>
+                        ►
+                    </button>
+                    <button
+                        style={{
+                            paddingLeft: '15px',
+                            paddingRight: '15px',
+                            border: 'none',
+                            borderLeft: '1px solid black',
+                            borderRadius: '0',
+                            height: '20px',
+                            color: 'white',
+                            backgroundColor: '#323232',
+                            float: 'right'
+                        }}
+                        onClick={this.togglePan.bind(this)}>
                         {this.state.allowPan ? 'Disable Panning' : 'Enable Panning'}
                     </button>
                 </div>
