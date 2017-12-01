@@ -19,7 +19,7 @@ const grey900 = '#212121';
 // *
 const sansSerif = "'Roboto', 'Helvetica Neue', Helvetica, sans-serif";
 const letterSpacing = 'normal';
-const fontSize = 12;
+const fontSize = 8;
 // *
 // * Layout
 // *
@@ -27,7 +27,7 @@ const padding = 8;
 const baseProps = {
     width: 350,
     height: 350,
-    padding: 50
+    padding: 30,
 };
 // *
 // * Labels
@@ -37,7 +37,7 @@ const baseLabelStyles = {
     fontSize,
     letterSpacing,
     padding,
-    fill: blueGrey700,
+    margin: blueGrey700,
     stroke: 'transparent',
     strokeWidth: 0
 };

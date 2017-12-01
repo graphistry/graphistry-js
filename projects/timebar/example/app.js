@@ -13,8 +13,8 @@ for (var i = 0; i < data.bins.length; i++) {
 
 ReactDOM.render(
     <Timebar
-        width={800}
-        height={150}
+        width={900}
+        height={125}
         bins={bins}
         theme={theme}
         onHighlight={bar => null}
