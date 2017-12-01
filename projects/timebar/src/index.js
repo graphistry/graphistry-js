@@ -105,12 +105,12 @@ export default class Timebar extends React.Component {
                     domainPadding={{ x: 20 }}
                     containerComponent={Container}>
                     <VictoryBar
-                        style={{ data: { stroke: 'red', fill: 'green' } }}
+                        style={{ data: { stroke: 'red', fill: 'green'} }}
                         data={this.getBinsAsArray()}
                         y="count"
                         x={datum => datum.values[0]}
                         labels={datum => datum.y}
-                        style={{ data: { fill: (d, active) => (active ? 'tomato' : 'gray') } }}
+                        style={{ data: { fill: (d, active) => (active ? 'darkslategrey' : 'lightgrey') } }}
                         events={[
                             {
                                 target: 'data',
@@ -139,9 +139,9 @@ export default class Timebar extends React.Component {
                         ]}
                     />
                 </VictoryChart>
-                <div>
-                    <button onClick={this.play.bind(this)}>Play</button>
-                    <button onClick={this.togglePan.bind(this)}>
+                <div style={{backgroundColor: '#494949'}}>
+                    <button style={{paddingLeft: '10px', paddingRight: '10px', border: 'none', borderRight: '1px solid black', borderRadius: '0', height: '20px', color: 'DeepSkyBlue', backgroundColor: '#323232'}} onClick={this.play.bind(this)}>►</button>
+                    <button style={{paddingLeft: '15px', paddingRight: '15px', border: 'none', borderLeft: '1px solid black', borderRadius: '0', height: '20px', color: 'white', backgroundColor: '#323232', float: 'right'}} onClick={this.togglePan.bind(this)}>
                         {this.state.allowPan ? 'Disable Panning' : 'Enable Panning'}
                     </button>
                 </div>
