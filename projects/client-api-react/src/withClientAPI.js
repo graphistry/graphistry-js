@@ -59,53 +59,8 @@ function applyPropsToClientAPI(iFrameRefHandler) {
         if (typeof props.gravity              !== 'undefined') operations.push(g.updateSetting('gravity', props.gravity));
         if (typeof props.scalingRatio         !== 'undefined') operations.push(g.updateSetting('scalingRatio', props.scalingRatio));
         if (typeof props.axes                 !== 'undefined') operations.push(g.encodeAxis(props.axes));
-
-        function setEncoding(name, ...args) {
-            return g.defer(() => g[name](...args).do({
-                next(x) { console.log(`set encoding ${name}`); },
-                error(e) { console.log(`${name} failed, retrying`); }
-            })).retry();
-        }
-
-        ['point', 'edge'].forEach((graphType) => {
-            ['', 'Default'].forEach((suffix) => {
-                const prop = props[`${graphType}IconEncoding${suffix}`];
-                if (typeof prop !== 'undefined') {
-                    const { attribute, mapping } = prop;
-                    operations.push(setEncoding(`encode${suffix}Icons`, graphType, attribute, mapping));
-                } else {
-                    operations.push(setEncoding(`encode${suffix}Icons`, graphType));
-                }
-            });
-        });
-
-        ['point', 'edge'].forEach((graphType) => {
-            ['', 'Default'].forEach((suffix) => {
-                const prop = props[`${graphType}SizeEncoding${suffix}`];
-                if (typeof prop !== 'undefined') {
-                    const { attribute, mapping } = prop;
-                    operations.push(setEncoding(`encode${suffix}Size`, graphType, attribute, mapping));
-                } else {
-                    operations.push(setEncoding(`encode${suffix}Size`, graphType));
-                }
-            });
-        });
-
-        ['point', 'edge'].forEach((graphType) => {
-            ['', 'Default'].forEach((suffix) => {
-                const prop = props[`${graphType}ColorEncoding${suffix}`];
-                if (typeof prop !== 'undefined') {
-                    const { attribute, variation, mapping } = prop;
-                    operations.push(setEncoding(`encode${suffix}Color`, graphType, attribute, variation, mapping));
-                } else {
-                    operations.push(setEncoding(`encode${suffix}Color`, graphType));
-                }
-            });
-        });
-
-
-
         if (typeof props.workbook             !== 'undefined') operations.push(g.saveWorkbook());
+
         return Observable
             .merge(...operations)
             .takeLast(1).startWith(null)

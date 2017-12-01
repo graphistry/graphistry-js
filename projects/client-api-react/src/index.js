@@ -31,65 +31,6 @@ const propTypes = {
 
     onClientAPIConnected: PropTypes.func,
 
-    pointColorEncoding:
-    		PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      variation: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),
-    pointColorEncodingDefault:
-    		PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      variation: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),    
-    pointSizeEncoding:
-    		PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),
-    pointSizeEncodingDefault:
-    		PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),
-    pointIconEncoding: 
-			PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),
-    pointIconEncodingDefault:
-		PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),
-    edgeColorEncoding:
-    		PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      variation: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),    
-    edgeColorEncodingDefault:
-    		PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      variation: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),    
-    //edgeSizeEncoding: PropTypes.object,
-    //edgeSizeEncodingDefault: PropTypes.object,
-    //edgeWeightEncoding: PropTypes.object,
-    //edgeWeightEncodingDefault: PropTypes.object,
-    edgeIconEncoding:
-			PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),    
-    edgeIconEncodingDefault:
-			PropTypes.shape({
-		      attribute: PropTypes.string.isRequired,
-		      mapping: PropTypes.object
-		    }),    
-    
     nodes: PropTypes.arrayOf(),
 
     showInfo: PropTypes.bool,
@@ -172,10 +113,10 @@ const defaultProps = {
 };
 
 const handleETLUpload = mapPropsStream((propsStream) => {
-	const keysThatCanTriggerReRender = [
-		'dataset', 'graphistryHost',
-		'loading', 'loadingMessage',
-	];
+    const keysThatCanTriggerReRender = [
+        'dataset', 'graphistryHost',
+        'loading', 'loadingMessage',
+    ];
     return Observable.from(propsStream).startWith({}).pairwise()
         .switchMap(([curr, next]) => {
             if (typeof next.dataset === 'string' || (
@@ -210,7 +151,7 @@ const handleETLUpload = mapPropsStream((propsStream) => {
         })
         .map((props) => ({ ...defaultProps, ...props }))
         .distinctUntilChanged((prev, curr) =>
-    		keysThatCanTriggerReRender.every((key) => shallowEqual(prev[key], curr[key])));
+            keysThatCanTriggerReRender.every((key) => shallowEqual(prev[key], curr[key])));
 });
 
 function Graphistry({
