@@ -92,12 +92,6 @@ export default class Timebar extends React.Component {
 
     render() {
         const bins = this.getBinsAsArray();
-        bins.forEach((bin, i) => {
-            const startTime = bin.values.length > 1 ? bin.values[0] : 0;
-            const endTime = bin.values[1];
-            const size = bin.values[0] - (bin.values[1] || 0) * -1;
-            console.log(`${i} - ${size / 1000}`);
-        });
 
         return (
             <div>
