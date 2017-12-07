@@ -7,6 +7,7 @@ import {
     VictoryBar,
     Bar
 } from 'victory';
+import ScrollLock from 'react-scrolllock';
 
 const ZoomSelectionContainer = createContainer('zoom', 'selection');
 
@@ -104,7 +105,6 @@ export default class Timebar extends React.Component {
                 data-component-name="graphistry-timebar"
                 onMouseDown={stopPropagation}
                 onMouseMove={stopPropagation}
-                onScroll={stopPropagation}
                 onMouseOver={stopPropagation}
                 onMouseUp={stopPropagation}>
                 <VictoryChart
@@ -194,6 +194,7 @@ export default class Timebar extends React.Component {
                         {this.state.allowPan ? 'Disable Panning' : 'Enable Panning'}
                     </button>
                 </div>
+                <ScrollLock />
             </div>
         );
     }
