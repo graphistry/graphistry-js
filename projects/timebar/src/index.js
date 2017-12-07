@@ -7,7 +7,6 @@ import {
     VictoryBar,
     Bar
 } from 'victory';
-import ScrollLock from 'react-scrolllock';
 
 const ZoomSelectionContainer = createContainer('zoom', 'selection');
 
