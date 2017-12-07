@@ -112,8 +112,10 @@ export default class Timebar extends React.Component {
                         />
                     }>
                     <VictoryAxis dependentAxis offsetX={40} />
+                    <VictoryAxis fixLabelOverlap />
                     <VictoryBar
                         data={this.getBinsAsArray()}
+                        offsetY={1}
                         alignment="middle"
                         y="count"
                         x={datum => datum.values[0]}
@@ -148,7 +150,6 @@ export default class Timebar extends React.Component {
                             }
                         ]}
                     />
-                    <VictoryAxis />
                 </VictoryChart>
                 <div style={{ backgroundColor: '#494949' }}>
                     <button
