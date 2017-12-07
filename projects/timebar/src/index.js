@@ -106,7 +106,8 @@ export default class Timebar extends React.Component {
                 onMouseDown={stopPropagation}
                 onMouseMove={stopPropagation}
                 onMouseOver={stopPropagation}
-                onMouseUp={stopPropagation}>
+                onMouseUp={stopPropagation}
+                onWheel={stopPropagation}>
                 <VictoryChart
                     theme={this.props.theme}
                     width={this.props.width}
@@ -194,7 +195,6 @@ export default class Timebar extends React.Component {
                         {this.state.allowPan ? 'Disable Panning' : 'Enable Panning'}
                     </button>
                 </div>
-                <ScrollLock />
             </div>
         );
     }
