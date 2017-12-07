@@ -19,7 +19,7 @@ const extractBins = props =>
 const stopPropagation = e => {
     e.stopPropagation();
     e.preventDefault();
-    return e;
+    return false;
 };
 
 export default class Timebar extends React.Component {
