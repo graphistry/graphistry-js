@@ -17,6 +17,8 @@ const extractBins = props =>
     }));
 
 const stopPropagation = e => {
+    eve.nativeEvent.stopImmediatePropagation();
+    eve.nativeEvent.stopPropagation();
     e.stopPropagation();
     e.preventDefault();
     return false;
@@ -106,7 +108,8 @@ export default class Timebar extends React.Component {
                 onMouseMove={stopPropagation}
                 onMouseOver={stopPropagation}
                 onMouseUp={stopPropagation}
-                onWheel={stopPropagation}>
+                onWheel={stopPropagation}
+                onScroll={stopPropagation}>
                 <VictoryChart
                     theme={this.props.theme}
                     width={this.props.width}
