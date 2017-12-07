@@ -17,8 +17,8 @@ const extractBins = props =>
     }));
 
 const stopPropagation = e => {
-    eve.nativeEvent.stopImmediatePropagation();
-    eve.nativeEvent.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+    e.nativeEvent.stopPropagation();
     e.stopPropagation();
     e.preventDefault();
     return false;
