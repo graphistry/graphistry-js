@@ -16,6 +16,12 @@ const extractBins = props =>
         x: new Date(bin.values[0]) // we use the START TIME of a bin as its time.,
     }));
 
+const stopPropagation = e => {
+    e.stopPropagation();
+    e.preventDefault();
+    return e;
+};
+
 export default class Timebar extends React.Component {
     constructor(props) {
         super(props);
@@ -56,7 +62,7 @@ export default class Timebar extends React.Component {
     }
 
     onBarClick(index) {
-        // not currently enabled
+        console.log('bar clicked!', index);
     }
 
     onBarMouseOver(index) {
@@ -94,7 +100,13 @@ export default class Timebar extends React.Component {
         const bins = this.getBinsAsArray();
 
         return (
-            <div>
+            <div
+                data-component-name="graphistry-timebar"
+                onMouseDown={stopPropagation}
+                onMouseMove={stopPropagation}
+                onScroll={stopPropagation}
+                onMouseOver={stopPropagation}
+                onMouseUp={stopPropagation}>
                 <VictoryChart
                     theme={this.props.theme}
                     width={this.props.width}
@@ -131,7 +143,7 @@ export default class Timebar extends React.Component {
                                         this.onBarMouseOver(dataIndex);
                                         return [
                                             {
-                                                mutation: props => ({ ...props, hovered: true })
+                                                mutation: props => ({ hovered: true })
                                             }
                                         ];
                                     },
@@ -139,7 +151,7 @@ export default class Timebar extends React.Component {
                                         this.onBarMouseOut(dataIndex);
                                         return [
                                             {
-                                                mutation: props => ({ ...props, hovered: false })
+                                                mutation: props => ({ hovered: false })
                                             }
                                         ];
                                     },
