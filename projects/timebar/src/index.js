@@ -98,7 +98,7 @@ export default class Timebar extends React.Component {
 
         return (
             <div
-                data-component-name="graphistry-timebar"
+                data-component-name="graphistry-timebar-src"
                 onMouseDown={stopPropagation}
                 onMouseMove={stopPropagation}
                 onMouseOver={stopPropagation}
