@@ -30,13 +30,6 @@ export default class Timebar extends React.Component {
         this.state = { allowPan: false };
     }
 
-    getBinsInRange(from, to) {
-        return this.props.bins.filter(bin => {
-            const binStart = new Date(bin.values[0]);
-            return from <= binStart && binStart <= to;
-        });
-    }
-
     getBinsAsArray() {
         if (Array.isArray(this.props.bins)) {
             return this.props.bins;
@@ -50,9 +43,9 @@ export default class Timebar extends React.Component {
         }
     }
 
-    onSelection(_, { x: [from, to] }) {
+    onSelection([x]) {
         if (this.props.setSelection) {
-            const selection = this.getBinsInRange(from, to);
+            const selection = x.eventKey;
             this.props.setSelection(selection);
         }
     }
@@ -64,7 +57,9 @@ export default class Timebar extends React.Component {
     }
 
     onBarClick(index) {
-        console.log('bar clicked!', index);
+        if (this.props.setSelection) {
+            this.props.setSelection([index]);
+        }
     }
 
     onBarMouseOver(index) {
@@ -158,7 +153,7 @@ export default class Timebar extends React.Component {
                                             }
                                         ];
                                     },
-                                    onClick: (_, __, dataIndex) => {
+                                    onMouseDown: (_, __, dataIndex) => {
                                         this.onBarClick(dataIndex);
                                     }
                                 }
