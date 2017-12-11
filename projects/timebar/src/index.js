@@ -64,7 +64,7 @@ export default class Timebar extends React.Component {
 
     onBarMouseOver(index) {
         if (this.props.onHighlight) {
-            this.props.onHighlight(this.props.bins[index]);
+            this.props.onHighlight(index);
         }
     }
 
