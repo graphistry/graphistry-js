@@ -154,7 +154,9 @@ export default class Timebar extends React.Component {
                                         ];
                                     },
                                     onMouseDown: (_, __, dataIndex) => {
-                                        this.onBarClick(dataIndex);
+                                        {
+                                            /* this.onBarClick(dataIndex); */
+                                        }
                                     }
                                 }
                             }
