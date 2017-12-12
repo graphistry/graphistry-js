@@ -45,6 +45,7 @@ export default class Timebar extends React.Component {
 
     onSelection([x]) {
         if (this.props.setSelection) {
+            console.log('onSelectionCleared fired');
             const selection = x.eventKey;
             this.props.setSelection(selection);
         }
@@ -52,13 +53,14 @@ export default class Timebar extends React.Component {
 
     onSelectionCleared() {
         if (this.props.setSelection) {
+            console.log('onSelectionCleared fired');
             this.props.setSelection([]);
         }
     }
 
     onBarClick(index) {
         if (this.props.setSelection) {
-            this.props.setSelection([index]);
+            // this.props.setSelection([index]);
         }
     }
 
@@ -113,7 +115,8 @@ export default class Timebar extends React.Component {
                     domainPadding={{ x: [20, 10], y: 20 }}
                     containerComponent={
                         <ZoomSelectionContainer
-                            allowPan={false}
+                            allowPan={this.state.allowPan}
+                            allowSelection={!this.state.allowPan}
                             zoomDimension="x"
                             zoomDomain={this.state.zoomDomain}
                             selectionDimension="x"
@@ -152,11 +155,6 @@ export default class Timebar extends React.Component {
                                                 mutation: props => ({ hovered: false })
                                             }
                                         ];
-                                    },
-                                    onMouseDown: (_, __, dataIndex) => {
-                                        {
-                                            /* this.onBarClick(dataIndex); */
-                                        }
                                     }
                                 }
                             }
@@ -164,6 +162,8 @@ export default class Timebar extends React.Component {
                     />
                 </VictoryChart>
                 <div style={{ backgroundColor: '#494949' }}>
+                    {/*
+                    we can bring this back in V2
                     <button
                         style={{
                             paddingLeft: '10px',
@@ -177,7 +177,7 @@ export default class Timebar extends React.Component {
                         }}
                         onClick={this.play.bind(this)}>
                         ►
-                    </button>
+                    </button>*/}
                     <button
                         style={{
                             paddingLeft: '15px',
