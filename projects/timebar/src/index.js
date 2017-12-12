@@ -162,8 +162,6 @@ export default class Timebar extends React.Component {
                     />
                 </VictoryChart>
                 <div style={{ backgroundColor: '#494949' }}>
-                    {/*
-                    we can bring this back in V2
                     <button
                         style={{
                             paddingLeft: '10px',
@@ -172,12 +170,13 @@ export default class Timebar extends React.Component {
                             borderRight: '1px solid black',
                             borderRadius: '0',
                             height: '20px',
-                            color: 'DeepSkyBlue',
+                            color: 'Grey',
                             backgroundColor: '#323232'
                         }}
-                        onClick={this.play.bind(this)}>
+                        onClick={this.play.bind(this)}
+                        disabled>
                         ►
-                    </button>*/}
+                    </button>
                     <button
                         style={{
                             paddingLeft: '15px',
