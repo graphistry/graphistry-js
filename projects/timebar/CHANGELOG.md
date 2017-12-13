@@ -1,7 +1,29 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
-See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+<a name="2.17.2"></a>
+## [2.17.2](https://github.com/graphistry/graphistry-js/compare/v2.16.0...v2.17.2) (2017-12-13)
+
+
+### Bug Fixes
+
+* **$browser:** added a scrollLock component ([aa9f3fc](https://github.com/graphistry/graphistry-js/commit/aa9f3fc))
+* **$browser:** added mouse traps, fixed hover glitch ([8dd1ae2](https://github.com/graphistry/graphistry-js/commit/8dd1ae2))
+* **$browser:** changed a string value to force a new commit because last one didnt work ([7808811](https://github.com/graphistry/graphistry-js/commit/7808811))
+* make mousetrap return false ([71ea444](https://github.com/graphistry/graphistry-js/commit/71ea444))
+* **$browser:** enabled zoom panning ([26e0028](https://github.com/graphistry/graphistry-js/commit/26e0028))
+* **$browser:** fix label overlap on x-axis of timebar ([ea09818](https://github.com/graphistry/graphistry-js/commit/ea09818))
+* hey look a stupid typo ([22b1221](https://github.com/graphistry/graphistry-js/commit/22b1221))
+* **$browser:** no longer dispatch bar click on mouse down ([06acd86](https://github.com/graphistry/graphistry-js/commit/06acd86))
+* **$browser:** remove scrollLock, add onWheel ([f307990](https://github.com/graphistry/graphistry-js/commit/f307990))
+* **$browser:** return highlight index not bin ([34f073e](https://github.com/graphistry/graphistry-js/commit/34f073e))
+* **$browser:** stop propagation on the nativeEvent rather than the synthetic event ([d49e2c9](https://github.com/graphistry/graphistry-js/commit/d49e2c9))
+* **$compile:** whoops, forgot to remove dead code ([9d8bf8a](https://github.com/graphistry/graphistry-js/commit/9d8bf8a))
+
+
+
 
 <a name="2.17.2"></a>
 ## 2.17.2 (2017-12-12)
