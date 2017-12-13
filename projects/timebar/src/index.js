@@ -80,11 +80,7 @@ export default class Timebar extends React.Component {
         this.setState({ allowPan: !this.state.allowPan });
     }
 
-    play() {
-        // TODO - this should setState( { selection: { from, to }}) on an interval, where `from`
-        // is always 0 and `to` advanced one step per interval until the whole bar is selected.
-        // then it should stop and garbage collect itself.
-    }
+    play() {}
 
     // this should be used with buttons that control zoom/position,
     // not added to UI yet
