@@ -87,7 +87,7 @@ export default class Timebar extends React.Component {
     onZoomDomainChange(domain) {
         this.setState({ zoomDomain: domain });
         if (this.props.zoomChanged) {
-            this.props.zoomChanged(domain);
+            this.props.zoomChanged(domain.x);
         }
     }
 
@@ -115,6 +115,7 @@ export default class Timebar extends React.Component {
                             allowSelection={!this.state.allowPan}
                             zoomDimension="x"
                             zoomDomain={this.state.zoomDomain}
+                            onZoomDomainChange={this.onZoomDomainChange.bind(this)}
                             selectionDimension="x"
                             onSelection={this.onSelection.bind(this)}
                             onSelectionCleared={this.onSelectionCleared.bind(this)}

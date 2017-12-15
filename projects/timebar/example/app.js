@@ -19,6 +19,7 @@ ReactDOM.render(
         theme={theme}
         onHighlight={bar => null}
         setSelection={selection => console.log('currently selected:', selection)}
+        zoomChanged={domain => console.log('zoom changed, new domain:', domain)}
     />,
     app
 );
