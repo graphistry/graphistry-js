@@ -1,24 +1,10 @@
 import React from 'react';
-import {
-    VictoryChart,
-    VictoryAxis,
-    createContainer,
-    VictoryZoomContainer,
-    VictoryBar,
-    Bar
-} from 'victory';
-
-const ZoomSelectionContainer = createContainer('zoom', 'selection');
-
-const extractBins = props =>
-    props.bins.map(bin => ({
-        y: bin.count,
-        x: new Date(bin.values[0]) // we use the START TIME of a bin as its time.,
-    }));
+import Chart from './chart';
+import Header from './header';
+import Footer from './footer';
+import TimeControls from './timecontrols';
 
 const stopPropagation = e => {
-    e.nativeEvent.stopImmediatePropagation();
-    e.nativeEvent.stopPropagation();
     e.stopPropagation();
     e.preventDefault();
     return false;
@@ -27,7 +13,6 @@ const stopPropagation = e => {
 export default class Timebar extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { allowPan: false };
     }
 
     getBinsAsArray() {
@@ -96,6 +81,7 @@ export default class Timebar extends React.Component {
 
         return (
             <div
+                className="timebarWrapper"
                 data-component-name="graphistry-timebar-src"
                 onMouseDown={stopPropagation}
                 onMouseMove={stopPropagation}
@@ -103,93 +89,10 @@ export default class Timebar extends React.Component {
                 onMouseUp={stopPropagation}
                 onWheel={stopPropagation}
                 onScroll={stopPropagation}>
-                <VictoryChart
-                    theme={this.props.theme}
-                    width={this.props.width}
-                    height={this.props.height}
-                    scale={{ x: 'time' }}
-                    domainPadding={{ x: [20, 10], y: 20 }}
-                    containerComponent={
-                        <ZoomSelectionContainer
-                            allowPan={this.state.allowPan}
-                            allowSelection={!this.state.allowPan}
-                            zoomDimension="x"
-                            zoomDomain={this.state.zoomDomain}
-                            onZoomDomainChange={this.onZoomDomainChange.bind(this)}
-                            selectionDimension="x"
-                            onSelection={this.onSelection.bind(this)}
-                            onSelectionCleared={this.onSelectionCleared.bind(this)}
-                        />
-                    }>
-                    <VictoryAxis dependentAxis offsetX={40} />
-                    <VictoryAxis fixLabelOverlap />
-                    <VictoryBar
-                        data={this.getBinsAsArray()}
-                        offsetY={1}
-                        alignment="middle"
-                        y="count"
-                        x={datum => datum.values[0]}
-                        labels={datum => datum.y}
-                        style={{
-                            data: { fill: (d, active) => (active ? 'darkslategrey' : 'lightgrey') }
-                        }}
-                        events={[
-                            {
-                                target: 'data',
-                                eventHandlers: {
-                                    onMouseOver: (_, __, dataIndex) => {
-                                        this.onBarMouseOver(dataIndex);
-                                        return [
-                                            {
-                                                mutation: props => ({ hovered: true })
-                                            }
-                                        ];
-                                    },
-                                    onMouseOut: (_, __, dataIndex) => {
-                                        this.onBarMouseOut(dataIndex);
-                                        return [
-                                            {
-                                                mutation: props => ({ hovered: false })
-                                            }
-                                        ];
-                                    }
-                                }
-                            }
-                        ]}
-                    />
-                </VictoryChart>
-                <div style={{ backgroundColor: '#494949' }}>
-                    <button
-                        style={{
-                            paddingLeft: '10px',
-                            paddingRight: '10px',
-                            border: 'none',
-                            borderRight: '1px solid black',
-                            borderRadius: '0',
-                            height: '20px',
-                            color: 'Grey',
-                            backgroundColor: '#323232'
-                        }}
-                        onClick={this.play.bind(this)}
-                        disabled>
-                        ►
-                    </button>
-                    <button
-                        style={{
-                            paddingLeft: '15px',
-                            paddingRight: '15px',
-                            border: 'none',
-                            borderLeft: '1px solid black',
-                            borderRadius: '0',
-                            height: '20px',
-                            color: 'white',
-                            backgroundColor: '#323232',
-                            float: 'right'
-                        }}
-                        onClick={this.togglePan.bind(this)}>
-                        {this.state.allowPan ? 'Disable Panning' : 'Enable Panning'}
-                    </button>
-                </div>
+                <Header />
+                <Chart bins={bins} />
+                <TimeControls />
+                <Footer />
             </div>
         );
     }
