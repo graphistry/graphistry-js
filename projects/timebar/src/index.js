@@ -90,7 +90,11 @@ export default class Timebar extends React.Component {
                 onWheel={stopPropagation}
                 onScroll={stopPropagation}>
                 <Header />
-                <Chart bins={bins} />
+                <Chart
+                    onBarMouseOver={this.onBarMouseOver.bind(this)}
+                    onBarMouseOut={this.onBarMouseOut.bind(this)}
+                    bins={bins}
+                />
                 <TimeControls />
                 <Footer />
             </div>

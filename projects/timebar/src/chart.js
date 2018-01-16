@@ -64,6 +64,9 @@ export default class Chart extends React.Component {
                         x={item.x}
                         color={item.color}
                         label={item.label}
+                        index={index}
+                        onBarMouseOver={() => this.props.onBarMouseOver(index)}
+                        onBarMouseOut={() => this.props.onBarMouseOut()}
                     />
                 )}
             </div>

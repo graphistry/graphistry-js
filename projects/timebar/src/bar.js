@@ -17,6 +17,8 @@ export default class Bar extends React.Component {
                         position: 'absolute',
                         backgroundColor: color
                     }}
+                    onMouseOver={() => this.props.onBarMouseOver()}
+                    onMouseOut={() => this.props.onBarMouseOut()}
                 />
                 <span className="barLabel">
                     {label}
