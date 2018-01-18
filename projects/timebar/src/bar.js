@@ -5,6 +5,36 @@ export default class Bar extends React.Component {
         super(props);
     }
 
+    cancelEvent(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+    }
+
+    onHover(e) {
+        if (this.props.onBarMouseOver) {
+            this.props.onBarMouseOver();
+        }
+
+        this.cancelEvent(e);
+    }
+
+    onOut(e) {
+        if (this.props.onBarMouseOut) {
+            this.props.onBarMouseOut();
+        }
+
+        this.cancelEvent(e);
+    }
+
+    onClick(e) {
+        if (this.props.onBarClick) {
+            this.props.onBarClick();
+        }
+
+        this.cancelEvent(e);
+    }
+
     render() {
         const { height, x, label, color } = this.props;
         return (
@@ -17,8 +47,9 @@ export default class Bar extends React.Component {
                         position: 'absolute',
                         backgroundColor: color
                     }}
-                    onMouseOver={() => this.props.onBarMouseOver()}
-                    onMouseOut={() => this.props.onBarMouseOut()}
+                    onMouseOver={this.onHover.bind(this)}
+                    onMouseOut={this.onOut.bind(this)}
+                    onClick={this.onClick.bind(this)}
                 />
                 <span className="barLabel">
                     {label}

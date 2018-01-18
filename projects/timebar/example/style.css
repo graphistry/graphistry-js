@@ -51,7 +51,11 @@
 */
 .selectionArea {
     position: absolute;
-    display: none;
+    pointer-events: none;
+    opacity: .3;
+    background-color: #000000;
+    top: 0;
+    bottom: 0;
 }
 
 /*
@@ -60,13 +64,14 @@
 .barWrapper {
     position: absolute;
     height: 100%;
+    width: 3%;
 }
 
 /*
   This is the actual div that gets a height and color from the data and receives click events.
 */
 .bar {
-    width: 20px;
+    width: 100%;
 }
 
 /*

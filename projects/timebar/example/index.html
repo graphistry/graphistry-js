@@ -15,66 +15,57 @@
     }
 
     #output {
-      width: 100%;
+      width: 20%;
       clear: both;
+      margin: 20px;
+      padding: 5px;
+      border: 1px solid black;
     }
   </style>
-  <script>
-    let state = {
-      hoveredIndex: null,
-
-    }
-
-    function updateState(part) {
-      state = { state, ...part };
-      render();
-    }
-
-    function render() {
-      document.getElementById('output').innerHTML = format(state);
-    }
-
-    function format(state) {
-      return `<ul>
-        <li><b>Hovered Index</b>: ${state.hoveredIndex}</li>
-        </ul>`;
-    }
-  </script>
 </head>
 
 <body>
   <div id="main" style="width:60%; float: left;"></div>
   <div id="acceptance" style="width: 30%; float: right">
-    key:
-    <span>todo</span>
-    <span class="done">done</span>
-    <span class="v2">v2</span>
     <ul>
-      <li class="done">User can view temporal graph data in a timeline </li>
       <li class="done">User can see all graph data in timeline histogram, represented in "bins"</li>
-      <li>User can drill in and out of time frames (year > month > day > hour > second > minute) by selecting the smaller or
-        larger time frame label</li>
-      <li class="v2">Each bucket should have the ability to represent the containing graph elements using color encoding (color coding the
-        bars / scatterplot)</li>
-      <li>User can filter the graph by selecting a range of the timebar</li>
+      <li>User can zoom in/out and pan through the timebar</li>
       <li class="done">User can hover over a bin to see a preview of included elements</li>
-      <li>User can select 1 histogram bucket to create a filter</li>
-      <li>User can select multiple histogram bins (click and drag)(rectangular select button, or default drag behavior?) to create
+      <li class="done">User can select 1 histogram bucket to create a filter</li>
+      <li class="done">User can select multiple histogram bins (click and drag)(rectangular select button, or default drag behavior?) to create
         a filter</li>
-      <li>User can edit the selection box by dragging the sides (changes the filter values)</li>
       <li>User can disable the selection box (Delete the filter)</li>
-      <li class="v2">User can shift or cmd + click multiple singular buckets (Creates 2 filters)</li>
-      <li>Filters should react quickly so a user can watch the graph evolve as they drag the slider</li>
-      <li>User can control how graph data is represented in timebar</li>
-      <li>User can control default time zone of the timebar</li>
-      <li>User can control which metric of the graph data they want to look at in the histogram (Events, Bytes, IP's) (default
-        should be Event + Count) User can control by which computational method (Count, Sum, Count Unique) they want the
-        chosen metric to by processed</li>
-      <li class="v2">User can control which data visualization type the timebar uses (Bar chart, Line chart, Scatterplot)</li>
+      <li class="done">Filters should react quickly so a user can watch the graph evolve as they drag the slider </li>
     </ul>
   </div>
   <div id="output"></div>
   <script src="./app.compiled.js"></script>
+  <script>
+    let state = {
+      hoveredIndex: null,
+      selection: [],
+      zoom: 100
+    }
+
+    function updateState(part) {
+      state = { ...state, ...part };
+      render(state);
+    }
+
+    function render(state) {
+      document.getElementById('output').innerHTML = format(state);
+    }
+
+    function format(state) {
+      return `<ul>
+          <li><b>Hovered Index</b>: ${state.hoveredIndex}</li>
+          <li><b>Current Selection</b>: ${state.selection}</li>
+          <li><b>Current Zoom</b>: ${state.zoom}%</li>
+          </ul>`;
+    }
+
+    render(state);
+  </script>
 </body>
 
 </html>

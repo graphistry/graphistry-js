@@ -13,9 +13,9 @@ for (var i = 0; i < data.bins.length; i++) {
 ReactDOM.render(
     <Timebar
         bins={bins}
-        onHighlight={bar => updateState({ hoveredIndex: bar })}
-        setSelection={selection => console.log('currently selected:', selection)}
-        zoomChanged={domain => console.log('zoom changed, new domain:', domain)}
+        highlight={bar => updateState({ hoveredIndex: bar })}
+        setSelection={bars => updateState({ selection: bars })}
+        zoomChanged={domain => updateState({ zoom: domain })}
     />,
     app
 );
