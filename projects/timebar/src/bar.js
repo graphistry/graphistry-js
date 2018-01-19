@@ -36,7 +36,7 @@ export default class Bar extends React.Component {
     }
 
     render() {
-        const { height, x, label, color } = this.props;
+        const { height, x, label, color, timestamp, showAxisLabel } = this.props;
         return (
             <div className="barWrapper" style={{ left: `${x * 100}%` }}>
                 <div
@@ -53,6 +53,9 @@ export default class Bar extends React.Component {
                 />
                 <span className="barLabel">
                     {label}
+                </span>
+                <span className="axisLabel" style={{ display: showAxisLabel ? 'block' : 'none' }}>
+                    {timestamp.format('ddd Do MMM YYYY [at] HH[:]MM')}
                 </span>
             </div>
         );

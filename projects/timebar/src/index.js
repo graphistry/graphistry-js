@@ -5,6 +5,10 @@ import Footer from './footer';
 import TimeControls from './timecontrols';
 import SelectionArea from './selectionarea';
 import Bar from './bar';
+import moment from 'moment';
+import rafSchedule from 'raf-schd';
+
+const X_AXIS_FREQUENCY = 4;
 
 const stopPropagation = e => {
     e.stopPropagation();
@@ -22,6 +26,17 @@ class Timebar extends React.Component {
             dragging: false,
             bins: this.normalizeBins(this.getBinsAsArray(props.bins))
         };
+
+        // Create a new function to schedule updates.
+        this.scheduleZoomUpdate = rafSchedule((x, y) => {
+            this.processScrollEvent(x, y);
+        });
+    }
+
+    onChartScroll(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.scheduleZoomUpdate(e.deltaX, e.deltaY);
     }
 
     componentWillReceiveProps(props) {
@@ -66,7 +81,8 @@ class Timebar extends React.Component {
                 height: count / yrange,
                 x: (values[0] - xmin) / xrange,
                 label: count,
-                color: 'red'
+                color: 'red',
+                timestamp: moment(values[0])
             };
         };
         return bins.map(normalize);
@@ -87,33 +103,53 @@ class Timebar extends React.Component {
 
     setSelection(selection = []) {
         this.setState({ selection });
-        if (this.props.setSelection) {
-            this.props.setSelection(selection);
+        if (this.props.onSelect) {
+            this.props.onSelect(selection);
         }
     }
 
     clearSelection() {
-        if (this.props.setSelection) {
-            this.props.setSelection([]);
+        this.setState({
+            dragging: false,
+            selectionDetails: {
+                active: false,
+                from: null,
+                to: null
+            }
+        });
+        if (this.props.onSelection) {
+            this.props.onSelection([]);
         }
     }
 
     onBarClick(index) {
-        if (this.props.setSelection) {
-            this.props.setSelection([index]);
+        if (this.props.onSelection) {
+            this.props.onSelection([index]);
         }
     }
 
     onBarMouseOver(index) {
         this.setState({ highlight: index });
-        if (this.props.highlight) {
-            this.props.highlight(index);
+        if (this.props.onHighlight) {
+            this.props.onHighlight(index);
         }
     }
 
     onBarMouseOut(index) {
-        if (this.props.highlight) {
-            this.props.highlight(null);
+        if (this.props.onHighlight) {
+            this.props.onHighlight(null);
+        }
+    }
+
+    processScrollEvent(x, y) {
+        console.log('scroll', x, y);
+    }
+
+    setZoomLevel(from, to) {
+        if (this.props.onZoom) {
+            this.props.onZoom(from, to);
+            // TODO do a falcor query to determine new bins!
+            // no visual indicator!
         }
     }
 
@@ -153,7 +189,6 @@ class Timebar extends React.Component {
 
     computeSelectionFromDragBounds(from, to) {
         const { start, stop } = this.getNormalizedDragBounds(from, to);
-        console.log('Percent Bounds:', start, stop);
         return this.state.bins.reduce((acc, val, index) => {
             if (val.x >= start && val.x <= stop) {
                 acc.push(index);
@@ -187,15 +222,17 @@ class Timebar extends React.Component {
                 onMouseMove={stopPropagation}
                 onMouseOver={stopPropagation}
                 onMouseUp={stopPropagation}
-                onWheel={stopPropagation}
                 onScroll={stopPropagation}>
-                <Header />
+                <Header clearSelection={this.clearSelection.bind(this)} />
                 <div
                     className="chart"
                     onMouseDown={this.startDragSelection.bind(this)}
                     onMouseUp={this.stopDragSelection.bind(this)}
-                    onMouseMove={this.onMouseMove.bind(this)}>
+                    onMouseMove={this.onMouseMove.bind(this)}
+                    onWheel={this.onChartScroll.bind(this)}
+                    style={{ backgroundColor: 'green' }}>
                     <SelectionArea details={this.state.selectionDetails} />
+
                     {bins.map((item, index) =>
                         <Bar
                             key={item.x}
@@ -203,6 +240,8 @@ class Timebar extends React.Component {
                             x={item.x}
                             color={item.color}
                             label={item.label}
+                            timestamp={item.timestamp}
+                            showAxisLabel={index % X_AXIS_FREQUENCY === 0}
                             index={index}
                             onBarMouseOver={() => this.onBarMouseOver(index)}
                             onBarMouseOut={() => this.onBarMouseOut()}
@@ -210,7 +249,7 @@ class Timebar extends React.Component {
                         />
                     )}
                 </div>
-                <TimeControls />
+                <TimeControls from={bins[0].timestamp} to={bins[bins.length - 1].timestamp} />
                 <Footer />
             </div>
         );

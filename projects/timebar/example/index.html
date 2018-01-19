@@ -34,12 +34,11 @@
       <li class="done">User can select 1 histogram bucket to create a filter</li>
       <li class="done">User can select multiple histogram bins (click and drag)(rectangular select button, or default drag behavior?) to create
         a filter</li>
-      <li>User can disable the selection box (Delete the filter)</li>
+      <li class="done">User can disable the selection box (Delete the filter)</li>
       <li class="done">Filters should react quickly so a user can watch the graph evolve as they drag the slider </li>
     </ul>
   </div>
   <div id="output"></div>
-  <script src="./app.compiled.js"></script>
   <script>
     let state = {
       hoveredIndex: null,
@@ -66,6 +65,8 @@
 
     render(state);
   </script>
+  <script src="./app.compiled.js"></script>
+
 </body>
 
 </html>

@@ -1,15 +1,8 @@
 import React from 'react';
 
-export default class Footer extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+const Footer = props =>
+    <div className="timebarFooter">
+        <span>zoom controls go here</span>
+    </div>;
 
-    render() {
-        return (
-            <div className="timebarFooter">
-                <span>zoom controls go here</span>
-            </div>
-        );
-    }
-}
+export default Footer;

@@ -1,15 +1,10 @@
 import React from 'react';
 
-export default class Header extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+const Header = props =>
+    <div className="timebarHeader">
+        <button onClick={() => props.clearSelection()} className="clearSelectionButton">
+            Clear Selection
+        </button>
+    </div>;
 
-    render() {
-        return (
-            <div className="timebarHeader">
-                <span>selection controls go here</span>
-            </div>
-        );
-    }
-}
+export default Header;
