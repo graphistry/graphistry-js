@@ -1,12 +1,10 @@
 import React from 'react';
-import Dimensions from 'react-dimensions';
 import Header from './header';
 import Footer from './footer';
 import TimeControls from './timecontrols';
 import SelectionArea from './selectionarea';
 import Bar from './bar';
 import moment from 'moment';
-import rafSchedule from 'raf-schd';
 
 const X_AXIS_FREQUENCY = 4;
 
@@ -16,7 +14,7 @@ const stopPropagation = e => {
     return false;
 };
 
-class Timebar extends React.Component {
+export default class Timebar extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -245,5 +243,3 @@ class Timebar extends React.Component {
         );
     }
 }
-
-export default Dimensions()(Timebar);
