@@ -43,7 +43,10 @@
     let state = {
       hoveredIndex: null,
       selection: [],
-      zoom: 100
+      zoom: {
+        x: 0,
+        y: 0
+      }
     }
 
     function updateState(part) {
@@ -59,7 +62,12 @@
       return `<ul>
           <li><b>Hovered Index</b>: ${state.hoveredIndex}</li>
           <li><b>Current Selection</b>: ${state.selection}</li>
-          <li><b>Current Zoom</b>: ${state.zoom}%</li>
+          <li><b>Current Zoom</b>: 
+            <ul>
+              <li>horizontal: ${state.zoom.x}</li>
+              <li>vertical: ${state.zoom.y}</li>
+            </ul>
+            </li>
           </ul>`;
     }
 

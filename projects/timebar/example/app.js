@@ -15,7 +15,8 @@ ReactDOM.render(
         bins={bins}
         onHighlight={bar => updateState({ hoveredIndex: bar })}
         onSelection={bars => updateState({ selection: bars })}
-        onZoom={domain => updateState({ zoom: domain })}
+        onZoom={e =>
+            updateState({ zoom: { x: state.zoom.x + e.deltaX, y: state.zoom.y + e.deltaY } })}
     />,
     app
 );

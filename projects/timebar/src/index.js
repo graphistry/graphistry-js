@@ -36,7 +36,9 @@ class Timebar extends React.Component {
     onChartScroll(e) {
         e.stopPropagation();
         e.preventDefault();
-        this.scheduleZoomUpdate(e.deltaX, e.deltaY);
+        if (this.props.onZoom) {
+            this.props.onZoom(e);
+        }
     }
 
     componentWillReceiveProps(props) {
@@ -138,18 +140,6 @@ class Timebar extends React.Component {
     onBarMouseOut(index) {
         if (this.props.onHighlight) {
             this.props.onHighlight(null);
-        }
-    }
-
-    processScrollEvent(x, y) {
-        console.log('scroll', x, y);
-    }
-
-    setZoomLevel(from, to) {
-        if (this.props.onZoom) {
-            this.props.onZoom(from, to);
-            // TODO do a falcor query to determine new bins!
-            // no visual indicator!
         }
     }
 
