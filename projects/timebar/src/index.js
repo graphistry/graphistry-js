@@ -24,11 +24,6 @@ export default class Timebar extends React.Component {
             dragging: false,
             bins: this.normalizeBins(this.getBinsAsArray(props.bins))
         };
-
-        // Create a new function to schedule updates.
-        this.scheduleZoomUpdate = rafSchedule((x, y) => {
-            this.processScrollEvent(x, y);
-        });
     }
 
     onChartScroll(e) {
