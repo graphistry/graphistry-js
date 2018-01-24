@@ -68,8 +68,8 @@ export default class Timebar extends React.Component {
             }
         );
 
-        const yrange = ymax - ymin;
-        const xrange = xmax - xmin;
+        const yrange = ymax - ymin || 1;
+        const xrange = xmax - xmin || 1;
 
         const normalize = ({ count, values }) => {
             return {
