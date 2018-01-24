@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Header from './header';
 import Footer from './footer';
 import TimeControls from './timecontrols';
@@ -14,6 +15,18 @@ const stopPropagation = e => {
     return false;
 };
 
+const computeOffset = el => {
+    var rect = el.getBoundingClientRect(),
+        scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+        scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    return {
+        x: rect.top + scrollTop,
+        y: rect.left + scrollLeft,
+        width: rect.width,
+        height: rect.height
+    };
+};
+
 export default class Timebar extends React.Component {
     constructor(props) {
         super(props);
@@ -22,8 +35,13 @@ export default class Timebar extends React.Component {
             highlight: null,
             selectionDetails: { active: false },
             dragging: false,
-            bins: this.normalizeBins(this.getBinsAsArray(props.bins))
+            bins: this.normalizeBins(this.getBinsAsArray(props.bins)),
+            bounds: { x: 0, y: 0 }
         };
+    }
+
+    componentDidMount() {
+        this.setState({ bounds: computeOffset(ReactDOM.findDOMNode(this)) });
     }
 
     onChartScroll(e) {
@@ -144,8 +162,8 @@ export default class Timebar extends React.Component {
             dragging: true,
             selectionDetails: {
                 active: true,
-                from: e.clientX,
-                to: e.clientX
+                from: e.clientX + this.state.bounds.x,
+                to: e.clientX + this.state.bounds.x
             }
         });
     }
@@ -156,7 +174,7 @@ export default class Timebar extends React.Component {
         }
 
         const selectionDetails = {
-            to: e.clientX,
+            to: e.clientX + this.state.bounds.x,
             from: this.state.selectionDetails.from,
             active: this.state.selectionDetails.active
         };
@@ -175,18 +193,20 @@ export default class Timebar extends React.Component {
 
     computeSelectionFromDragBounds(from, to) {
         const { start, stop } = this.getNormalizedDragBounds(from, to);
+        console.log('now computing selection from drag bounds', start, stop);
         return this.state.bins.reduce((acc, val, index) => {
             if (val.x >= start && val.x <= stop) {
                 acc.push(index);
             }
+
             return acc;
         }, []);
     }
 
     getNormalizedDragBounds(from, to) {
         return {
-            start: Math.min(from, to) / this.props.containerWidth,
-            stop: Math.max(from, to) / this.props.containerWidth
+            start: Math.min(from, to) / this.state.bounds.width,
+            stop: Math.max(from, to) / this.state.bounds.width
         };
     }
 
@@ -199,8 +219,6 @@ export default class Timebar extends React.Component {
         if (!bins) {
             return <div />;
         }
-
-        console.log('Now rendering the following bins:', bins);
 
         return (
             <div
