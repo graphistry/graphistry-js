@@ -15,9 +15,7 @@
         "type": "git",
         "url": "git+ssh://git@github.com/graphistry/graphistry-js.git"
     },
-    "keywords": [
-        "timebar"
-    ],
+    "keywords": ["timebar"],
     "author": "@mykola",
     "license": "ISC",
     "bugs": {
@@ -26,8 +24,8 @@
     "homepage": "https://github.com/graphistry/graphistry-js#readme",
     "dependencies": {
         "moment": "^2.20.1",
-        "react": "^16.1.1",
-        "react-dom": "^16.1.0"
+        "react": "15.6.1",
+        "react-dom": "15.6.1"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
