@@ -6,7 +6,7 @@ import SelectionArea from './selectionarea';
 import Bar from './bar';
 import moment from 'moment';
 
-const X_AXIS_FREQUENCY = 4;
+const X_AXIS_FREQUENCY = 1;
 
 const stopPropagation = e => {
     e.stopPropagation();
@@ -72,12 +72,13 @@ export default class Timebar extends React.Component {
         const xrange = xmax - xmin || 1;
 
         const normalize = ({ count, values }) => {
+            const ts = moment(values[0]);
             return {
                 height: count / yrange,
-                x: (values[0] - xmin) / xrange,
+                x: (ts - xmin) / xrange,
                 label: count,
                 color: 'red',
-                timestamp: moment(values[0])
+                timestamp: ts
             };
         };
         return bins.map(normalize);
