@@ -50,12 +50,14 @@ export default class Timebar extends React.Component {
                     acc.ymax = val.count;
                 }
 
-                if (val.values[0] < acc.xmin) {
-                    acc.xmin = val.values[0];
+                const timestamp = moment(val.values[0]);
+
+                if (timestamp < acc.xmin) {
+                    acc.xmin = timestamp;
                 }
 
-                if (val.values[0] > acc.xmax) {
-                    acc.xmax = val.values[0];
+                if (timestamp > acc.xmax) {
+                    acc.xmax = timestamp;
                 }
 
                 return acc;
