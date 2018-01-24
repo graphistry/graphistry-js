@@ -1,6 +1,6 @@
 {
     "name": "@graphistry/timebar",
-    "version": "3.2.3",
+    "version": "3.2.1",
     "description": "A timebar component for the graphistry experience",
     "main": "lib/index.js",
     "scripts": {
@@ -25,9 +25,9 @@
     },
     "homepage": "https://github.com/graphistry/graphistry-js#readme",
     "dependencies": {
-        "moment": "^2.20.1",
-        "react": "15.6.1",
-        "react-dom": "15.6.1"
+        "moment": "2.20.1",
+        "react": "16.2.0",
+        "react-dom": "16.2.0"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
