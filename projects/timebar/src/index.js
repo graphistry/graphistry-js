@@ -197,6 +197,8 @@ export default class Timebar extends React.Component {
             return <div />;
         }
 
+        console.log('Now rendering the following bins:', bins);
+
         return (
             <div
                 className="timebarWrapper"
@@ -212,8 +214,7 @@ export default class Timebar extends React.Component {
                     onMouseDown={this.startDragSelection.bind(this)}
                     onMouseUp={this.stopDragSelection.bind(this)}
                     onMouseMove={this.onMouseMove.bind(this)}
-                    onWheel={this.onChartScroll.bind(this)}
-                    style={{ backgroundColor: 'green' }}>
+                    onWheel={this.onChartScroll.bind(this)}>
                     <SelectionArea details={this.state.selectionDetails} />
 
                     {bins.map((item, index) =>
