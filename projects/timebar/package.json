@@ -1,6 +1,6 @@
 {
     "name": "@graphistry/timebar",
-    "version": "3.2.0",
+    "version": "3.2.1",
     "description": "A timebar component for the graphistry experience",
     "main": "lib/index.js",
     "scripts": {
