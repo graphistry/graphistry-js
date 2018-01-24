@@ -133,6 +133,7 @@ export default class Timebar extends React.Component {
                 to: null
             }
         });
+
         if (this.props.onSelection) {
             this.props.onSelection([]);
         }
@@ -236,7 +237,10 @@ export default class Timebar extends React.Component {
                     onMouseUp={this.stopDragSelection.bind(this)}
                     onMouseMove={this.onMouseMove.bind(this)}
                     onWheel={this.onChartScroll.bind(this)}>
-                    <SelectionArea details={this.state.selectionDetails} />
+                    <SelectionArea
+                        details={this.state.selectionDetails}
+                        offset={{ x: this.state.bounds.x * -1 }}
+                    />
 
                     {bins.map((item, index) =>
                         <Bar

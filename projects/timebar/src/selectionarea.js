@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SelectionArea = ({ details }) => {
+const SelectionArea = ({ details, offset }) => {
     const { active, from, to } = details;
     if (!active) {
         return <div style={{ display: 'none' }} />;
@@ -9,6 +9,6 @@ const SelectionArea = ({ details }) => {
     const endX = Math.max(from, to);
     const width = endX - startX;
 
-    return <div className="selectionArea" style={{ left: startX, width }} />;
+    return <div className="selectionArea" style={{ left: startX + offset.x, width }} />;
 };
 export default SelectionArea;
