@@ -192,8 +192,6 @@ export default class Timebar extends React.Component {
     computeSelectionFromDragBounds(from, to) {
         const { start, stop } = this.getNormalizedDragBounds(from, to);
 
-        console.log('now computing selection from drag bounds', start, stop);
-
         return this.state.bins.reduce((acc, val, index) => {
             if (val.x >= start && val.x <= stop) {
                 acc.push(index);
@@ -204,11 +202,9 @@ export default class Timebar extends React.Component {
     }
 
     getNormalizedDragBounds(from, to) {
-        const min = Math.min(from, to);
-        const max = Math.max(from, to);
         return {
-            start: (min - this.state.bounds.x) / this.state.bounds.width,
-            stop: (max - this.state.bounds.x) / this.state.bounds.width
+            start: (Math.min(from, to) - this.state.bounds.x) / this.state.bounds.width,
+            stop: (Math.max(from, to) - this.state.bounds.x) / this.state.bounds.width
         };
     }
 
