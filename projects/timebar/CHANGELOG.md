@@ -3,6 +3,382 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.3.2"></a>
+## 3.3.2 (2018-01-25)
+
+
+### Bug Fixes
+
+* **$browser:** Found a different way to compute bounds ([6f0d634](https://github.com/graphistry/graphistry-js/commit/6f0d634))
+
+
+
+<a name="3.3.1"></a>
+## 3.3.1 (2018-01-25)
+
+
+
+<a name="3.3.0"></a>
+# 3.3.0 (2018-01-24)
+
+
+### Bug Fixes
+
+* **$browser:** updating to latest react ([3ece2d3](https://github.com/graphistry/graphistry-js/commit/3ece2d3))
+
+
+
+<a name="3.2.3"></a>
+## 3.2.3 (2018-01-24)
+
+
+### Bug Fixes
+
+* **$browser:** reduce react version for viz-app parity ([ab4be46](https://github.com/graphistry/graphistry-js/commit/ab4be46))
+
+
+
+<a name="3.2.1"></a>
+## 3.2.1 (2018-01-24)
+
+
+### Bug Fixes
+
+* **$browser:** account for offsets in rendernig selection area ([dd19d1e](https://github.com/graphistry/graphistry-js/commit/dd19d1e))
+
+
+
+<a name="3.2.0"></a>
+# 3.2.0 (2018-01-24)
+
+
+### Features
+
+* **$browser:** fix timebar ([8fa88e9](https://github.com/graphistry/graphistry-js/commit/8fa88e9))
+
+
+
+<a name="3.1.6"></a>
+## 3.1.6 (2018-01-24)
+
+
+### Bug Fixes
+
+* **$browser:** ensure input times are treated numerically for computations. ([f8e3bb9](https://github.com/graphistry/graphistry-js/commit/f8e3bb9))
+
+
+
+<a name="3.1.5"></a>
+## 3.1.5 (2018-01-24)
+
+
+### Bug Fixes
+
+* **$browser:** convert time strings to moment dates ([9729ac2](https://github.com/graphistry/graphistry-js/commit/9729ac2))
+
+
+
+<a name="3.1.4"></a>
+## 3.1.4 (2018-01-24)
+
+
+### Bug Fixes
+
+* **$browser:** normalizing inputs ([af96109](https://github.com/graphistry/graphistry-js/commit/af96109))
+
+
+
+<a name="3.1.3"></a>
+## 3.1.3 (2018-01-24)
+
+
+### Bug Fixes
+
+* **$browser:** cleanup ([1e12bfb](https://github.com/graphistry/graphistry-js/commit/1e12bfb))
+
+
+
+<a name="3.1.2"></a>
+## 3.1.2 (2018-01-23)
+
+
+### Bug Fixes
+
+* dead code ([de0dfe0](https://github.com/graphistry/graphistry-js/commit/de0dfe0))
+
+
+
+<a name="3.1.1"></a>
+## 3.1.1 (2018-01-23)
+
+
+### Bug Fixes
+
+* **$browser:** remove old dependencies ([8ef2ef2](https://github.com/graphistry/graphistry-js/commit/8ef2ef2))
+
+
+
+<a name="3.1.0"></a>
+# 3.1.0 (2018-01-23)
+
+
+
+<a name="3.0.3"></a>
+## 3.0.3 (2018-01-19)
+
+
+### Features
+
+* **$browser:** WIP additional updates and cleanup ([ce049ef](https://github.com/graphistry/graphistry-js/commit/ce049ef))
+
+
+
+<a name="3.0.2"></a>
+## 3.0.2 (2018-01-18)
+
+
+### Bug Fixes
+
+* **$browser:** Continued development of custom timebar ([567f129](https://github.com/graphistry/graphistry-js/commit/567f129))
+
+
+
+<a name="3.0.1"></a>
+## 3.0.1 (2018-01-16)
+
+
+### Features
+
+* **$browser:** better dev/debug environment for timebar UI development ([fc07eb4](https://github.com/graphistry/graphistry-js/commit/fc07eb4))
+
+
+
+<a name="3.0.0"></a>
+# 3.0.0 (2018-01-16)
+
+
+### Features
+
+* **$browser:** Remove victory, create custom timebar ([60abe4c](https://github.com/graphistry/graphistry-js/commit/60abe4c))
+
+
+
+<a name="2.17.4"></a>
+## 2.17.4 (2017-12-15)
+
+
+### Features
+
+* **$browser:** zoom change now calls handler ([9eb844e](https://github.com/graphistry/graphistry-js/commit/9eb844e))
+
+
+
+<a name="2.17.3"></a>
+## 2.17.3 (2017-12-13)
+
+
+### Bug Fixes
+
+* **$browser:** removed a comment. ([bc17fb7](https://github.com/graphistry/graphistry-js/commit/bc17fb7))
+
+
+
+<a name="2.17.2"></a>
+## 2.17.2 (2017-12-12)
+
+
+### Bug Fixes
+
+* **$browser:** undelete play button to fix layout bug ([3932e11](https://github.com/graphistry/graphistry-js/commit/3932e11))
+
+
+
+<a name="2.17.1"></a>
+## 2.17.1 (2017-12-12)
+
+
+### Bug Fixes
+
+* **$browser:** enabled zoom panning ([26e0028](https://github.com/graphistry/graphistry-js/commit/26e0028))
+
+
+
+<a name="2.17.0"></a>
+# 2.17.0 (2017-12-11)
+
+
+### Bug Fixes
+
+* **$browser:** no longer dispatch bar click on mouse down ([06acd86](https://github.com/graphistry/graphistry-js/commit/06acd86))
+
+
+
+<a name="2.16.10"></a>
+## 2.16.10 (2017-12-11)
+
+
+### Bug Fixes
+
+* **$browser:** return highlight index not bin ([34f073e](https://github.com/graphistry/graphistry-js/commit/34f073e))
+
+
+
+<a name="2.16.9"></a>
+## 2.16.9 (2017-12-08)
+
+
+### Bug Fixes
+
+* **$browser:** changed a string value to force a new commit because last one didnt work ([7808811](https://github.com/graphistry/graphistry-js/commit/7808811))
+
+
+
+<a name="2.16.8"></a>
+## 2.16.8 (2017-12-07)
+
+
+### Bug Fixes
+
+* hey look a stupid typo ([22b1221](https://github.com/graphistry/graphistry-js/commit/22b1221))
+
+
+
+<a name="2.16.7"></a>
+## 2.16.7 (2017-12-07)
+
+
+### Bug Fixes
+
+* **$browser:** stop propagation on the nativeEvent rather than the synthetic event ([d49e2c9](https://github.com/graphistry/graphistry-js/commit/d49e2c9))
+
+
+
+<a name="2.16.6"></a>
+## 2.16.6 (2017-12-07)
+
+
+### Bug Fixes
+
+* make mousetrap return false ([71ea444](https://github.com/graphistry/graphistry-js/commit/71ea444))
+
+
+
+<a name="2.16.5"></a>
+## 2.16.5 (2017-12-07)
+
+
+### Bug Fixes
+
+* **$compile:** whoops, forgot to remove dead code ([9d8bf8a](https://github.com/graphistry/graphistry-js/commit/9d8bf8a))
+
+
+
+<a name="2.16.4"></a>
+## 2.16.4 (2017-12-07)
+
+
+### Bug Fixes
+
+* **$browser:** remove scrollLock, add onWheel ([f307990](https://github.com/graphistry/graphistry-js/commit/f307990))
+
+
+
+<a name="2.16.3"></a>
+## 2.16.3 (2017-12-07)
+
+
+### Bug Fixes
+
+* **$browser:** added a scrollLock component ([aa9f3fc](https://github.com/graphistry/graphistry-js/commit/aa9f3fc))
+
+
+
+<a name="2.16.2"></a>
+## 2.16.2 (2017-12-07)
+
+
+### Bug Fixes
+
+* **$browser:** added mouse traps, fixed hover glitch ([8dd1ae2](https://github.com/graphistry/graphistry-js/commit/8dd1ae2))
+
+
+
+<a name="2.16.1"></a>
+## 2.16.1 (2017-12-07)
+
+
+### Bug Fixes
+
+* **$browser:** fix label overlap on x-axis of timebar ([ea09818](https://github.com/graphistry/graphistry-js/commit/ea09818))
+
+
+
+<a name="2.16.0"></a>
+# 2.16.0 (2017-12-01)
+
+
+### Features
+
+* **$compile:** add support for theme injection ([26d79d4](https://github.com/graphistry/graphistry-js/commit/26d79d4))
+
+
+
+<a name="2.15.12"></a>
+## 2.15.12 (2017-11-20)
+
+
+
+<a name="2.15.11"></a>
+## 2.15.11 (2017-11-20)
+
+
+
+<a name="2.15.10"></a>
+## 2.15.10 (2017-11-20)
+
+
+
+<a name="2.15.9"></a>
+## 2.15.9 (2017-11-20)
+
+
+
+<a name="2.15.8"></a>
+## 2.15.8 (2017-11-20)
+
+
+
+<a name="2.15.7"></a>
+## 2.15.7 (2017-11-20)
+
+
+
+<a name="2.15.6"></a>
+## 2.15.6 (2017-11-17)
+
+
+
+<a name="2.15.5"></a>
+## 2.15.5 (2017-11-17)
+
+
+### Bug Fixes
+
+* **$browser:** move react from devDependencies to dependencies ([bb4b9cb](https://github.com/graphistry/graphistry-js/commit/bb4b9cb))
+
+
+
+<a name="2.15.4"></a>
+## 2.15.4 (2017-11-16)
+
+
+
+<a name="2.15.3"></a>
+## 2.15.3 (2017-11-16)
+
+
+
+
 <a name="3.3.1"></a>
 ## 3.3.1 (2018-01-25)
 
