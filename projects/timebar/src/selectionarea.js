@@ -8,7 +8,8 @@ const SelectionArea = ({ details, offset }) => {
     const startX = Math.min(from, to);
     const endX = Math.max(from, to);
     const width = endX - startX;
+    const left = startX - offset.x;
 
-    return <div className="selectionArea" style={{ left: startX + offset.x, width }} />;
+    return <div className="selectionArea" style={{ left, width }} />;
 };
 export default SelectionArea;

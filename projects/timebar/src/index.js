@@ -15,14 +15,13 @@ const stopPropagation = e => {
     return false;
 };
 
-// PAUL or MILLER: this is what I need to have working.
 const computeOffset = el => {
     var rect = el.getBoundingClientRect(),
         scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
         scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     return {
-        x: rect.top + scrollTop,
-        y: rect.left + scrollLeft,
+        x: rect.left + scrollLeft,
+        y: rect.top + scrollTop,
         width: rect.width,
         height: rect.height
     };
@@ -131,9 +130,7 @@ export default class Timebar extends React.Component {
             }
         });
 
-        if (this.props.onSelection) {
-            this.props.onSelection([]);
-        }
+        this.setSelection([]);
     }
 
     onBarClick(index) {
@@ -156,14 +153,16 @@ export default class Timebar extends React.Component {
     }
 
     startDragSelection(e) {
+        const bounds = computeOffset(e.currentTarget);
+
         this.setState({
             dragging: true,
             selectionDetails: {
                 active: true,
-                from: e.clientX + this.state.bounds.x,
-                to: e.clientX + this.state.bounds.x
+                from: e.clientX,
+                to: e.clientX
             },
-            bounds: computeOffset(e.currentTarget)
+            bounds
         });
     }
 
@@ -173,7 +172,7 @@ export default class Timebar extends React.Component {
         }
 
         const selectionDetails = {
-            to: e.clientX + this.state.bounds.x,
+            to: e.clientX,
             from: this.state.selectionDetails.from,
             active: this.state.selectionDetails.active
         };
@@ -192,7 +191,9 @@ export default class Timebar extends React.Component {
 
     computeSelectionFromDragBounds(from, to) {
         const { start, stop } = this.getNormalizedDragBounds(from, to);
+
         console.log('now computing selection from drag bounds', start, stop);
+
         return this.state.bins.reduce((acc, val, index) => {
             if (val.x >= start && val.x <= stop) {
                 acc.push(index);
@@ -203,9 +204,11 @@ export default class Timebar extends React.Component {
     }
 
     getNormalizedDragBounds(from, to) {
+        const min = Math.min(from, to);
+        const max = Math.max(from, to);
         return {
-            start: Math.min(from, to) / this.state.bounds.width,
-            stop: Math.max(from, to) / this.state.bounds.width
+            start: (min - this.state.bounds.x) / this.state.bounds.width,
+            stop: (max - this.state.bounds.x) / this.state.bounds.width
         };
     }
 
@@ -237,7 +240,7 @@ export default class Timebar extends React.Component {
                     onWheel={this.onChartScroll.bind(this)}>
                     <SelectionArea
                         details={this.state.selectionDetails}
-                        offset={{ x: this.state.bounds.x * -1 }}
+                        offset={{ x: this.state.bounds.x }}
                     />
 
                     {bins.map((item, index) =>
