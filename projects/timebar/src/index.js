@@ -15,6 +15,7 @@ const stopPropagation = e => {
     return false;
 };
 
+// PAUL or MILLER: this is what I need to have working.
 const computeOffset = el => {
     var rect = el.getBoundingClientRect(),
         scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
