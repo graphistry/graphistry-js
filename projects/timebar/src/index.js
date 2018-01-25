@@ -41,10 +41,6 @@ export default class Timebar extends React.Component {
         };
     }
 
-    componentDidMount() {
-        this.setState({ bounds: computeOffset(ReactDOM.findDOMNode(this)) });
-    }
-
     onChartScroll(e) {
         e.stopPropagation();
         e.preventDefault();
@@ -166,7 +162,8 @@ export default class Timebar extends React.Component {
                 active: true,
                 from: e.clientX + this.state.bounds.x,
                 to: e.clientX + this.state.bounds.x
-            }
+            },
+            bounds: computeOffset(e.currentTarget)
         });
     }
 
