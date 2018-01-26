@@ -35,7 +35,7 @@ export default class Timebar extends React.Component {
             highlight: null,
             selectionDetails: { active: false },
             dragging: false,
-            bins: this.normalizeBins(this.getBinsAsArray(props.bins)),
+            bins: this.normalizeBins(props.bins),
             bounds: { x: 0, y: 0 }
         };
     }
@@ -49,68 +49,37 @@ export default class Timebar extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        const bins = this.normalizeBins(this.getBinsAsArray(props.bins));
+        const bins = this.normalizeBins(props.bins);
         this.setState({ bins });
     }
 
+    /*
+        "count": 0,
+        "exclude": false,
+        "values": {
+        "$type": "atom",
+        "value": [1501311600000, 0.944795076636391, 1]
+        }
+    */
     normalizeBins(bins) {
-        const { ymin, ymax, xmin, xmax } = bins.reduce(
-            (acc, val) => {
-                if (val.count < acc.ymin) {
-                    acc.ymin = val.count;
-                }
+        const length = bins.length;
+        const maxCount = Math.max.apply(null, bins.map(bin => bin.count));
 
-                if (val.count > acc.ymax) {
-                    acc.ymax = val.count;
-                }
+        const normalize = ({ count, values }, index) => {
+            const [timestamp, xOffset, widthMultiplier] = values.value;
 
-                const timestamp = moment(val.values[0]);
-
-                if (timestamp < acc.xmin) {
-                    acc.xmin = timestamp;
-                }
-
-                if (timestamp > acc.xmax) {
-                    acc.xmax = timestamp;
-                }
-
-                return acc;
-            },
-            {
-                ymin: Number.MAX_VALUE,
-                ymax: Number.MIN_VALUE,
-                xmin: Number.MAX_VALUE,
-                xmax: Number.MIN_VALUE
-            }
-        );
-
-        const yrange = ymax - ymin || 1;
-        const xrange = xmax - xmin || 1;
-
-        const normalize = ({ count, values }) => {
-            const ts = moment(values[0]);
             return {
-                height: count / yrange,
-                x: (ts - xmin) / xrange,
+                width: `${widthMultiplier}%`,
+                height: `${100 * (count / maxCount)}%`,
+                x: `${100 * xOffset}%`,
                 label: count,
                 color: 'red',
-                timestamp: ts
+                timestamp: moment(timestamp),
+                _x_offset: xOffset,
+                _width: widthMultiplier
             };
         };
         return bins.map(normalize);
-    }
-
-    getBinsAsArray(bins) {
-        if (Array.isArray(bins)) {
-            return bins;
-        } else {
-            const retVal = [];
-            for (var i = 0; i < bins.length; i++) {
-                retVal.push(bins[i]);
-            }
-
-            return retVal;
-        }
     }
 
     setSelection(selection = []) {
@@ -193,7 +162,7 @@ export default class Timebar extends React.Component {
         const { start, stop } = this.getNormalizedDragBounds(from, to);
 
         return this.state.bins.reduce((acc, val, index) => {
-            if (val.x >= start && val.x <= stop) {
+            if (val._x_offset >= start && val._x_offset <= stop) {
                 acc.push(index);
             }
 

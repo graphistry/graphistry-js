@@ -36,13 +36,14 @@ export default class Bar extends React.Component {
     }
 
     render() {
-        const { height, x, label, color, timestamp, showAxisLabel } = this.props;
+        const { height, x, width, label, color, timestamp, showAxisLabel } = this.props;
         return (
-            <div className="barWrapper" style={{ left: `${x * 100}%` }}>
+            <div className="barWrapper" style={{ left: x }}>
                 <div
                     className="bar"
                     style={{
-                        height: `${height * 100}%`,
+                        height,
+                        width,
                         bottom: 0,
                         position: 'absolute',
                         backgroundColor: color
