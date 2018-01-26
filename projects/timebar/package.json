@@ -8,7 +8,8 @@
         "prepublishOnly": "npm run build",
         "prebuild": "npm run clean",
         "clean": "rimraf lib",
-        "build": "webpack --config webpack.prod.config.js",
+        "build": "babel src -d lib --source-maps",
+        "build:webpack": "webpack --config webpack.prod.config.js",
         "dev": "webpack-dev-server"
     },
     "repository": {
