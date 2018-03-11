@@ -313,6 +313,39 @@ class Graphistry extends Observable {
     }
 
     /**
+     * Toggle timebars panel
+     * @method Graphistry.toggleTimebars
+     * @param {boolean} [turnOn] - Whether to make panel visible
+     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .flatMap(function (g) {
+     *         window.g = g;
+     *         console.log('opening timebards panel');
+     *         return g.toggleTimebars(true);
+     *     })
+     *     .subscribe();
+     */
+    static toggleTimebars(turnOn) {
+        const { view } = this;
+        if (!turnOn) {
+            return new this(view.set(
+                $value(`panels.bottom`, undefined),
+                $value(`timebars.controls[0].selected`, false),
+            )
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+        } else {
+            return new this(view.set(
+                $value(`timebars.controls[0].selected`, true),
+                $value(`panels.bottom`, $ref(view._path.concat(`timebars`)))
+            )
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+        }
+    }
+
+    /**
      * Toggle histogram panel
      * @method Graphistry.toggleHistograms
      * @param {boolean} [turnOn] - Whether to make panel visible
@@ -564,7 +597,9 @@ class Graphistry extends Observable {
             //models/label.js
             'labelOpacity':          ['view', 'labels.opacity'],
             'labelEnabled':          ['view', 'labels.enabled'],
+            'labelPropertiesEnabled': ['view', 'labels.propertiesEnabled'],
             'labelPOI':              ['view', 'labels.poiEnabled'],
+            'labelPOIMax':           ['view', 'labels.poiMax'],
             'labelHighlightEnabled': ['view', 'labels.highlightEnabled'],
             'labelColor':            ['view', 'labels.foreground.color'],
             'labelBackground':       ['view', 'labels.background.color'],
@@ -582,6 +617,8 @@ class Graphistry extends Observable {
         };
 
         const [model, path] = lookup[name];
+
+        console.log('updating setting', name, val, model, path);
 
         return new this(this[model]
             .set($value(path, $atom(val, { $timestamp: Date.now() })))
