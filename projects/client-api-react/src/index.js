@@ -6,6 +6,9 @@ import mapPropsStream from 'recompose/mapPropsStream';
 import createEventHandler from 'recompose/createEventHandler';
 import { GraphistryJS } from '@graphistry/client-api';
 import { withClientAPI } from './withClientAPI';
+
+import { bindings } from './bindings.js';
+
 const { Observable, Subject } = GraphistryJS;
 const loadingNavLogoStyle = {
     top: `5px`,
@@ -20,13 +23,17 @@ const loadingNavLogoStyle = {
 
 const propTypes = {
 
+	...(Object.values(bindings).reduce(
+			(acc, {name, nameDefault, reactType}) => 
+				({	...acc, 
+					[name]: reactType,
+					[nameDefault]: reactType,
+				}),
+			{})),
+
     apiKey: PropTypes.string,
     dataset: PropTypes.string,
     graphistryHost: PropTypes.string.isRequired,
-
-    pointSize: PropTypes.number,
-    edgeOpacity: PropTypes.number,
-    pointOpacity: PropTypes.number,
     play: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
 
     onClientAPIConnected: PropTypes.func,
@@ -36,47 +43,8 @@ const propTypes = {
     showInfo: PropTypes.bool,
     showMenu: PropTypes.bool,
     showLogo: PropTypes.bool,
-    showArrows: PropTypes.bool,
-    showLabels: PropTypes.bool,
-    showToolbar: PropTypes.bool,
-    showInspector: PropTypes.bool,
-    showHistograms: PropTypes.bool,
     showSplashScreen: PropTypes.bool,
-    pruneOrphans: PropTypes.bool,
     loadingMessage: PropTypes.string,
-    showLabelOnHover: PropTypes.bool,
-    showLoadingIndicator: PropTypes.bool,
-    showPointsOfInterest: PropTypes.bool,
-    linLog: PropTypes.bool,
-    lockedX: PropTypes.bool,
-    lockedY: PropTypes.bool,
-    strongGravity: PropTypes.bool,
-    dissuadeHubs: PropTypes.bool,
-    edgeInfluence: PropTypes.oneOf([0, 1, 2, 3, 4, 5]),
-    precisionVsSpeed: PropTypes.oneOf([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]),
-    gravity: PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)),
-    scalingRatio: PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)),
-
-    defaultPointSize: PropTypes.number,
-    defaultEdgeOpacity: PropTypes.number,
-    defaultPointOpacity: PropTypes.number,
-    defaultShowArrows: PropTypes.bool,
-    defaultShowLabels: PropTypes.bool,
-    defaultShowToolbar: PropTypes.bool,
-    defaultShowInspector: PropTypes.bool,
-    defaultShowHistograms: PropTypes.bool,
-    defaultPruneOrphans: PropTypes.bool,
-    defaultShowLabelOnHover: PropTypes.bool,
-    defaultShowPointsOfInterest: PropTypes.bool,
-    defaultLinLog: PropTypes.bool,
-    defaultLockedX: PropTypes.bool,
-    defaultLockedY: PropTypes.bool,
-    defaultStrongGravity: PropTypes.bool,
-    defaultDissuadeHubs: PropTypes.bool,
-    defaultEdgeInfluence: PropTypes.oneOf([0, 1, 2, 3, 4, 5]),
-    defaultPrecisionVsSpeed: PropTypes.oneOf([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]),
-    defaultGravity: PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)),
-    defaultScalingRatio: PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)),
 
     vizStyle: PropTypes.object,
     vizClassName: PropTypes.string,

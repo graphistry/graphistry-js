@@ -4,29 +4,20 @@ import createEventHandler from 'recompose/createEventHandler';
 import { GraphistryJS } from '@graphistry/client-api';
 const { Observable } = GraphistryJS;
 
+import { bindings } from './bindings.js';
+
+
 function mergeDefaultPropValues(props) {
     return {
-        pointSize: props.defaultPointSize,
-        edgeOpacity: props.defaultEdgeOpacity,
-        pointOpacity: props.defaultPointOpacity,
         showIcons: props.defaultShowIcons,
-        showArrows: props.defaultShowArrows,
-        showLabels: props.defaultShowLabels,
-        showToolbar: props.defaultShowToolbar,
-        showInspector: props.defaultShowInspector,
-        showHistograms: props.defaultShowHistograms,
-        pruneOrphans: props.defaultPruneOrphans,
-        showLabelOnHover: props.defaultShowLabelOnHover,
-        showPointsOfInterest: props.defaultShowPointsOfInterest,
-        linLog: props.defaultLinLog,
-        lockedX: props.defaultLockedX,
-        lockedY: props.defaultLockedY,
-        strongGravity: props.defaultStrongGravity,
-        dissuadeHubs: props.defaultDissuadeHubs,
-        edgeInfluence: props.defaultEdgeInfluence,
-        precisionVsSpeed: props.defaultPrecisionVsSpeed,
-        gravity: props.defaultGravity,
-        scalingRatio: props.defaultScalingRatio,
+
+        ...(Object.values(bindings).reduce(
+            (acc, {name, nameDefault}) => 
+                ({  ...acc, 
+                    [name]: props[nameDefault]
+                }),
+            {})),
+        
         ...props
     };
 }
@@ -38,26 +29,16 @@ function applyPropsToClientAPI(iFrameRefHandler) {
         }
         const operations = [];
 
-        if (typeof props.pointSize            !== 'undefined') operations.push(g.updateSetting('pointSize', props.pointSize));
-        if (typeof props.edgeOpacity          !== 'undefined') operations.push(g.updateSetting('edgeOpacity', props.edgeOpacity));
-        if (typeof props.pointOpacity         !== 'undefined') operations.push(g.updateSetting('pointOpacity', props.pointOpacity));
-        if (typeof props.showArrows           !== 'undefined') operations.push(g.updateSetting('showArrows', props.showArrows));
-        if (typeof props.showLabels           !== 'undefined') operations.push(g.updateSetting('labelEnabled', props.showLabels));
-        if (typeof props.showToolbar          !== 'undefined') operations.push(g.updateSetting('showToolbar', props.showToolbar));
-        if (typeof props.showInspector        !== 'undefined') operations.push(g.toggleInspector(props.showInspector));
-        if (typeof props.showHistograms       !== 'undefined') operations.push(g.toggleHistograms(props.showHistograms));
-        if (typeof props.pruneOrphans         !== 'undefined') operations.push(g.updateSetting('pruneOrphans', props.pruneOrphans));
-        if (typeof props.showLabelOnHover     !== 'undefined') operations.push(g.updateSetting('labelHighlightEnabled', props.showLabelOnHover));
-        if (typeof props.showPointsOfInterest !== 'undefined') operations.push(g.updateSetting('labelPOI', props.showPointsOfInterest));
-        if (typeof props.linLog               !== 'undefined') operations.push(g.updateSetting('linLog', props.linLog));
-        if (typeof props.lockedX              !== 'undefined') operations.push(g.updateSetting('lockedX', props.lockedX));
-        if (typeof props.lockedY              !== 'undefined') operations.push(g.updateSetting('lockedY', props.lockedY));
-        if (typeof props.strongGravity        !== 'undefined') operations.push(g.updateSetting('strongGravity', props.strongGravity));
-        if (typeof props.dissuadeHubs         !== 'undefined') operations.push(g.updateSetting('dissuadeHubs', props.dissuadeHubs));
-        if (typeof props.edgeInfluence        !== 'undefined') operations.push(g.updateSetting('edgeInfluence', props.edgeInfluence));
-        if (typeof props.precisionVsSpeed     !== 'undefined') operations.push(g.updateSetting('precisionVsSpeed', props.precisionVsSpeed));
-        if (typeof props.gravity              !== 'undefined') operations.push(g.updateSetting('gravity', props.gravity));
-        if (typeof props.scalingRatio         !== 'undefined') operations.push(g.updateSetting('scalingRatio', props.scalingRatio));
+        bindings.forEach( ({name, jsName, jsCommand}) => {
+            if (typeof props[name] !== 'undefined') {
+                if (!jsCommand) {
+                    operations.push(g.updateSetting(jsName, props[name]));
+                } else {
+                    operations.push(g[jsCommand](props[name]));
+                }
+            }
+        });
+
         if (typeof props.axes                 !== 'undefined') operations.push(g.encodeAxis(props.axes));
         if (typeof props.workbook             !== 'undefined') operations.push(g.saveWorkbook());
 
