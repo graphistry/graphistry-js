@@ -8,7 +8,6 @@ import { bindings } from './bindings.js';
 
 
 function mergeDefaultPropValues(props) {
-    console.log('react merge', props, bindings);
     return {
         showIcons: props.defaultShowIcons,
 

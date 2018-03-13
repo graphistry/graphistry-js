@@ -618,8 +618,6 @@ class Graphistry extends Observable {
 
         const [model, path] = lookup[name];
 
-        console.log('updating setting', name, val, model, path);
-
         return new this(this[model]
             .set($value(path, $atom(val, { $timestamp: Date.now() })))
             .map(({ json }) => json.toJSON())
