@@ -33,11 +33,10 @@ function applyPropsToClientAPI(iFrameRefHandler) {
             if (typeof props[name] !== 'undefined') {
                 if (!jsCommand) {
                     operations.push(g.updateSetting(jsName, props[name]));
+                } else {
+                    operations.push(g[jsCommand](props[name]));
                 }
-            } else {
-                operations.push(g[jsCommand](props[name]));
             }
-
         });
 
         if (typeof props.axes                 !== 'undefined') operations.push(g.encodeAxis(props.axes));
