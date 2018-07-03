@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.4.3"></a>
+## [3.4.3](https://github.com/graphistry/graphistry-js/compare/v3.4.2...v3.4.3) (2018-07-03)
+
+
+### Bug Fixes
+
+* **client-api-react:** use a weakmap to diff axes prop ([2858663](https://github.com/graphistry/graphistry-js/commit/2858663))
+
+
+
+
 <a name="3.4.2"></a>
 ## [3.4.2](https://github.com/graphistry/graphistry-js/compare/v3.4.1...v3.4.2) (2018-07-03)
 
