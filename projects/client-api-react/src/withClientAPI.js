@@ -23,6 +23,7 @@ function mergeDefaultPropValues(props) {
 }
 
 function applyPropsToClientAPI(iFrameRefHandler) {
+    const axesMap = new WeakMap();
     return function applyPropsToClientAPI([g, props]) {
         if (!g) {
             return Observable.of({ ...props, loading: !props.showSplashScreen, iFrameRefHandler });
@@ -39,8 +40,11 @@ function applyPropsToClientAPI(iFrameRefHandler) {
             }
         });
 
-        if (typeof props.workbook             !== 'undefined') operations.push(g.saveWorkbook());
-        if (props.axesUpdated && typeof props.axes !== 'undefined') operations.push(g.encodeAxis(props.axes));
+        if (typeof props.workbook !== 'undefined') operations.push(g.saveWorkbook());
+        if (typeof props.axes !== 'undefined' && !axesMap.has(props.axes)) {
+            axesMap.set(props.axes, true);
+            operations.push(g.encodeAxis(props.axes));
+        }
 
         return Observable
             .merge(...operations)
@@ -54,7 +58,7 @@ function scanClientAPIAndProps(prev, curr) {
     if (currG && prevG !== currG && typeof props.onClientAPIConnected === 'function') {
         props.onClientAPIConnected.call(undefined, currG);
     }
-    return [currG, { ...props, axesUpdated: !shallowEqual(prev.axes, curr.axes) }];
+    return curr;
 }
 
 const withClientAPI = mapPropsStream((propsStream) => {
