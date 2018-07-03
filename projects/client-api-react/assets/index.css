@@ -54,8 +54,7 @@
 }
 @keyframes graphistry-loading-placeholder-animation-spin {
   to {
-    -webkit-transform: rotate(1turn);
-            transform: rotate(1turn);
+    transform: rotate(1turn);
   }
 }
 @-webkit-keyframes graphistry-loading-placeholder-animation-spin {

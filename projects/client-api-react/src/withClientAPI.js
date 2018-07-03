@@ -29,7 +29,7 @@ function applyPropsToClientAPI(iFrameRefHandler) {
         }
         const operations = [];
 
-        bindings.forEach( ({name, jsName, jsCommand}) => {
+        bindings.forEach(({name, jsName, jsCommand}) => {
             if (typeof props[name] !== 'undefined') {
                 if (!jsCommand) {
                     operations.push(g.updateSetting(jsName, props[name]));
@@ -39,8 +39,8 @@ function applyPropsToClientAPI(iFrameRefHandler) {
             }
         });
 
-        if (typeof props.axes                 !== 'undefined') operations.push(g.encodeAxis(props.axes));
         if (typeof props.workbook             !== 'undefined') operations.push(g.saveWorkbook());
+        if (props.axesUpdated && typeof props.axes !== 'undefined') operations.push(g.encodeAxis(props.axes));
 
         return Observable
             .merge(...operations)
@@ -54,7 +54,7 @@ function scanClientAPIAndProps(prev, curr) {
     if (currG && prevG !== currG && typeof props.onClientAPIConnected === 'function') {
         props.onClientAPIConnected.call(undefined, currG);
     }
-    return curr;
+    return [currG, { ...props, axesUpdated: !shallowEqual(prev.axes, curr.axes) }];
 }
 
 const withClientAPI = mapPropsStream((propsStream) => {
@@ -66,7 +66,8 @@ const withClientAPI = mapPropsStream((propsStream) => {
         .distinctUntilChanged();
 
     const propsStreamWithDefaults = Observable.from(propsStream).publish((xs) =>
-        xs.merge(xs.take(1).map(mergeDefaultPropValues)));
+        xs.merge(xs.take(1).map(mergeDefaultPropValues))
+    ).distinctUntilChanged(shallowEqual);
 
     const clientAPIAndPropsStream = clientAPIStream
         .combineLatest(propsStreamWithDefaults)
