@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 const bindingsTable = {
 	
     pointSize:				[ PropTypes.number,      'defaultPointSize',          undefined,      undefined],
+    edgeCurvature:          [ PropTypes.number,      'defaultEdgeCurvature',      undefined,      undefined],
     edgeOpacity:			[ PropTypes.number,      'defaultEdgeOpacity',        undefined,      undefined],
     pointOpacity:			[ PropTypes.number,      'defaultPointOpacity',       undefined,      undefined],
     showArrows:				[ PropTypes.bool,        'defaultShowArrows',         undefined,      undefined],

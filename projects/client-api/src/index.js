@@ -557,6 +557,7 @@ class Graphistry extends Observable {
      * | `background` | color as hex or rgba `string` |
      * | `edgeOpacity` | `number` (0 to 1) |
      * | `edgeSize` | `number` (0.1 to 10) |
+     * | `edgeCurvature` | `number` (0.1 to 1) |
      * | `pointOpacity` | `number` (0 to 1) |
      * | `pointSize` | `number` (0.1 to 10) |
      * | `zoom` | `uint` |
@@ -587,6 +588,7 @@ class Graphistry extends Observable {
             'background':   ['view', 'scene.renderer.background.color'],
             'edgeOpacity':  ['view', 'scene.renderer.edges.opacity'],
             'edgeSize':     ['view', 'scene.renderer.edges.scaling'],
+            'edgeCurvature': ['view', 'scene.renderer.edges.curvature'],
             'pointOpacity': ['view', 'scene.renderer.points.opacity'],
             'pointSize':    ['view', 'scene.renderer.points.scaling'],
 
