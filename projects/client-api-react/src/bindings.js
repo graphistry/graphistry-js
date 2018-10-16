@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 const bindingsTable = {
 	
-    background:             [ PropTypes.string,      'defaultBackground',         undefined,      undefined],
     labelOpacity:           [ PropTypes.number,      'defaultLabelOpacity',       undefined,      undefined],
     labelColor:             [ PropTypes.string,      'defaultLabelColor',         undefined,      undefined],
     labelBackground:        [ PropTypes.string,      'defaultLabelBackground',    undefined,      undefined],
