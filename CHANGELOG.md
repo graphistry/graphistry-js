@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.5.0"></a>
+# [3.5.0](https://github.com/graphistry/graphistry-js/compare/v3.4.4...v3.5.0) (2018-10-18)
+
+
+### Bug Fixes
+
+* **revert bg control:** redundant with iframe control ([fd2161a](https://github.com/graphistry/graphistry-js/commit/fd2161a))
+
+
+### Features
+
+* **client-api:** expose edge curvature ([987ebe4](https://github.com/graphistry/graphistry-js/commit/987ebe4))
+* **client-api-react:** expose more controls ([1180984](https://github.com/graphistry/graphistry-js/commit/1180984))
+
+
+
+
 <a name="3.4.4"></a>
 ## [3.4.4](https://github.com/graphistry/graphistry-js/compare/v3.4.3...v3.4.4) (2018-07-11)
 
