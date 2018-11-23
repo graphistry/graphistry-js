@@ -565,6 +565,7 @@ class Graphistry extends Observable {
      * | `labelOpacity` | `boolean` |
      * | `labelEnabled` | `boolean` |
      * | `labelPOI` | `boolean` |
+     * | `labelLabelPOI` | `boolean` |
      * | `labelHighlightEnabled` | `boolean` |
      * | `labelColor` | color as hex or rgba `string` |
      * | `labelBackground` | color as hex or rgba `string` |
@@ -601,6 +602,7 @@ class Graphistry extends Observable {
             'labelEnabled':          ['view', 'labels.enabled'],
             'labelPropertiesEnabled': ['view', 'labels.propertiesEnabled'],
             'labelPOI':              ['view', 'labels.poiEnabled'],
+            'labelLabelPOI':              ['view', 'labels.poiLabelEnabled'],
             'labelPOIMax':           ['view', 'labels.poiMax'],
             'labelHighlightEnabled': ['view', 'labels.highlightEnabled'],
             'labelColor':            ['view', 'labels.foreground.color'],
