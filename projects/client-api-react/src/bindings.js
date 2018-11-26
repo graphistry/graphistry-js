@@ -19,6 +19,7 @@ const bindingsTable = {
     showLabelOnHover:		[ PropTypes.bool,        'defaultShowLabelOnHover',   'labelHighlightEnabled',   undefined],
 	showLabelPropertiesOnHover: [ PropTypes.bool, 'defaultShowLabelPropertiesOnHover', 'labelPropertiesEnabled',   undefined],
     showPointsOfInterest:	[ PropTypes.bool,   'defaultShowPointsOfInterest',    'labelPOI',      undefined],
+    showPointsOfInterestLabel:   [ PropTypes.bool,   'defaultShowPointsOfInterestLabel',    'labelLabelPOI',      undefined],
     pointsOfInterestMax:	[ PropTypes.number,  'defaultPointsOfInterestMax',    'labelPOIMax',  undefined],
     linLog:					[ PropTypes.bool,        'defaultLinLog',             undefined,      undefined],
     lockedX:				[ PropTypes.bool,        'defaultLockedX',            undefined,      undefined],
