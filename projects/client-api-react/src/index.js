@@ -127,7 +127,7 @@ function Graphistry({
         play, showMenu = true, showLogo = true, showInfo = true, showToolbar = true,
         showLoadingIndicator = true, showSplashScreen = false, loading, loadingMessage = '',
         backgroundColor, graphistryHost, iFrameRefHandler, dataset, type = 'vgraph',
-        controls = '', workbook
+        controls = '', workbook, session
     }) {
 
     const children = [];
@@ -156,6 +156,7 @@ function Graphistry({
         const iFrameClassNames = 'graphistry-iframe' + (vizClassName ? ' ' + vizClassName : '');
         const optionalParams = (type ? `&type=${type}` : ``) +
                                (controls ? `&controls=${controls}` : ``) +
+                               (session ? `&session=${session}` : ``) +
                                (workbook ? `&workbook=${workbook}` : ``);
         children.push(
             <iframe scrolling='no'
