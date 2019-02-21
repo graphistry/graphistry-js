@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.6.0"></a>
+# [3.6.0](https://github.com/graphistry/graphistry-js/compare/v3.5.0...v3.6.0) (2019-02-21)
+
+
+### Features
+
+* **iframe:** Propagate session parameter to the iframe url ([e443ae5](https://github.com/graphistry/graphistry-js/commit/e443ae5))
+* **poi:** label toggle ([74bf15f](https://github.com/graphistry/graphistry-js/commit/74bf15f))
+
+
+
+
 <a name="3.5.0"></a>
 # [3.5.0](https://github.com/graphistry/graphistry-js/compare/v3.4.4...v3.5.0) (2018-10-18)
 
