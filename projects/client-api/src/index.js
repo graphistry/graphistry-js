@@ -618,6 +618,7 @@ class Graphistry extends Observable {
             'linLog':           ['view', 'layout.options.forceatlas2barnes[6].value'],
             'lockedX':          ['view', 'layout.options.forceatlas2barnes[7].value'],
             'lockedY':          ['view', 'layout.options.forceatlas2barnes[8].value'],
+            'lockedR':          ['view', 'layout.options.forceatlas2barnes[9].value'],
         };
 
         const [model, path] = lookup[name];

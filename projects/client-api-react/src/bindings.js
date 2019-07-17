@@ -24,6 +24,7 @@ const bindingsTable = {
     linLog:					[ PropTypes.bool,        'defaultLinLog',             undefined,      undefined],
     lockedX:				[ PropTypes.bool,        'defaultLockedX',            undefined,      undefined],
     lockedY:				[ PropTypes.bool,        'defaultLockedY',            undefined,      undefined],
+    lockedR:                [ PropTypes.bool,        'defaultLockedR',            undefined,      undefined],
     strongGravity:			[ PropTypes.bool,        'defaultStrongGravity',      undefined,      undefined],
     dissuadeHubs:			[ PropTypes.bool,        'defaultDissuadeHubs',       undefined,      undefined],
     edgeInfluence:			[ PropTypes.oneOf([ 0, 1, 2, 3, 4, 5]), 'defaultEdgeInfluence',    undefined,  undefined],
