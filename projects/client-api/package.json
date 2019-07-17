@@ -62,7 +62,7 @@
     "commitizen": "~2.9.6",
     "cz-conventional-changelog": "~2.0.0",
     "http-server": "~0.10.0",
-    "jsdoc": "3.5.5",
+    "jsdoc": "3.6.3",
     "jsdoc-babel": "~0.3.0",
     "rc-tools": "7.0.0",
     "react": "16.0.0",
