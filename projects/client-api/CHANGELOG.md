@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.7.0"></a>
+# [3.7.0](https://github.com/graphistry/graphistry-js/compare/v3.6.0...v3.7.0) (2019-07-17)
+
+
+### Bug Fixes
+
+* **$security:** Bump jsdoc ([2b37de7](https://github.com/graphistry/graphistry-js/commit/2b37de7))
+
+
+### Features
+
+* **LockedR:** Expose lockedR ([bafc884](https://github.com/graphistry/graphistry-js/commit/bafc884))
+
+
+
+
 <a name="3.6.0"></a>
 # [3.6.0](https://github.com/graphistry/graphistry-js/compare/v3.5.0...v3.6.0) (2019-02-21)
 
