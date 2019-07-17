@@ -2,9 +2,13 @@ This project use automatic changelog management, so development is a bit differe
 
 ## Install 
 
+nvm use 10 #12 is broken (rc-tools -> gulp -> ...)
+
 npm install
 
 npm run bootstrap
+
+(revert `projects/*/package.json` if they get wiped out)
 
 ## Build
 
