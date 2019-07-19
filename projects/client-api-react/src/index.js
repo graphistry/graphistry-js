@@ -9,6 +9,7 @@ import { withClientAPI } from './withClientAPI';
 
 import { bindings } from './bindings.js';
 
+
 const { Observable, Subject } = GraphistryJS;
 const loadingNavLogoStyle = {
     top: `5px`,

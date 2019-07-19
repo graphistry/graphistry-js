@@ -4,6 +4,7 @@ import { PostMessageDataSource } from '@graphistry/falcor-socket-datasource';
 import { $ref, $atom, $value, $invalidate } from '@graphistry/falcor-json-graph';
 import { $$observable, Subject, Scheduler, Observable, AsyncSubject, ReplaySubject } from './rxjs';
 
+
 /**
  * @class Graphistry
  * @classdesc This object wraps a HTML IFrame of a Graphistry Visualization in order
@@ -570,6 +571,10 @@ class Graphistry extends Observable {
      * | `labelColor` | color as hex or rgba `string` |
      * | `labelBackground` | color as hex or rgba `string` |
      * | `precisionVsSpeed` | `int` (-5 to +5) |
+     * | `dissuadeHubs` | `boolean` | 
+     * | `lockedX` | `boolean` | 
+     * | `lockedY` | `boolean` | 
+     * | `lockedR` | `boolean` | 
      * @method Graphistry.updateSetting
      * @static
      * @param {string} name - the name of the setting to change
