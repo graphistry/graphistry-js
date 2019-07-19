@@ -2,7 +2,7 @@ This project use automatic changelog management, so development is a bit differe
 
 ## Install 
 
-nvm use 10 #12 is broken (rc-tools -> gulp -> ...)
+nvm use 10.9.0  #12 is broken (rc-tools -> gulp -> ...)
 
 npm install
 
