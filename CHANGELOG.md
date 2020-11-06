@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.7.3"></a>
+## [3.7.3](https://github.com/graphistry/graphistry-js/compare/v3.7.1...v3.7.3) (2020-11-06)
+
+
+### Features
+
+* **containerized build:** client-api ([6fa934d](https://github.com/graphistry/graphistry-js/commit/6fa934d))
+
+
+
+
+<a name="3.7.2"></a>
+## [3.7.2](https://github.com/graphistry/graphistry-js/compare/v3.7.1...v3.7.2) (2020-11-06)
+
+
+### Features
+
+* **containerized build:** client-api ([6fa934d](https://github.com/graphistry/graphistry-js/commit/6fa934d))
+
+
+
+
 <a name="3.6.0"></a>
 # [3.6.0](https://github.com/graphistry/graphistry-js/compare/v3.5.0...v3.6.0) (2019-02-21)
 
