@@ -1,0 +1,15 @@
+version: "3.4"
+
+x-build-kwargs:
+  &build_kwargs
+  args:
+      - APP_BUILD_TAG=${APP_BUILD_TAG:-latest}
+  context: .
+
+services:
+
+  graphistry-js:
+    image:  graphistry/graphistry-js:${APP_BUILD_TAG:-latest}
+    build:
+      << : *build_kwargs
+      dockerfile: ./Dockerfile
