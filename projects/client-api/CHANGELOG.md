@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="3.7.5"></a>
+## [3.7.5](https://github.com/graphistry/graphistry-js/compare/v3.7.4...v3.7.5) (2020-11-06)
+
+
+
+
+**Note:** Version bump only for package @graphistry/client-api
+
 <a name="3.7.4"></a>
 ## [3.7.4](https://github.com/graphistry/graphistry-js/compare/v3.7.3...v3.7.4) (2020-11-06)
 
