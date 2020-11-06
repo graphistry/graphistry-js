@@ -76,7 +76,11 @@ Push branch to github as usual
 
 ### Publish for public consumption (Maintainer only)
 
-npm run deploy
+1. Follow above build steps
+
+2. Ensure git + npm auth
+
+3. npm run deploy
 
 This will update the changelog, push that to github, and then lerna publish
 
