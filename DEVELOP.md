@@ -26,7 +26,7 @@ docker run --rm -it graphistry/graphistry:latest
 root@8f18f077e0b6:/opt/graphistry-js#
 ```
 
-### Output
+### Output - outdated
 
 `./tools/extract-dist.sh` => `dist/client-api[-react]/{dist,docs,es,lib,examples}`
 
@@ -34,7 +34,12 @@ Will copy from `graphistry/graphistry-js:latest` into folder `DIST_PATH=dist`
 
 
 
-## Native
+## Native - outdated
+
+Notes:
+* We're deprecating tool-driven conventional commits so git raw commands will be (mostly) OK
+* Moving to [GHA-driven check + publish](https://dev.to/xaviercanchal/automatic-versioning-in-a-lerna-monorepo-using-github-actions-4hij)
+
 
 ### Install 
 
