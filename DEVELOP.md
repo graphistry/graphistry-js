@@ -32,6 +32,7 @@ root@8f18f077e0b6:/opt/graphistry-js#
 
 Will copy from `graphistry/graphistry-js:latest` into folder `DIST_PATH=dist`
 
+You may want to run `docker rm graphistry-js-tmp` if a stale container
 
 
 ## Native - outdated

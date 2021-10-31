@@ -884,6 +884,13 @@ function wrapStaticObservableMethods(Observable, Graphistry) {
     return Graphistry;
 }
 
+//esbuild not exposing some reason
+try {
+    window.GraphistryJS = GraphistryJS;
+} catch (e) {
+    //not browser
+}
+
 /**
  * A LabelEvent is dispatched by the inner Observables emitted by the labelUpdates() {@link Observable}.
  * A LabelEvent is generated for each label update in the visualization.

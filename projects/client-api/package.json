@@ -19,9 +19,9 @@
   },
   "scripts": {
     "build": "npm run build:prod && npm run build:cjs && npm run build:esm && npm run build:docs",
-    "build:prod": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=www/main.js --minify ",
+    "build:prod": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=lib/index.js --minify --target=chrome58,firefox57,safari11,edge18 && mkdir -p dist && cp lib/index.js dist/GraphistryJS.js",
     "build:dev":  "esbuild --bundle src/index.js --loader:.js=jsx --outfile=www/main.js --sourcemap ",
-    "build:cjs":  "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=cjs --outfile=dist/client-api-react.cjs.js --minify",
+    "build:cjs":  "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=cjs --outfile=dist/client-api.cjs.js --minify",
     "build:esm":  "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.js",
     "build:esm2": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.mjs",
     "build:docs": "rimraf docs && mkdir -p docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
@@ -62,6 +62,6 @@
     "@graphistry/falcor-model-rxjs": "2.9.11",
     "@graphistry/falcor-socket-datasource": "2.9.11",
     "rxjs": "5.4.3",
-    "symbol-observable": "^1.0.4"
+    "symbol-observable": "^4.0.0"
   }
 }

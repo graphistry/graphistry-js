@@ -28,7 +28,7 @@
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api-react#readme",
   "scripts": {
     "build": "npm run build:prod && npm run build:cjs && npm run build:esm",
-    "build:prod": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=www/main.js --minify ",
+    "build:prod": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=lib/index.js --minify ",
     "build:dev":  "esbuild --bundle src/index.js --loader:.js=jsx --outfile=www/main.js --sourcemap ",
     "build:cjs":  "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=cjs --outfile=dist/client-api-react.cjs.js --minify",
     "build:esm":  "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.js",
