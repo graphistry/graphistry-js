@@ -6,9 +6,6 @@
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
   "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    },
     "port": 8000,
     "entry": {
       "GraphistryJS": [
@@ -21,22 +18,14 @@
     }
   },
   "scripts": {
-    "build": "npm run build:umd && npm run build:prod && npm run build:docs && npm run build:examples",
-    "build:umd": "rc-tools run dist",
-    "build:prod": "rc-tools run compile",
-    "build:examples": "rc-tools run build",
+    "build": "npm run build:prod && npm run build:cjs && npm run build:esm && npm run build:docs",
+    "build:prod": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=www/main.js --minify ",
+    "build:dev":  "esbuild --bundle src/index.js --loader:.js=jsx --outfile=www/main.js --sourcemap ",
+    "build:cjs":  "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=cjs --outfile=dist/client-api-react.cjs.js --minify",
+    "build:esm":  "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.js",
+    "build:esm2": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.mjs",
     "build:docs": "rimraf docs && mkdir -p docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
-    "prebuild:docs": "rimraf docs",
-    "commit": "git-cz",
-    "commitmsg": "validate-commit-msg",
-    "test": "rc-tools run test",
-    "test:chrome": "rc-tools run chrome-test",
-    "test:coverage": "rc-tools run coverage",
-    "start": "rc-tools run server",
-    "start:docs": "rc-tools run server",
-    "lint": "rc-tools run lint",
-    "gh-pages": "rc-tools run gh-pages",
-    "pub": "rc-tools run update-self && rc-tools run pub"
+    "prebuild:docs": "rimraf docs"
   },
   "repository": {
     "type": "git",
@@ -59,21 +48,19 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api#readme",
   "devDependencies": {
-    "commitizen": "~2.9.6",
-    "cz-conventional-changelog": "~2.0.0",
-    "http-server": "~0.10.0",
-    "jsdoc": "3.6.3",
-    "jsdoc-babel": "~0.3.0",
-    "rc-tools": "7.0.0",
-    "react": "16.0.0",
-    "react-dom": "16.0.0",
-    "rimraf": "2.6.2"
+    "@babel/preset-env": "7.16.0",
+    "esbuild": "0.13.12",
+    "jsdoc": "3.6.7",
+    "jsdoc-babel": "~0.5.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "rimraf": "3.0.2",
+    "shallowequal": "1.1.0"
   },
   "dependencies": {
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-model-rxjs": "2.9.11",
     "@graphistry/falcor-socket-datasource": "2.9.11",
-    "recompose": "0.26.0",
     "rxjs": "5.4.3",
     "symbol-observable": "^1.0.4"
   }

@@ -1,4 +1,4 @@
-import shallowEqual from 'recompose/shallowEqual';
+import shallowEqual from 'shallowequal';
 import { Model } from '@graphistry/falcor-model-rxjs';
 import { PostMessageDataSource } from '@graphistry/falcor-socket-datasource';
 import { $ref, $atom, $value, $invalidate } from '@graphistry/falcor-json-graph';

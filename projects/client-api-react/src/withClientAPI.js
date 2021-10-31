@@ -1,6 +1,4 @@
-import shallowEqual from 'recompose/shallowEqual';
-import mapPropsStream from 'recompose/mapPropsStream';
-import createEventHandler from 'recompose/createEventHandler';
+import shallowEqual from 'shallowequal';
 import { GraphistryJS } from '@graphistry/client-api';
 const { Observable } = GraphistryJS;
 
@@ -61,7 +59,17 @@ function scanClientAPIAndProps(prev, curr) {
     return curr;
 }
 
+const mapPropsStream = function(p) {
+    console.error('mapPropsStream not implemented');
+    throw new Error('mapPropsStream not implemented');
+}
+
 const withClientAPI = mapPropsStream((propsStream) => {
+
+    const createEventHandler = function (v) { 
+        console.error('not implemented createEventHandler');
+        throw new Error('not implemented createEventHandler');
+    }
 
     const { handler: iFrameRefHandler, stream: iFrames } = createEventHandler();
 

@@ -1,9 +1,7 @@
 import React from 'react';
 import uuidv4 from 'uuid/v4';
 import PropTypes from 'prop-types';
-import shallowEqual from 'recompose/shallowEqual';
-import mapPropsStream from 'recompose/mapPropsStream';
-import createEventHandler from 'recompose/createEventHandler';
+import shallowEqual from 'shallowequal';
 import { GraphistryJS } from '@graphistry/client-api';
 import { withClientAPI } from './withClientAPI';
 
@@ -80,6 +78,11 @@ const defaultProps = {
     showLoadingIndicator: true,
     loadingMessage: 'Herding stray GPUs',
 };
+
+const mapPropsStream = function(p) { 
+    console.error('no mapPropsStream');
+    throw new Error('no mapPropsStream');
+}
 
 const handleETLUpload = mapPropsStream((propsStream) => {
     const keysThatCanTriggerReRender = [
@@ -180,7 +183,7 @@ function Graphistry({
     return <div style={style} className={`graphistry-container ${className || ''}`}>{children}</div>;
 }
 
-Graphistry = withClientAPI(handleETLUpload(Graphistry));
+//Graphistry = withClientAPI(handleETLUpload(Graphistry));
 
 Graphistry.propTypes = propTypes;
 
