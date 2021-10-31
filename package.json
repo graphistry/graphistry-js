@@ -10,7 +10,8 @@
     "build": "lerna run build",
     "build:umd": "lerna run build:umd",
     "build:prod": "lerna run build:prod",
-    "build:examples": "lerna run build:examples"
+    "build:examples": "lerna run build:examples",
+    "lint": "lerna run lint"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js#readme",
   "devDependencies": {
+    "eslint": "7.32.0",
     "lerna": "^4.0.0"
   }
 }
