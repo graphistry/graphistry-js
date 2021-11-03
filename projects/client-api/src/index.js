@@ -13,9 +13,6 @@ import { $$observable, Subject, Scheduler, Observable, AsyncSubject, ReplaySubje
  * @see {@link https://github.com/ReactiveX/rxjs/blob/master/doc/observable.md}
  */
 class Graphistry extends Observable {
-    static view = null;
-    static model = null;
-    static workbook = null;
 
     /**
      * Create Graphistry {@link Observable} by extending observable's methods
@@ -768,6 +765,9 @@ class Graphistry extends Observable {
         .subscribe();
     }
 }
+Graphistry.view = null;
+Graphistry.model = null;
+Graphistry.workbook = null;
 
 /**
  * Function that creates a Graphistry Wrapped IFrame
@@ -838,13 +838,13 @@ function GraphistryJS(iFrame) {
             model._source = new PostMessageDataSource(window, target, model, '*');
 
             class InstalledGraphistry extends Graphistry {
-                static model = model;
                 lift(operator) {
                     const observable = new InstalledGraphistry(this);
                     observable.operator = operator;
                     return observable;
                 }
             }
+            InstalledGraphistry.model = model;
 
             InstalledGraphistry = wrapStaticObservableMethods(Observable, InstalledGraphistry);
 

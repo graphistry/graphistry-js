@@ -1,8 +1,10 @@
+import React, { useRef, useState, useEffect, useCallback } from 'react'
 import shallowEqual from 'shallowequal';
-import { GraphistryJS } from '@graphistry/client-api';
-const { Observable } = GraphistryJS;
 
 import { bindings } from './bindings.js';
+import { GraphistryJS } from '@graphistry/client-api';
+import { usePrevious } from './usePrevious';
+const { Observable } = GraphistryJS;
 
 
 function mergeDefaultPropValues(props) {
@@ -61,10 +63,10 @@ function scanClientAPIAndProps(prev, curr) {
 
 const mapPropsStream = function(p) {
     console.error('mapPropsStream not implemented');
-    throw new Error('mapPropsStream not implemented');
+    //throw new Error('mapPropsStream not implemented');
 }
 
-const withClientAPI = mapPropsStream((propsStream) => {
+const withClientAPI2 = mapPropsStream((propsStream) => {
 
     const createEventHandler = function (v) { 
         console.error('not implemented createEventHandler');
@@ -90,5 +92,14 @@ const withClientAPI = mapPropsStream((propsStream) => {
         .distinctUntilChanged(shallowEqual);
 });
 
-export { withClientAPI };
-export default withClientAPI;
+const ClientAPI = ({iframeRef, ...props}) => {
+
+    const [g, setG] = React.useState(props.g);
+    const [iframe, setIframe] = React.useState(iframeRef);
+    //const [combinedProps, setCombinedProps] = React.useState(props);
+
+    return null;
+};
+
+export { ClientAPI };
+export default ClientAPI;
