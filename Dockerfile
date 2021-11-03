@@ -40,4 +40,3 @@ COPY --from=base_react \
 RUN  echo "== Final react client" \
     && find /opt/graphistry-js/projects/client-api-react
 
-ENTRYPOINT [ "/bin/bash" ]
