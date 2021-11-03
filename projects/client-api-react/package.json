@@ -35,7 +35,9 @@
     "build:esm2": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.mjs",
     "build:docs": "rimraf docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
     "prebuild:docs": "rimraf docs",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook -o docs-build -s ./assets"
   },
   "files": [
     "dist",
@@ -54,6 +56,12 @@
     "shallowequal": "1.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@storybook/addon-actions": "^6.3.12",
+    "@storybook/addon-essentials": "^6.3.12",
+    "@storybook/addon-links": "^6.3.12",
+    "@storybook/react": "^6.3.12",
+    "babel-loader": "^8.2.3",
     "esbuild": "0.13.12",
     "eslint": "7.32.0",
     "eslint-plugin-react": "7.26.1",
