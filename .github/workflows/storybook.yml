@@ -11,6 +11,8 @@ on:
       "projects/client-api-react/package-lock.json",
       "projects/client-api-react/eslintrc"
     ] # Trigger the action only when files change in the folders defined here
+  workflow_dispatch:
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
