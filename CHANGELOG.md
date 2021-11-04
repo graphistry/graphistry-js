@@ -19,6 +19,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Breaking Changes
 
+* React now a required peer dependency when used from React
 * Removed `withClientAPI`; instead use `Graphistry` directly
 * Changed styling override fields and behavior:
   * Removed `vizStyle`, `vizClassName`, `style`, `className`
