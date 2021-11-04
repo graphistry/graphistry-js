@@ -3,9 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+
+
+## Development
+
+### Features
+
+* **storybook:**: Added storybook-based demos, gh pages static docs
+* **React:** Upgraded to hooks
+* **docker:** Use buildkit caching and layering
+
+### Bug Fixes
+
+* **nodes proptype:** Set to `arrayOf([])` to work around webpack build crashes
+
+### Breaking Changes
+
+* Removed `withClientAPI`; instead use `Graphistry` directly
+* Changed styling override fields and behavior:
+  * Removed `vizStyle`, `vizClassName`, `style`, `className`
+  * Added `containerStyle`, `containerClassName`, `containerProps`
+  * Added `iframeStyle`, `iframeClassName`, `iframeProps`
+* **Hooks:** Removed recompose in favor of hooks, pushing minimum React version to 16.8
+
+
+## Latest
+
+
 <a name="3.7.6"></a>
 ## [3.7.6](https://github.com/graphistry/graphistry-js/compare/v3.7.5...v3.7.6) (2020-11-06)
-
 
 
 

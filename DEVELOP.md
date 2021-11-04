@@ -1,5 +1,11 @@
 This project use automatic changelog management, so development is a bit different:
 
+## Docs
+
+We use Storybook for React, plugged into github pages
+
+See [Deploy Storybook to GitHub Pages](https://dev.to/kouts/deploy-storybook-to-github-pages-3bij) for a great tutorial
+
 ## Docker
 
 ### Build
