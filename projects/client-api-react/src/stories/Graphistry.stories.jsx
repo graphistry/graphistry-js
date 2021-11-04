@@ -6,6 +6,7 @@ import { Graphistry } from '../index';
 
 const defaultSettings = {
   dataset: 'Miserables',
+  play: 1
   //showSplashScreen: false
 };
 
@@ -182,5 +183,5 @@ Filters.args = {
   ...defaultSettings,
   filters: ['point:community_infomap in (4, 5, 6)', 'point:degree > 1'],
   exclusions: ['edge:id = 1'],
-  //pruneOrphans: true
+  pruneOrphans: true
 };
