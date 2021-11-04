@@ -262,17 +262,20 @@ function Graphistry(props) {
         });
     }, [...Object.values(currState), ...Object.values(prevState), g]);
 
+    //props changes override latest etl?
     const prevDataset = usePrevious(props.dataset);
-    if ((prevDataset !== props.dataset) && (props.dataset !== dataset)) {
-        setLoading(true);
-        setLoadingMessage('Fetching session');
-        setDataset(props.dataset);
-    }
+    useEffect(() => {
+        if ((prevDataset !== props.dataset) && (props.dataset !== dataset)) {
+            setDataset(props.dataset);
+        }
+    }, [props.dataset, prevDataset, dataset]);
 
     //Initial frame load and settings
     const iframeRef = useCallback(iframe => {
         if (iframe) {
             let loaded = false;
+            setLoading(true);
+            setLoadingMessage('Fetching session');
             console.log('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
             const sub = (new GraphistryJS(iframe))
                 .do((g2) => {
@@ -337,7 +340,7 @@ function Graphistry(props) {
         graphistryHost
     ]);
 
-    const prevIframeRef = usePrevious(iframeRef);
+    
     useEffect(() => {        
         if (prevSub != gSub) {
             console.log('iframe sub changed!', prevSub, gSub);
@@ -346,7 +349,7 @@ function Graphistry(props) {
                 prevSub.unsubscribe();
             }
         }
-    }, [iframeRef, prevIframeRef, g, prevG, prevSub]);
+    }, [prevSub, gSub]);
 
 
 

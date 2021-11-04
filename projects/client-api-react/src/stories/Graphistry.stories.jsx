@@ -15,7 +15,8 @@ export default {
   component: Graphistry,
   argTypes: {
     'dataset': {
-      control: { type: 'select', options: ['Miserables', 'Facebook', undefined, null] },
+      control: { type: 'select' },
+      options: ['Miserables', 'Facebook', undefined, null]
     }
   }
 };
@@ -123,7 +124,7 @@ BindPointSize.args = {
 };
 
 export const BindPointSizeCategorical = Template.bind({});
-BindPointSize.args = {
+BindPointSizeCategorical.args = {
   ...defaultSettings,
   encodePointSize: [
     'community_infomap',
@@ -144,6 +145,22 @@ BindPointSize.args = {
           }
       }
   }
+  ],
+  pointSize: 0.2
+};
+
+export const BindPointColorContinuous = Template.bind({});
+BindPointColorContinuous.args = {
+  ...defaultSettings,
+  encodePointColor: [
+    'betweenness',
+    {
+      encodingType: 'color',
+      graphType: 'point',
+      attribute: 'betweenness',
+      variation: 'continuous',
+      colors: ['#fff', '#f00', '#0f0', '#00f']
+    }
   ],
   pointSize: 0.2
 };
