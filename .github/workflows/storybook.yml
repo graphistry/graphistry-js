@@ -38,7 +38,7 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
-          branch: dev/jwt-uploads
+          branch: docs
           folder: projects/client-api-react/docs-build
           target-folder: docs # The folder that we serve our Storybook files from
           #token is implicit
