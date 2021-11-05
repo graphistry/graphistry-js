@@ -33,7 +33,7 @@ jobs:
           docker run --rm \
             --entrypoint=/bin/bash \
             -w=/opt/graphistry-js/projects/client-api-react \
-            -v projects/client-api-react/docs-build:/opt/graphistry-js/projects/client-api-react/docs-build \
+            -v `pwd`/projects/client-api-react/docs-build:/opt/graphistry-js/projects/client-api-react/docs-build \
             graphistry/graphistry-js:latest -c "npm run build-storybook"
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
