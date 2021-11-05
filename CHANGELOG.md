@@ -9,13 +9,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* **storybook:**: Added storybook-based demos, gh pages static docs
+* **storybook:**: Added storybook-based demos
+* **gh pages:** New site at [graphistry.github.io/graphistry-js](https://graphistry.github.io/graphistry-js)
 * **React:** Upgraded to hooks
 * **docker:** Use buildkit caching and layering
+* **gha:** Automate build using github actions and docker
 
 ### Bug Fixes
 
 * **nodes proptype:** Set to `arrayOf([])` to work around webpack build crashes
+* **props:** Changing props such as background no longer triggers a page reload
 
 ### Breaking Changes
 
@@ -25,6 +28,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   * Removed `vizStyle`, `vizClassName`, `style`, `className`
   * Added `containerStyle`, `containerClassName`, `containerProps`
   * Added `iframeStyle`, `iframeClassName`, `iframeProps`
+* Added new experimental props
 * **Hooks:** Removed recompose in favor of hooks, pushing minimum React version to 16.8
 
 
