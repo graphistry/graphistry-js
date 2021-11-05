@@ -111,20 +111,16 @@ const ETLUploader = (props) => {
     const prevNodes = usePrevious(nodes);
     const prevBindings = usePrevious(bindings);
 
-    const keysThatCanTriggerReRender = [
-        'dataset', 'graphistryHost',
-        'loading', 'loadingMessage',
-    ];
-
     if (typeof dataset === 'string' || (
         shallowEqual(prevEdges, edges) &&
         shallowEqual(prevNodes, nodes) &&
         shallowEqual(prevBindings, bindings))) {
+        console.log('has dataset or unchanged data: no upload');
         return null;
     }
 
-    const { setLoading, setDataset, setLoadingMessage } = props;
-    const { apiKey, graphistryHost = {} } = props;
+    const { setLoading, setDataset, setLoadingMessage,
+            apiKey, graphistryHost = {} } = props;
     if (!edges ||
         !edges.length ||
         !apiKey ||
@@ -144,6 +140,7 @@ const ETLUploader = (props) => {
         return null;
     }
 
+    console.log('uploading');
     const type = 'edgelist';
     const name = uuidv4();
     setLoading(true);
