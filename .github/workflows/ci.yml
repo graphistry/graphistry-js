@@ -1,0 +1,45 @@
+#See: 
+# - https://dev.to/xaviercanchal/automatic-versioning-in-a-lerna-monorepo-using-github-actions-4hij
+# - https://github.com/graphistry/pygraphistry/blob/master/.github/workflows/ci.yml
+
+name: CI
+
+on:
+  #Regular dev
+  push:
+  pull_request:
+    types: [opened, synchronize] # Workflow triggering events
+
+  #Enable UI-driven branch testing
+  workflow_dispatch:
+
+  #Test main bidaily @ 1a
+  schedule:
+    - cron: '0 1 1-31/2 * *'
+
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      DOCKER_BUILDKIT: 1
+
+    steps:
+    - name: "Checkout"
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: "Build"
+      run: |
+        docker-compose build
+
+    # Requires eslint 8 for class statics, but eslint-plugin-react not yet 8-compatible
+    #- name: "Lint"
+    #  run: |
+    #    docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/cli.js run lint
+
+    - name: "Ensure binaries"
+      run: |
+        ./tools/extract-dist.sh

@@ -1,5 +1,11 @@
 This project use automatic changelog management, so development is a bit different:
 
+## Docs
+
+We use Storybook for React, plugged into github pages
+
+See [Deploy Storybook to GitHub Pages](https://dev.to/kouts/deploy-storybook-to-github-pages-3bij) for a great tutorial
+
 ## Docker
 
 ### Build
@@ -26,15 +32,21 @@ docker run --rm -it graphistry/graphistry:latest
 root@8f18f077e0b6:/opt/graphistry-js#
 ```
 
-### Output
+### Output - outdated
 
 `./tools/extract-dist.sh` => `dist/client-api[-react]/{dist,docs,es,lib,examples}`
 
 Will copy from `graphistry/graphistry-js:latest` into folder `DIST_PATH=dist`
 
+You may want to run `docker rm graphistry-js-tmp` if a stale container
 
 
-## Native
+## Native - outdated
+
+Notes:
+* We're deprecating tool-driven conventional commits so git raw commands will be (mostly) OK
+* Moving to [GHA-driven check + publish](https://dev.to/xaviercanchal/automatic-versioning-in-a-lerna-monorepo-using-github-actions-4hij)
+
 
 ### Install 
 

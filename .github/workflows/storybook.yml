@@ -1,0 +1,45 @@
+name: Storybook
+on: 
+  push:
+    paths: [
+      "projects/client-api/**",
+      "projects/client-api-react/.storybook/**",
+      "projects/client-api-react/assets/**",
+      "projects/client-api-react/examples/**",
+      "projects/client-api-react/src/stories/**",
+      "projects/client-api-react/package.json",
+      "projects/client-api-react/package-lock.json",
+      "projects/client-api-react/eslintrc"
+    ] # Trigger the action only when files change in the folders defined here
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      DOCKER_BUILDKIT: 1
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.1
+        with:
+          persist-credentials: false
+      - name: Build
+        run: |
+          docker-compose build
+      - name: Install and Build 🔧
+        run: | # Install npm packages and build the Storybook files
+          mkdir -p projects/client-api-react/docs-build
+          docker run --rm -it \
+            --entrypoint=/bin/bash \
+            -w=/opt/graphistry-js/projects/client-api-react \
+            -v projects/client-api-react/docs-build:/opt/graphistry-js/projects/client-api-react/docs-build \
+            graphistry/graphistry-js:latest -c "npm run build-storybook"
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: dev/jwt-uploads
+          folder: projects/client-api-react/docs-build
+          target-folder: docs # The folder that we serve our Storybook files from
+          #token is implicit
+          #clean is implicit

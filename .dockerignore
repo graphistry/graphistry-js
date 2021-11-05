@@ -1,0 +1,12 @@
+.github
+.git
+.gitignore
+.bak
+.pyc
+node_modules
+Dockerfile
+docker-compose.yml
+
+dist/
+tools/
+

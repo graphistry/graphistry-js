@@ -1,4 +1,4 @@
-import shallowEqual from 'recompose/shallowEqual';
+import shallowEqual from 'shallowequal';
 import { Model } from '@graphistry/falcor-model-rxjs';
 import { PostMessageDataSource } from '@graphistry/falcor-socket-datasource';
 import { $ref, $atom, $value, $invalidate } from '@graphistry/falcor-json-graph';
@@ -13,9 +13,6 @@ import { $$observable, Subject, Scheduler, Observable, AsyncSubject, ReplaySubje
  * @see {@link https://github.com/ReactiveX/rxjs/blob/master/doc/observable.md}
  */
 class Graphistry extends Observable {
-    static view = null;
-    static model = null;
-    static workbook = null;
 
     /**
      * Create Graphistry {@link Observable} by extending observable's methods
@@ -123,6 +120,40 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // str, str, array (attr, variation, mapping)
+    static encodePointColor(opts) {
+        const args = ['point'];
+        if (opts !== undefined) {
+            if (opts instanceof Array) {
+                for (let v of opts) {
+                    args.push(v);
+                }
+            } else if (typeof(opts) === 'string') {
+                args.push(opts);
+            }
+        }
+        return this.encodeColor.apply(this, args);
+     }
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // str, str, array (attr, variation, mapping)
+    static encodeEdgeColor(opts) {
+        const args = ['edge'];
+        if (opts !== undefined) {
+            if (opts instanceof Array) {
+                for (let v of opts) {
+                    args.push(v);
+                }
+            } else if (typeof(opts) === 'string') {
+                args.push(opts);
+            }
+        }
+        return this.encodeColor.apply(this, args);
+     }
 
 
     /**
@@ -176,8 +207,40 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
-
-    
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // str, array (attr, mapping)
+    static encodePointIcons(opts) {
+        const args = ['point'];
+        if (opts !== undefined) {
+            if (opts instanceof Array) {
+                for (let v of opts) {
+                    args.push(v);
+                }
+            } else if (typeof(opts) === 'string') {
+                args.push(opts);
+            }
+        }
+        return this.encodeIcons.apply(this, args);
+     }
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // str, array (attr, mapping)
+    static encodeEdgeIcons(opts) {
+        const args = ['edge'];
+        if (opts !== undefined) {
+            if (opts instanceof Array) {
+                for (let v of opts) {
+                    args.push(v);
+                }
+            } else if (typeof(opts) === 'string') {
+                args.push(opts);
+            }
+        }
+        return this.encodeIcons.apply(this, args);
+     }
 
     /**
      * Change size based on an attribute. Pass null for attribute, mapping to clear.
@@ -202,7 +265,24 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
-    
+
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // [str, obj] (attr, mapping)
+    static encodePointSize(opts) {
+        const args = ['point'];
+        if (opts !== undefined) {
+            const attribute = opts instanceof Array ? opts[0] : opts;
+            args.push(attribute);
+            if (opts instanceof Array && opts.length > 1) {
+                const mapping = opts[1];
+                args.push(mapping);
+            }
+        }
+        return this.encodeSize.apply(this, args);
+     }
+
 
     /**
      * Toggle a leftside panel
@@ -260,6 +340,39 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // [str, obj] (attr, mapping)
+    static encodeDefaultPointIcons(opts) {
+        const args = ['point'];
+        if (opts !== undefined) {
+            const attribute = opts instanceof Array ? opts[0] : opts;
+            args.push(attribute);
+            if (opts instanceof Array && opts.length > 1) {
+                const mapping = opts[1];
+                args.push(mapping);
+            }
+        }
+        return this.encodeDefaultIcons.apply(this, args);
+     }
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // [str, obj] (attr, mapping)
+    static encodeDefaultEdgeIcons(opts) {
+        const args = ['edge'];
+        if (opts !== undefined) {
+            const attribute = opts instanceof Array ? opts[0] : opts;
+            args.push(attribute);
+            if (opts instanceof Array && opts.length > 1) {
+                const mapping = opts[1];
+                args.push(mapping);
+            }
+        }
+        return this.encodeDefaultIcons.apply(this, args);
+     }
+
     static encodeDefaultSize(graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
@@ -269,6 +382,39 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // [str, obj] (attr, mapping)
+    static encodeDefaultPointSize(opts) {
+        const args = ['point'];
+        if (opts !== undefined) {
+            const attribute = opts instanceof Array ? opts[0] : opts;
+            args.push(attribute);
+            if (opts instanceof Array && opts.length > 1) {
+                const mapping = opts[1];
+                args.push(mapping);
+            }
+        }
+        return this.encodeDefaultSize.apply(this, args);
+    }
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // [str, obj] (attr, mapping)
+    static encodeDefaultEdgeSize(opts) {
+        const args = ['edge'];
+        if (opts !== undefined) {
+            const attribute = opts instanceof Array ? opts[0] : opts;
+            args.push(attribute);
+            if (opts instanceof Array && opts.length > 1) {
+                const mapping = opts[1];
+                args.push(mapping);
+            }
+        }
+        return this.encodeDefaultSize.apply(this, args);
+    }
+
     static encodeDefaultColor(graphType, attribute, variation, mapping) {
         const { view } = this;
         return new this(view.set(
@@ -277,7 +423,39 @@ class Graphistry extends Observable {
                     encodingType: 'color', graphType, attribute, mapping }))
             .map(({ json }) => json.toJSON())
             .toPromise());
-    }    
+    }  
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // [str, obj] (attr, mapping)
+    static encodeDefaultPointColor(opts) {
+        const args = ['point'];
+        if (opts !== undefined) {
+            const attribute = opts instanceof Array ? opts[0] : opts;
+            args.push(attribute);
+            if (opts instanceof Array && opts.length > 1) {
+                const mapping = opts[1];
+                args.push(mapping);
+            }
+        }
+        return this.encodeDefaultColor.apply(this, args);
+    }
+    //helper just for react bindings
+    // undefined (reset)
+    // str (attr)
+    // [str, obj] (attr, mapping)
+    static encodeDefaultEdgeColor(opts) {
+        const args = ['edge'];
+        if (opts !== undefined) {
+            const attribute = opts instanceof Array ? opts[0] : opts;
+            args.push(attribute);
+            if (opts instanceof Array && opts.length > 1) {
+                const mapping = opts[1];
+                args.push(mapping);
+            }
+        }
+        return this.encodeDefaultColor.apply(this, args);
+    }
 
 
     /**
@@ -521,6 +699,22 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
+    static addFilters(expr) {
+
+        if (typeof(expr) === 'string') {
+            return this.addFilter(expr);
+        }
+
+        let filtered = null;
+        for (let e of expr) {
+            if (filtered === null) {
+                filtered = this.addFilter(e);
+            } else {
+                filtered = filtered.flatMap(() => this.addFilter(e));
+            }
+        }
+        return filtered;
+    }
 
     /**
      * Add an exclusion to the visualization with the given expression
@@ -544,6 +738,23 @@ class Graphistry extends Observable {
         return new this(view.call('exclusions.add', [expr])
             .map(({ json }) => json.toJSON())
             .toPromise());
+    }
+
+    static addExclusions(expr) {
+
+        if (typeof(expr) === 'string') {
+            return this.addExclusion(expr);
+        }
+
+        let filtered = null;
+        for (let e of expr) {
+            if (filtered === null) {
+                filtered = this.addExclusion(e);
+            } else {
+                filtered = filtered.flatMap(() => this.addExclusion(e));
+            }
+        }
+        return filtered;
     }
 
     /**
@@ -768,6 +979,9 @@ class Graphistry extends Observable {
         .subscribe();
     }
 }
+Graphistry.view = null;
+Graphistry.model = null;
+Graphistry.workbook = null;
 
 /**
  * Function that creates a Graphistry Wrapped IFrame
@@ -838,13 +1052,13 @@ function GraphistryJS(iFrame) {
             model._source = new PostMessageDataSource(window, target, model, '*');
 
             class InstalledGraphistry extends Graphistry {
-                static model = model;
                 lift(operator) {
                     const observable = new InstalledGraphistry(this);
                     observable.operator = operator;
                     return observable;
                 }
             }
+            InstalledGraphistry.model = model;
 
             InstalledGraphistry = wrapStaticObservableMethods(Observable, InstalledGraphistry);
 
@@ -882,6 +1096,13 @@ function wrapStaticObservableMethods(Observable, Graphistry) {
     Graphistry.bindCallback = (...args) => (...args2) => new Graphistry(Observable.bindCallback(...args)(...args2));
     Graphistry.bindNodeCallback = (...args) => (...args2) => new Graphistry(Observable.bindNodeCallback(...args)(...args2));
     return Graphistry;
+}
+
+//esbuild not exposing some reason
+try {
+    window.GraphistryJS = GraphistryJS;
+} catch (e) {
+    //not browser
 }
 
 /**

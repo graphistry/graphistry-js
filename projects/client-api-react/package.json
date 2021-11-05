@@ -3,12 +3,9 @@
   "version": "3.7.6",
   "description": "Embed a Graphistry visualization via React",
   "main": "lib/index.js",
-  "module": "es/index.js",
+  "module": "es/index.mjs",
   "jsnext:main": "es/index.js",
   "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    },
     "port": 8000,
     "entry": {
       "Graphistry": [
@@ -27,23 +24,17 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api-react#readme",
   "scripts": {
-    "build": "npm run build:umd && npm run build:prod && npm run build:examples",
-    "build:umd": "rc-tools run dist",
-    "build:prod": "rc-tools run compile",
-    "build:examples": "rc-tools run build",
-    "build:watch": "rc-tools run watch",
+    "build": "npm run build:prod && npm run build:cjs && npm run build:esm",
+    "build:prod": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=lib/index.js --minify",
+    "build:dev": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=www/main.js --sourcemap",
+    "build:cjs": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=cjs --outfile=dist/client-api-react.cjs.js --minify",
+    "build:esm": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.js",
+    "build:esm2": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.mjs",
     "build:docs": "rimraf docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
     "prebuild:docs": "rimraf docs",
-    "commit": "git-cz",
-    "commitmsg": "validate-commit-msg",
-    "test": "rc-tools run test",
-    "test:chrome": "rc-tools run chrome-test",
-    "test:coverage": "rc-tools run coverage",
-    "start": "rc-tools run server",
-    "start:docs": "rc-tools run server",
-    "lint": "rc-tools run lint",
-    "gh-pages": "rc-tools run gh-pages",
-    "pub": "rc-tools run update-self && rc-tools run pub"
+    "lint": "eslint src",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook -o docs-build -s ./assets"
   },
   "files": [
     "dist",
@@ -53,21 +44,39 @@
     "assets"
   ],
   "keywords": [],
-  "author": "",
+  "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "ISC",
   "dependencies": {
     "@graphistry/client-api": "^3.7.6",
-    "prop-types": "15.6.0",
-    "react": "16.0.0",
-    "recompose": "0.26.0"
+    "prop-types": ">=15.6.0",
+    "shallowequal": "1.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.6",
+    "react-dom": ">=16.8.6"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    },
+    "react-dom": {
+      "optional": false
+    }
   },
   "devDependencies": {
-    "commitizen": "~2.9.6",
-    "cz-conventional-changelog": "~2.0.0",
-    "jsdoc": "3.6.3",
-    "jsdoc-babel": "~0.3.0",
-    "rc-tools": "7.0.0",
-    "react-dom": "16.0.0",
-    "rimraf": "2.6.2"
+    "@babel/core": "^7.16.0",
+    "@storybook/addon-actions": "^6.3.12",
+    "@storybook/addon-essentials": "^6.3.12",
+    "@storybook/addon-links": "^6.3.12",
+    "@storybook/react": "^6.3.12",
+    "babel-loader": "^8.2.3",
+    "esbuild": "0.13.12",
+    "eslint": "7.32.0",
+    "eslint-plugin-react": "7.26.1",
+    "jsdoc": "3.6.7",
+    "jsdoc-babel": "~0.5.0",
+    "react": ">=17.0.2",
+    "react-dom": ">=17.0.2",
+    "rimraf": "3.0.2"
   }
 }

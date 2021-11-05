@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 
 
+// react prop name :: [ react type, default name, maybe alt JS updateSetting prop, maybe alt JS method ]
 const bindingsTable = {
 	
     backgroundColor:        [ PropTypes.string,      'defaultBackgroundColor',    'background',   undefined],    
@@ -15,6 +16,7 @@ const bindingsTable = {
     showLabels:				[ PropTypes.bool,        'defaultShowLabels',         'labelEnabled', undefined],
     showToolbar:			[ PropTypes.bool,        'defaultShowToolbar',        undefined,      undefined],
     showInspector:			[ PropTypes.bool,        'defaultShowInspector',      undefined,      'toggleInspector'],
+    showTimebars:			[ PropTypes.bool,        'defaultShowTimebars',       undefined,      'toggleTimebars'],
     showHistograms:			[ PropTypes.bool,        'defaultShowHistograms',     undefined,      'toggleHistograms'],
     pruneOrphans:			[ PropTypes.bool,        'defaultPruneOrphans',       undefined,      undefined],
     showLabelOnHover:		[ PropTypes.bool,        'defaultShowLabelOnHover',   'labelHighlightEnabled',   undefined],
@@ -28,11 +30,72 @@ const bindingsTable = {
     lockedR:                [ PropTypes.bool,        'defaultLockedR',            undefined,      undefined],
     strongGravity:			[ PropTypes.bool,        'defaultStrongGravity',      undefined,      undefined],
     dissuadeHubs:			[ PropTypes.bool,        'defaultDissuadeHubs',       undefined,      undefined],
-    edgeInfluence:			[ PropTypes.oneOf([ 0, 1, 2, 3, 4, 5]), 'defaultEdgeInfluence',    undefined,  undefined],
+    edgeInfluence:			[ PropTypes.oneOf([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]), 'defaultEdgeInfluence',    undefined,  undefined],
     precisionVsSpeed:		[ PropTypes.oneOf([ -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]), 'defaultPrecisionVsSpeed',   undefined,  undefined],
     gravity:				[ PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)), 'defaultGravity',  undefined,  undefined],
-    scalingRatio:			[ PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)), 'defaultScalingRatio', undefined,  undefined]
+    scalingRatio:			[ PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)), 'defaultScalingRatio', undefined,  undefined],
 
+    filters:                [
+        PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+                                                     undefined,                   undefined,      'addFilters'],
+    exclusions:             [
+                            PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+                                                     undefined,                   undefined,      'addExclusions'],
+
+    encodePointSize: [
+        PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.array,
+        ]),
+        'encodeDefaultPointSize',
+        undefined,
+        'encodePointSize'
+    ],
+
+    encodePointColor: [
+        PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.array
+        ]),
+        'encodeDefaultPointColor',
+        undefined,
+        'encodePointColor'
+    ],
+    encodeEdgeColor: [
+        PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.array
+        ]),
+        'encodeDefaultEdgeColor',
+        undefined,
+        'encodeEdgeColor'
+    ],
+
+    encodeAxis: [
+        PropTypes.object,
+        undefined,
+        undefined,
+        'encodeAxis'
+    ],
+
+    encodePointIcons:  [
+        PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.array
+        ]),
+        'encodeDefaultPointIcons',
+        undefined,
+        'encodePointIcons'
+    ],
+    encodeEdgeIcons:  [
+        PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.array
+        ]),
+        'encodeDefaultEdgeIcons',
+        undefined,
+        'encodeEdgeIcons'
+    ],
 };
 
 

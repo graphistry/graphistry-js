@@ -6,17 +6,12 @@
   "scripts": {
     "lerna": "lerna",
     "bootstrap": "lerna bootstrap",
-    "commit": "git-cz",
-    "commitmsg": "validate-commit-msg",
-    "deploy": "lerna publish --conventional-commits",
+    "deploy": "lerna publish",
     "build": "lerna run build",
     "build:umd": "lerna run build:umd",
     "build:prod": "lerna run build:prod",
     "build:examples": "lerna run build:examples",
-    "lint": "lerna run lint",
-    "test": "lerna run test",
-    "test:chrome": "lerna run test:chrome",
-    "test:coverage": "lerna run test:coverage"
+    "lint": "lerna run lint"
   },
   "repository": {
     "type": "git",
@@ -29,15 +24,7 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js#readme",
   "devDependencies": {
-    "commitizen": "~2.9.6",
-    "cz-conventional-changelog": "~2.0.0",
-    "husky": "~0.14.3",
-    "lerna": "^2.0.0",
-    "validate-commit-msg": "~2.12.1"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
+    "eslint": "7.32.0",
+    "lerna": "^4.0.0"
   }
 }

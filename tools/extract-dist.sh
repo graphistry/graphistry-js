@@ -60,7 +60,7 @@ echo
 echo "---------------"
 echo
 echo "[[ Exported folders ]]"
-du -h --max-depth=2 dist
+du -h dist
 echo
 echo "---------------"
 echo
