@@ -30,7 +30,7 @@ jobs:
       - name: Install and Build 🔧
         run: | # Install npm packages and build the Storybook files
           mkdir -p projects/client-api-react/docs-build
-          docker run --rm -it \
+          docker run --rm \
             --entrypoint=/bin/bash \
             -w=/opt/graphistry-js/projects/client-api-react \
             -v projects/client-api-react/docs-build:/opt/graphistry-js/projects/client-api-react/docs-build \
