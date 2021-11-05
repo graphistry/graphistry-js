@@ -43,7 +43,6 @@ const propTypes = {
 
     showInfo: PropTypes.bool,
     showMenu: PropTypes.bool,
-    showLogo: PropTypes.bool,
     showToolbar: PropTypes.bool,
     showInspector: PropTypes.bool,
     showHistograms: PropTypes.bool,
@@ -88,10 +87,9 @@ const defaultProps = {
     allowFullScreen: true,
     backgroundColor: '#333339',
     play: 5,
-    //showInfo: true,
-    //showMenu: true,
-    //showLogo: true,
-    //showToolbar: true,
+    showInfo: true,
+    showMenu: true,
+    showToolbar: true,
     //showInspector: false,
     //showHistograms: false,
     showSplashScreen: false,
@@ -109,7 +107,6 @@ const ETLUploader = (props) => {
 
     const { dataset, edges, nodes, bindings } =  props;
 
-    const prevDataset = usePrevious(dataset);
     const prevEdges = usePrevious(edges);
     const prevNodes = usePrevious(nodes);
     const prevBindings = usePrevious(bindings);
@@ -185,72 +182,44 @@ const ETLUploader = (props) => {
     return null;
 };
 
-// iframe refreshes on key arg changes: via <iframe key={f(url)}
-// graphistryjs connects on mount, unsubscribes on new graphistry or unmount
-function Graphistry(props) {
-
-    const {
-        containerStyle, containerClassName, containerProps,
-        iframeStyle, iframeClassName, iframeProps,
-        allowFullScreen,
-        play, showMenu = true, showLogo = true, showInfo = true, showToolbar = true,
-        showLoadingIndicator = true, showSplashScreen = false,
-        backgroundColor, graphistryHost, type = 'vgraph',
-        controls = '', workbook, session,
-    } = props;
-
-    console.log('Graphistry', {graphistryHost, dataset, dataset: props.dataset})
-    const [loading, setLoading] = useState(!!props.loading);
-    const [dataset, setDataset] = useState(props.dataset);
-    const [loadingMessage, setLoadingMessage] = useState(props.loadingMessage || '');
-
-    console.log('g state');
-    const [g, setG] = useState(null);
-    console.log('gSub state');
-    const [gSub, setGSub] = useState(null);
-    const prevG = usePrevious(g);
-    const prevSub = usePrevious(gSub);
+function handleUpdates({g, isFirstRun, props}) {
+    console.log('update any settings')
 
     const prevState = {};
     const currState = {};
-    //const setters = {};
-    bindings.forEach(({name, jsName, jsCommand}) => {
+    bindings.forEach(({name}) => {
         const val = props[name];
-        //const [ val, setter ]= useState(props[name]);
-        //setters[name] = setter;
         currState[name] = val;
         prevState[name] = usePrevious(val);
     });
 
-    console.log('update any settings')
-    const [isFirstRun, setFirstRun] = useState(true);
     useEffect(() => {
-        if (!g || !g.g) {
-            console.log('no g yet');
-            return;
-        } else {
-            console.log('has g', g);
-        }
         if (isFirstRun) {
             console.log('firstRun; skip updates')
             return;
         }
+    
+        if (!g || !g.g) {
+            console.log('no g; skip updates')
+            return;
+        }
+
         const changes = [];        
         const changed = {};
         bindings.forEach(({name, jsName, jsCommand}) => {
-            //const val = currState[name];
             const val = props[name];
             if (prevState[name] !== val) {
-                console.log('delta', {prev: prevState[name], val, jsCommand, jsName});
+                changed[name] = val;
                 if (!jsCommand) {
-                    console.log('pushing settings command', {name, jsName, val});
                     changes.push(g.g.updateSetting(jsName, val));
-                    changed[name] = val;
                 } else {
-                    console.log('pushing special command', {name, jsName, jsCommand, val});
+                    console.log('pushing update command', {jsCommand, val});
                     changes.push(g.g[jsCommand](val));
                 }
             }
+        });
+        if (changes.length) {
+            console.log('dispatched all updating settings', changed);
             Observable
                 .merge(...changes)
                 .takeLast(1).startWith(null)
@@ -258,21 +227,22 @@ function Graphistry(props) {
                     (v) => { console.log('iframe prop change updates', v, changed); },
                     (e) => { console.error('iframe prop change error', e, changed); },
                     () => { console.log('iframe prop change done', changed); }
-                )
-        });
-    }, [...Object.values(currState), ...Object.values(prevState), g]);
-
-    //props changes override latest etl?
-    const prevDataset = usePrevious(props.dataset);
-    useEffect(() => {
-        if ((prevDataset !== props.dataset) && (props.dataset !== dataset)) {
-            setDataset(props.dataset);
+                );
+        } else {
+            console.log('no updating settings to dispatch');
         }
-    }, [props.dataset, prevDataset, dataset]);
+    }, [...Object.values(currState), ...Object.values(prevState), g]);
+}
 
-    //Initial frame load and settings
-    const iframeRef = useCallback(iframe => {
-        if (iframe) {
+
+// Regenerate on url change
+function generateIframeRef({
+    setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
+    url, dataset, props,
+    iframeStyle, iframeClassName, iframeProps, allowFullScreen
+}) {
+    return useCallback(iframe => {
+        if (iframe && dataset) {
             let loaded = false;
             setLoading(true);
             setLoadingMessage('Fetching session');
@@ -294,12 +264,11 @@ function Graphistry(props) {
                     const changes = [];        
                     const changed = {};
                     bindings.forEach(({name, jsName, jsCommand}) => {
-                        //const val = currState[name];
                         const val = props[name];
                         if (val !== undefined) {
                             console.log('not undefined', {val, jsCommand, jsName});
                             if (!jsCommand) {
-                                console.log('pushing init command', {name, jsName, val});
+                                console.log('pushing init setting', {name, jsName, val});
                                 changes.push(g2.updateSetting(jsName, val));
                                 changed[name] = val;
                             } else {
@@ -327,21 +296,58 @@ function Graphistry(props) {
                 (e) => console.error('sub error', e),
                 () => console.log('sub complete'));
             setGSub(sub);
+            return () => {
+                // Not called in practice; maybe only if <Graphistry> itself is unmounted?
+                console.log('iframe unmounted!', iframe);
+                sub.unsubscribe();
+            }    
         } else {
             console.log('no iframe', typeof(iframe), {iframe, dataset});
-        }
-        return () => {
-            // Not called in practice; maybe only if <Graphistry> itself is unmounted?
-            console.log('iframe unmounted!', iframe);
-            sub.unsubscribe();
+            return () => {};
         }
     }, [
-        dataset, props.dataset, prevDataset,
-        graphistryHost
+       url,
+       iframeStyle, iframeClassName, iframeProps, allowFullScreen
     ]);
+}
 
-    
-    useEffect(() => {        
+
+// iframe refreshes on key arg changes: via <iframe key={f(url)}
+// graphistryjs connects on mount, unsubscribes on new graphistry or unmount
+function Graphistry(props) {
+
+    const {
+        containerStyle, containerClassName, containerProps,
+        iframeStyle, iframeClassName, iframeProps,
+        allowFullScreen,
+        play, showMenu, showInfo, showToolbar,
+        showLoadingIndicator, showSplashScreen,
+        graphistryHost, type = 'vgraph',
+        controls = '', workbook, session,
+    } = props;
+
+    const [loading, setLoading] = useState(!!props.loading);
+    const [dataset, setDataset] = useState(props.dataset);
+    const [loadingMessage, setLoadingMessage] = useState(props.loadingMessage || '');
+
+    const [g, setG] = useState(null);
+    const [gSub, setGSub] = useState(null);
+    const prevSub = usePrevious(gSub);
+
+    console.log('update any settings')
+    const [isFirstRun, setFirstRun] = useState(true);
+    handleUpdates({g, isFirstRun, props});
+
+
+    //props changes override latest etl?
+    const prevDataset = usePrevious(props.dataset);
+    useEffect(() => {
+        if ((prevDataset !== props.dataset) && (props.dataset !== dataset)) {
+            setDataset(props.dataset);
+        }
+    }, [props.dataset, prevDataset, dataset]);
+
+    useEffect(() => {
         if (prevSub != gSub) {
             console.log('iframe sub changed!', prevSub, gSub);
             if (prevSub) {
@@ -351,7 +357,25 @@ function Graphistry(props) {
         }
     }, [prevSub, gSub]);
 
+    const playNormalized = typeof play === 'boolean' ? play : (play | 0) * 1000;
+    const optionalParams = (type ? `&type=${type}` : ``) +
+                           (controls ? `&controls=${controls}` : ``) +
+                           (session ? `&session=${session}` : ``) +
+                           (workbook ? `&workbook=${workbook}` : ``);
 
+    const url = `${graphistryHost || ''}/graph/graph.html${''
+}?play=${playNormalized
+}&info=${showInfo
+}&splashAfter=${showSplashScreen
+}&dataset=${encodeURIComponent(dataset)
+}${optionalParams}`;
+
+    //Initial frame load and settings
+    const iframeRef = generateIframeRef({
+        setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
+        url, dataset, props,
+        iframeStyle, iframeClassName, iframeProps, allowFullScreen
+    });
 
     const children = [
         <ETLUploader 
@@ -382,18 +406,7 @@ function Graphistry(props) {
     }
 
     if (dataset) {
-        const playNormalized = typeof play === 'boolean' ? play : (play | 0) * 1000;
-        const optionalParams = (type ? `&type=${type}` : ``) +
-                               (controls ? `&controls=${controls}` : ``) +
-                               (session ? `&session=${session}` : ``) +
-                               (workbook ? `&workbook=${workbook}` : ``);
-        console.log('<Graphistry> render iframe');
-        const url = `${graphistryHost || ''}/graph/graph.html${''
-    }?play=${playNormalized
-    }&info=${!!showInfo
-    }&splashAfter=${!!showSplashScreen
-    }&dataset=${encodeURIComponent(dataset)
-    }&logo=${showLogo}${optionalParams}`;
+        console.log('<Graphistry> render iframe', dataset, url);
         children.push(
             <iframe
                     key={`g_iframe_${url}`}

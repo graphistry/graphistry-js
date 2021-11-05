@@ -32,8 +32,20 @@ PredefinedDataset.args = {
   ...defaultSettings,
 };
 
-export const CustomStyle = Template.bind({});
-CustomStyle.args = {
+export const NoClusteringOnLoad = Template.bind({});
+NoClusteringOnLoad.args = {
+  ...defaultSettings,
+  play: 0
+};
+
+export const OneSecondClusteringOnLoad = Template.bind({});
+OneSecondClusteringOnLoad.args = {
+  ...defaultSettings,
+  play: 1
+};
+
+export const CustomStyleAndSize = Template.bind({});
+CustomStyleAndSize.args = {
   ...defaultSettings,
     containerStyle: {
       'width': '100px',
@@ -50,8 +62,8 @@ CustomStyle.args = {
     }
 };
 
-export const CustomColors = Template.bind({});
-CustomColors.args = {
+export const ColorLabelsAndBackground = Template.bind({});
+ColorLabelsAndBackground.args = {
   ...defaultSettings,
     backgroundColor: '#f0f0f0',
     labelOpacity: 0.5,
@@ -104,6 +116,7 @@ HideChrome.args = {
   showToolbar: false,
   showInfo: false,
   showMenu: false,
+  showHistograms: false,
 };
 
 export const HideChromeButShowTools = Template.bind({});
@@ -136,10 +149,10 @@ BindPointSizeCategorical.args = {
           categorical: {
               fixed: {
                   0: 2,   // -> 'red', or '#fff', or '2.0'
-                  1: 3,
-                  2: 2,
-                  3: 3,
-                  4: 2
+                  1: 1,
+                  2: 1,
+                  3: 1,
+                  4: 1
               },
               other: 1
           }
@@ -154,6 +167,7 @@ BindPointColorContinuous.args = {
   ...defaultSettings,
   encodePointColor: [
     'betweenness',
+    'continuous',
     {
       encodingType: 'color',
       graphType: 'point',

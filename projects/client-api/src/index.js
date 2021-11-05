@@ -123,7 +123,7 @@ class Graphistry extends Observable {
     //helper just for react bindings
     // undefined (reset)
     // str (attr)
-    // str, str, array (attr, variantion, mapping)
+    // str, str, array (attr, variation, mapping)
     static encodePointColor(opts) {
         const args = ['point'];
         if (opts !== undefined) {
@@ -140,7 +140,7 @@ class Graphistry extends Observable {
     //helper just for react bindings
     // undefined (reset)
     // str (attr)
-    // str, str, array (attr, variantion, mapping)
+    // str, str, array (attr, variation, mapping)
     static encodeEdgeColor(opts) {
         const args = ['edge'];
         if (opts !== undefined) {
