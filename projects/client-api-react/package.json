@@ -65,9 +65,12 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
+    "@storybook/addons": "^6.3.12",
     "@storybook/addon-actions": "^6.3.12",
     "@storybook/addon-essentials": "^6.3.12",
     "@storybook/addon-links": "^6.3.12",
+    "@storybook/addon-storysource": "^6.3.12",
+    "@storybook/theming": "^6.3.12",
     "@storybook/react": "^6.3.12",
     "babel-loader": "^8.2.3",
     "esbuild": "0.13.12",
