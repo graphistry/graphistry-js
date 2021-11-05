@@ -4,7 +4,18 @@ This project use automatic changelog management, so development is a bit differe
 
 We use Storybook for React, plugged into github pages
 
-See [Deploy Storybook to GitHub Pages](https://dev.to/kouts/deploy-storybook-to-github-pages-3bij) for a great tutorial
+See [Deploy Storybook to GitHub Pages](https://dev.to/kouts/deploy-storybook-to-github-pages-3bij) for a great tutorial:
+
+* Storybook builds get checked into branch `docs` and hosted at [graphistry.github.io/graphistry-js](https://graphistry.github.io/graphistry-js)
+
+* For local development:
+
+```bash
+docker compose build
+docker compose up storybook
+# http://localhost:6006
+# All demos work except uploads
+```
 
 ## Docker
 

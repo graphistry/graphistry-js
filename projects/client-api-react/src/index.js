@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
 
 import { GraphistryJS } from '@graphistry/client-api';
-import { ClientAPI } from './withClientAPI';
 import { bg } from './bg';
 import { bindings } from './bindings.js';
 import { usePrevious } from './usePrevious';
@@ -215,6 +214,14 @@ function handleUpdates({g, isFirstRun, props}) {
                 }
             }
         });
+        /*
+        //TODO
+        if (typeof props.workbook !== 'undefined') operations.push(g.saveWorkbook());
+        if (typeof props.axes !== 'undefined' && !axesMap.has(props.axes)) {
+            axesMap.set(props.axes, true);
+            operations.push(g.encodeAxis(props.axes));
+        }
+        */
         if (changes.length) {
             console.log('dispatched all updating settings', changed);
             Observable
@@ -274,6 +281,14 @@ function generateIframeRef({
                             }
                         }
                     });
+                    /*
+                    //TODO
+                    if (typeof props.workbook !== 'undefined') operations.push(g.saveWorkbook());
+                    if (typeof props.axes !== 'undefined' && !axesMap.has(props.axes)) {
+                        axesMap.set(props.axes, true);
+                        operations.push(g.encodeAxis(props.axes));
+                    }
+                    */
                     Observable
                         .merge(...changes)
                         .takeLast(1).startWith(null)
@@ -288,10 +303,15 @@ function generateIframeRef({
                             }
                         )
                 })
+                .do((g2) => {
+                    if (props.onClientAPIConnected) {
+                        props.onClientAPIConnected.call(undefined, g2);
+                    }
+                })
                 .subscribe(
-                (v) => console.log('sub hit', v),
-                (e) => console.error('sub error', e),
-                () => console.log('sub complete'));
+                    (v) => console.log('sub hit', v),
+                    (e) => console.error('sub error', e),
+                    () => console.log('sub complete'));
             setGSub(sub);
             return () => {
                 // Not called in practice; maybe only if <Graphistry> itself is unmounted?
@@ -382,7 +402,7 @@ function Graphistry(props) {
         />
     ];
 
-    if (loading) {
+    if (loading && !showSplashScreen) {
         const showHeader = showMenu && showToolbar;
         children.push(
             <div key='graphistry-loading-placeholder'
@@ -417,17 +437,9 @@ function Graphistry(props) {
                     {...iframeProps}
             />
         );
-        children.push(<ClientAPI
-            key={'g_client'}
-            iframeRef={iframeRef}
-            {...props}
-            {...{setLoading, setDataset, setLoadingMessage}}
-        />);
     }
     return <div style={containerStyle} className={containerClassName} {...containerProps}>{children}</div>;
 }
-
-//Graphistry = withClientAPI(handleETLUpload(Graphistry));
 
 Graphistry.propTypes = propTypes;
 Graphistry.defaultProps = defaultProps;

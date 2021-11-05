@@ -6,12 +6,12 @@ import { Graphistry } from '../index';
 
 const defaultSettings = {
   dataset: 'Miserables',
-  play: 1
-  //showSplashScreen: false
+  play: 1,
+  showSplashScreen: true
 };
 
 export default {
-  title: 'Graphistry',
+  title: 'Graphistry (React)',
   component: Graphistry,
   argTypes: {
     'dataset': {
@@ -31,6 +31,13 @@ export const PredefinedDataset = Template.bind({});
 PredefinedDataset.args = {
   ...defaultSettings,
 };
+
+export const NoSplashScreen = Template.bind({});
+NoSplashScreen.args = {
+  ...defaultSettings,
+  showSplashScreen: false,
+};
+
 
 export const NoClusteringOnLoad = Template.bind({});
 NoClusteringOnLoad.args = {
