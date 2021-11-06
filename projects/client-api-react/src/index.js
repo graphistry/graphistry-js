@@ -396,7 +396,7 @@ function Graphistry(props) {
 
     const children = [
         <ETLUploader 
-            key={'g_etl'}
+            key={`g_etl_${props.key}`}
             {...props}
             {...{setLoading, setDataset, setLoadingMessage}}
         />
@@ -405,7 +405,7 @@ function Graphistry(props) {
     if (loading && !showSplashScreen) {
         const showHeader = showMenu && showToolbar;
         children.push(
-            <div key='graphistry-loading-placeholder'
+            <div key={`graphistry-loading-placeholder-${props.key}`}
                  className='graphistry-loading-placeholder'>
                 {showHeader &&
                 <div className='graphistry-loading-placeholder-nav'>
@@ -426,7 +426,7 @@ function Graphistry(props) {
         console.log('<Graphistry> render iframe', dataset, url);
         children.push(
             <iframe
-                    key={`g_iframe_${url}`}
+                    key={`g_iframe_${url}_${props.key}`}
                     ref={iframeRef}
                     scrolling='no'
                     key='vizframe'
