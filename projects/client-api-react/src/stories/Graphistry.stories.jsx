@@ -3,6 +3,14 @@ import '../../assets/index.css';
 
 import { Graphistry } from '../index';
 
+export default {
+  title: 'Graphistry: React style',
+  component: Graphistry
+};
+
+//no default args
+export const Empty = (args) => <Graphistry {...args} />;
+export const PredefinedDataset = (args) => <Graphistry {...args} dataset='Miserables' showSplashScreen={true} />;
 
 const defaultSettings = {
   dataset: 'Miserables',
@@ -10,143 +18,81 @@ const defaultSettings = {
   showSplashScreen: true
 };
 
-export default {
-  title: 'Graphistry (React)',
-  component: Graphistry,
-  argTypes: {
-    'dataset': {
-      control: { type: 'select' },
-      options: ['Miserables', 'Facebook', undefined, null]
-    }
-  }
-};
-
-const Template = (args) => <Graphistry {...args} />;
-
-
-export const Empty = Template.bind({});
-Empty.args = {};
-
-export const PredefinedDataset = Template.bind({});
-PredefinedDataset.args = {
-  ...defaultSettings,
-};
-
-export const NoSplashScreen = Template.bind({});
-NoSplashScreen.args = {
-  ...defaultSettings,
-  showSplashScreen: false,
-};
-
-
-export const NoClusteringOnLoad = Template.bind({});
-NoClusteringOnLoad.args = {
-  ...defaultSettings,
-  play: 0
-};
-
-export const OneSecondClusteringOnLoad = Template.bind({});
-OneSecondClusteringOnLoad.args = {
-  ...defaultSettings,
-  play: 1
-};
-
-export const CustomStyleAndSize = Template.bind({});
-CustomStyleAndSize.args = {
-  ...defaultSettings,
-    containerStyle: {
+export const NoSplashScreen = (args) => <Graphistry {...defaultSettings} {...args} showSplashScreen={false} />;
+export const NoClusteringOnLoad = (args) => <Graphistry {...defaultSettings} {...args} play={0} />;
+export const OneSecondClusteringOnLoad = (args) => <Graphistry {...defaultSettings} {...args} play={1} />;
+export const CustomContainerStyleAndSize = (args) => <Graphistry {...defaultSettings} {...args}
+  containerStyle= {{
       'width': '100px',
       'height': '100px',
       'backgroundColor': 'red',
       'border': '4px dotted blue'
-    },
-    containerClassName: '',
-    iframeClassName: '',
-    iframeStyle: {
+    }}
+    containerClassName=''
+    iframeClassName=''
+    iframeStyle={{
       'width': '100%',
       'height': '100%',
       'border': 'none'
-    }
-};
+    }}
+/>;
 
-export const ColorLabelsAndBackground = Template.bind({});
-ColorLabelsAndBackground.args = {
-  ...defaultSettings,
-    backgroundColor: '#f0f0f0',
-    labelOpacity: 0.5,
-    labelColor: 'magenta',
-    labelBackground: '#ffffff',
-};
+export const ColorLabelsAndBackground = (args) => <Graphistry {...defaultSettings} {...args} 
+    backgroundColor= '#f0f0f0'
+    labelOpacity={0.5}
+    labelColor='magenta'
+    labelBackground='#ffffff'
+/>;
 
-export const PointSettings = Template.bind({});
-PointSettings.args = {
-  ...defaultSettings,
-  pointSize: 10,
-  pointOpacity: 0.5,
-};
+export const PointSettings = (args) => <Graphistry {...defaultSettings} {...args}
+    pointSize={10}
+    pointOpacity={0.5}
+/>;
 
-export const EdgeSettings = Template.bind({});
-EdgeSettings.args = {
-  ...defaultSettings,
-  edgeCurvature: 0.5,
-  edgeOpacity: 0.5,
-  showArrows: false
-};
+export const EdgeSettings = (args) => <Graphistry {...defaultSettings} {...args}
+    edgeCurvature={0.5}
+    edgeOpacity={0.5}
+    showArrows={false}
+/>;
 
-export const HoverPropertiesInsteadOfInspector = Template.bind({});
-HoverPropertiesInsteadOfInspector.args = {
-  ...defaultSettings,
-  showLabelPropertiesOnHover: true
-}
+export const HoverPropertiesInsteadOfInspector = (args) => <Graphistry {...defaultSettings} {...args}
+    showLabelPropertiesOnHover={true}
+/>;
 
-export const LabelsOnlyOnHover = Template.bind({});
-LabelsOnlyOnHover.args = {
-  ...defaultSettings,
-  showPointsOfInterest: false
-};
+export const LabelsOnlyOnHover = (args) => <Graphistry {...defaultSettings} {...args}
+    showPointsOfInterest={false}
+/>;
 
-export const PointsOfInterestWithoutTextLabel = Template.bind({});
-PointsOfInterestWithoutTextLabel.args = {
-  ...defaultSettings,
-  showPointsOfInterestLabel: false
-};
+export const PointsOfInterestWithoutTextLabel = (args) => <Graphistry {...defaultSettings} {...args}
+    showPointsOfInterestLabels={false}
+/>;
 
-export const ManyPointsOfInterest = Template.bind({});
-ManyPointsOfInterest.args = {
-  ...defaultSettings,
-  pointsOfInterestMax: 50
-};
+export const ManyPointsOfInterest = (args) => <Graphistry {...defaultSettings} {...args}
+  pointsOfInterestMax={50}
+/>;
 
-export const HideChrome = Template.bind({});
-HideChrome.args = {
-  ...defaultSettings,
-  showToolbar: false,
-  showInfo: false,
-  showMenu: false,
-  showHistograms: false,
-};
+export const HideChrome = (args) => <Graphistry {...defaultSettings} {...args}
+  showToolbar={false}
+  showInfo={false}
+  showMenu={false}
+  showHistograms={false}
+/>;
 
-export const HideChromeButShowTools = Template.bind({});
-HideChromeButShowTools.args = {
-  ...defaultSettings,
-  showToolbar: false,
-  showInfo: false,
-  showMenu: false,
-  showHistograms: true,
-  showInspector: true,
-};
+export const HideChromeButShowTools = (args) => <Graphistry {...defaultSettings} {...args}
+  showToolbar={false}
+  showInfo={false}
+  showMenu={false}
+  showHistograms={true}
+  showInspector={true}
+/>;
 
-export const BindPointSize = Template.bind({});
-BindPointSize.args = {
-  ...defaultSettings,
-  encodePointSize: 'betweenness',
-  pointSize: 0.2
-};
+export const BindPointSize = (args) => <Graphistry {...defaultSettings} {...args}
+  encodePointSize={'betweenness'}
+  pointSize={0.2}
+/>;
 
-export const BindPointSizeCategorical = Template.bind({});
-BindPointSizeCategorical.args = {
-  ...defaultSettings,
-  encodePointSize: [
+export const BindPointSizeCategorical = (args) => <Graphistry {...defaultSettings} {...args}
+  encodePointSize={[
     'community_infomap',
     {
       encodingType: 'size',
@@ -165,14 +111,12 @@ BindPointSizeCategorical.args = {
           }
       }
   }
-  ],
-  pointSize: 0.2
-};
+  ]}
+  pointSize={0.2}
+/>;
 
-export const BindPointColorContinuous = Template.bind({});
-BindPointColorContinuous.args = {
-  ...defaultSettings,
-  encodePointColor: [
+export const BindPointColorContinuous = (args) => <Graphistry {...defaultSettings} {...args}
+  encodePointColor={[
     'betweenness',
     'continuous',
     {
@@ -182,77 +126,65 @@ BindPointColorContinuous.args = {
       variation: 'continuous',
       colors: ['#fff', '#f00', '#0f0', '#00f']
     }
-  ],
-  pointSize: 0.2
-};
+  ]}
+  pointSize={0.2}
+/>;
 
-export const LayoutSettings = Template.bind({});
-LayoutSettings.args = {
-  ...defaultSettings,
-  precisionVsSpeed: 0.5,
-  gravity: 0.5,
-  scalingRatio: 0.5,
-  edgeInfluence: 0.5,
-  strongGravity: true,
-  dissuadeHubs: true,
-  linLog: true
-}
+export const LayoutSettings = (args) => <Graphistry {...defaultSettings} {...args}
+  precisionVsSpeed={0.5}
+  gravity={0.5}
+  scalingRatio={0.5}
+  edgeInfluence={0.5}
+  strongGravity={true}
+  dissuadeHubs={true}
+  linLog={true}
+/>;
 
-export const LayoutLockedX = Template.bind({});
-LayoutLockedX.args = {
-  ...defaultSettings,
-  lockedX: true
-};
+export const LayoutLockedX = (args) => <Graphistry {...defaultSettings} {...args}
+  lockedX={true}
+/>;
 
-export const LayoutLockedY = Template.bind({});
-LayoutLockedY.args = {
-  ...defaultSettings,
-  lockedY: true
-};
+export const LayoutLockedY = (args) => <Graphistry {...defaultSettings} {...args}
+  lockedY={true}
+/>;
 
-export const LayoutLockedRadius = Template.bind({});
-LayoutLockedRadius.args = {
-  ...defaultSettings,
-  lockedR: true
-};
+export const LayoutLockedRadius = (args) => <Graphistry {...defaultSettings} {...args}
+  lockedR={true}
+/>;
 
-export const Filters = Template.bind({});
-Filters.args = {
-  ...defaultSettings,
-  filters: ['point:community_infomap in (4, 5, 6)', 'point:degree > 1'],
-  exclusions: ['edge:id = 1'],
-  pruneOrphans: true
-};
+export const Filters = (args) => <Graphistry {...defaultSettings} {...args}
+  filters={['point:community_infomap in (4, 5, 6)', 'point:degree > 1']}
+  exclusions={['edge:id = 1']}
+  pruneOrphans={true}
+/>;
 
-export const UploadEdges = Template.bind({});
-UploadEdges.args = {
-  play: 1,
-  apiKey: 'PUT_KEY_HERE',
-  bindings: {
+export const UploadEdges = (args) => <Graphistry {...defaultSettings} {...args}
+  play={1}
+  apiKey={'PUT_KEY_HERE'}
+  bindings={{
     'sourceField': 's',
     'destinationField': 'd'
-  },
-  edges: [
+  }}
+  edges={[
     {'s': 'a', 'd': 'b', 'v': 2},
     {'s': 'b', 'd': 'c', 'v': 3}
-  ]
-};
+  ]}
+/>;
 
-export const UploadEdgesAndNodes = Template.bind({});
-UploadEdges.args = {
-  play: 1,
-  apiKey: 'PUT_KEY_HERE',
-  bindings: {
+export const UploadEdgesAndNodes = (args) => <Graphistry {...defaultSettings} {...args}
+  play={1}
+  apiKey='PUT_KEY_HERE'
+  bindings={{
     'sourceField': 's',
     'destinationField': 'd',
     'idField': 'n'
-  },
-  edges: [
+  }}
+  edges={[
     {'s': 'a', 'd': 'b', 'v1': 2},
     {'s': 'b', 'd': 'c', 'v1': 3}
-  ],
-  nodes: [
+  ]}
+  nodes={[
     {'n': 'a', 'v2': 2},
     {'n': 'b', 'v2': 4},
-  ]
-};
+  ]}
+/>;
