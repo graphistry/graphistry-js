@@ -16,7 +16,7 @@ import '@graphistry/client-api-react/assets/index.less';
 
 ReactDOM.render(
     <Graphistry dataset='Miserables'
-                graphistryHost='https://labs.graphistry.com'/>,
+                graphistryHost='https://hub.graphistry.com'/>,
     document.getElementById('react-root')
 );
 

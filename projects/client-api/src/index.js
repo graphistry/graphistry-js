@@ -990,7 +990,7 @@ Graphistry.workbook = null;
  * @return {@link Graphistry}
  * @example
  *
- * <iframe id="viz" src="https://labs.graphistry.com/graph/graph.html?dataset=Miserables" />
+ * <iframe id="viz" src="https://hub.graphistry.com/graph/graph.html?dataset=Miserables" />
  * <script>
  * document.addEventListener("DOMContentLoaded", function () {
  *

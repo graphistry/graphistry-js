@@ -16,6 +16,6 @@ ReactDOM.render(
                 precisionVsSpeed={-2}
                 showPointsOfInterest={false}
                 style={{ border: `1px solid #ccc` }}
-                graphistryHost='https://labs.graphistry.com'/>,
+                graphistryHost='https://hub.graphistry.com'/>,
     container
 );
