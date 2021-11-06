@@ -355,7 +355,7 @@ class Graphistry extends Observable {
             }
         }
         return this.encodeDefaultIcons.apply(this, args);
-     }
+    }
     //helper just for react bindings
     // undefined (reset)
     // str (attr)
@@ -371,7 +371,7 @@ class Graphistry extends Observable {
             }
         }
         return this.encodeDefaultIcons.apply(this, args);
-     }
+    }
 
     static encodeDefaultSize(graphType, attribute, mapping) {
         const { view } = this;
