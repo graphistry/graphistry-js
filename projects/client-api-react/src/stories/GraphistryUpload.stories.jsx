@@ -18,7 +18,7 @@ const defaultSettings = {
   showSplashScreen: true
 };
 
-export const UploadEdges = (args) => <Graphistry {...defaultSettings} {...args}
+export const UploadEdges = (args) => <Graphistry {...defaultSettings}
   play={1}
   apiKey={'PUT_KEY_HERE'}
   bindings={{
@@ -29,9 +29,10 @@ export const UploadEdges = (args) => <Graphistry {...defaultSettings} {...args}
     {'s': 'a', 'd': 'b', 'v': 2},
     {'s': 'b', 'd': 'c', 'v': 3}
   ]}
+  {...args}
 />;
 
-export const UploadEdgesAndNodes = (args) => <Graphistry {...defaultSettings} {...args}
+export const UploadEdgesAndNodes = (args) => <Graphistry {...defaultSettings}
   play={1}
   apiKey='PUT_KEY_HERE'
   bindings={{
@@ -47,4 +48,5 @@ export const UploadEdgesAndNodes = (args) => <Graphistry {...defaultSettings} {.
     {'n': 'a', 'v2': 2},
     {'n': 'b', 'v2': 4},
   ]}
+  {...args}
 />;
