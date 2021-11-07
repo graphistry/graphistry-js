@@ -23,7 +23,8 @@ export const UploadEdges = (args) => <Graphistry {...defaultSettings}
   apiKey={'PUT_KEY_HERE'}
   bindings={{
     'sourceField': 's',
-    'destinationField': 'd'
+    'destinationField': 'd',
+    'idField': 'n'
   }}
   edges={[
     {'s': 'a', 'd': 'b', 'v': 2},
