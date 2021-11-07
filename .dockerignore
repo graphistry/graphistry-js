@@ -9,4 +9,6 @@ docker-compose.yml
 
 dist/
 tools/
-
+docs-build/
+.github/
+projects/client-api/jsdocs/

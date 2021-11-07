@@ -68,3 +68,5 @@ assets/**/*.css
 build
 lib
 es
+docs-build
+projects/client-api/jsdocs/
