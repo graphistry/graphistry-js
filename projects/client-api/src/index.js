@@ -16,6 +16,7 @@ class Graphistry extends Observable {
 
     /**
      * Create Graphistry {@link Observable} by extending observable's methods
+     * @constructs Graphistry
      * @param {Object} source - The source observable.
      */
     constructor(source) {
@@ -63,6 +64,7 @@ class Graphistry extends Observable {
             .toPromise()
         );
     }
+}
 
     /**
      * Add columns to the current graph visuzliation's dataset
@@ -82,7 +84,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static addColumns(...columns) {
+    Graphistry.addColumns = function (...columns) {
         const { view } = this;
         return new this(this
             .from(columns)
@@ -97,7 +99,7 @@ class Graphistry extends Observable {
 
     /**
      * Change colors based on an attribute. Pass null for attribute, mapping to clear.
-     * @method Graphistry.encodeColor
+     * @method Graphistry~encodeColor
      * @param {GraphType} [graphType] - 'point' or 'edge'
      * @param {Attribute} [attribute] - name of data column, e.g., 'degree'
      * @param {Variant} [variation] - If there are more bins than colors, use 'categorical' to repeat colors and 'continuous' to interpolate
@@ -111,7 +113,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeColor(graphType, attribute, variation, mapping) {
+     Graphistry.encodeColor = function (graphType, attribute, variation, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.color`,
@@ -124,7 +126,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // str, str, array (attr, variation, mapping)
-    static encodePointColor(opts) {
+    Graphistry.encodePointColor = function (opts) {
         const args = ['point'];
         if (opts !== undefined) {
             if (opts instanceof Array) {
@@ -141,7 +143,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // str, str, array (attr, variation, mapping)
-    static encodeEdgeColor(opts) {
+    Graphistry.encodeEdgeColor = function (opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             if (opts instanceof Array) {
@@ -169,7 +171,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeAxis(axis) {
+     Graphistry.encodeAxis = function (axis) {
         const { view } = this;
 
         return new this(view.set(
@@ -198,7 +200,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeIcons(graphType, attribute, mapping) {
+     Graphistry.encodeIcons = function (graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.icon`,
@@ -211,7 +213,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // str, array (attr, mapping)
-    static encodePointIcons(opts) {
+    Graphistry.encodePointIcons = function (opts) {
         const args = ['point'];
         if (opts !== undefined) {
             if (opts instanceof Array) {
@@ -228,7 +230,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // str, array (attr, mapping)
-    static encodeEdgeIcons(opts) {
+    Graphistry.encodeEdgeIcons = function (opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             if (opts instanceof Array) {
@@ -256,7 +258,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static encodeSize(graphType, attribute, mapping) {
+     Graphistry.encodeSize = function (graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.${graphType}.size`,
@@ -270,7 +272,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // [str, obj] (attr, mapping)
-    static encodePointSize(opts) {
+    Graphistry.encodePointSize = function (opts) {
         const args = ['point'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -299,7 +301,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static togglePanel(panel, turnOn) {
+     Graphistry.togglePanel = function (panel, turnOn) {
         const { view } = this;
         if (turnOn) {
             return new this(view.set(
@@ -331,7 +333,7 @@ class Graphistry extends Observable {
         }
     }
 
-    static encodeDefaultIcons(graphType, attribute, mapping) {
+    Graphistry.encodeDefaultIcons = function (graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.defaults.${graphType}.icon`,
@@ -344,7 +346,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // [str, obj] (attr, mapping)
-    static encodeDefaultPointIcons(opts) {
+    Graphistry.encodeDefaultPointIcons = function (opts) {
         const args = ['point'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -360,7 +362,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // [str, obj] (attr, mapping)
-    static encodeDefaultEdgeIcons(opts) {
+    Graphistry.encodeDefaultEdgeIcons = function(opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -373,7 +375,7 @@ class Graphistry extends Observable {
         return this.encodeDefaultIcons.apply(this, args);
     }
 
-    static encodeDefaultSize(graphType, attribute, mapping) {
+    Graphistry.encodeDefaultSize = function(graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.defaults.${graphType}.size`,
@@ -386,7 +388,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // [str, obj] (attr, mapping)
-    static encodeDefaultPointSize(opts) {
+    Graphistry.encodeDefaultPointSize = function(opts) {
         const args = ['point'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -402,7 +404,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // [str, obj] (attr, mapping)
-    static encodeDefaultEdgeSize(opts) {
+    Graphistry.encodeDefaultEdgeSize = function(opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -415,7 +417,7 @@ class Graphistry extends Observable {
         return this.encodeDefaultSize.apply(this, args);
     }
 
-    static encodeDefaultColor(graphType, attribute, variation, mapping) {
+    Graphistry.encodeDefaultColor = function (graphType, attribute, variation, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.defaults.${graphType}.color`,
@@ -428,7 +430,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // [str, obj] (attr, mapping)
-    static encodeDefaultPointColor(opts) {
+    Graphistry.encodeDefaultPointColor = function (opts) {
         const args = ['point'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -444,7 +446,7 @@ class Graphistry extends Observable {
     // undefined (reset)
     // str (attr)
     // [str, obj] (attr, mapping)
-    static encodeDefaultEdgeColor(opts) {
+    Graphistry.encodeDefaultEdgeColor = function (opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -472,7 +474,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static toggleInspector(turnOn) {
+     Graphistry.toggleInspector = function (turnOn) {
         const { view } = this;
         if (!turnOn) {
             return new this(view.set(
@@ -505,7 +507,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static toggleTimebars(turnOn) {
+     Graphistry.toggleTimebars = function (turnOn) {
         const { view } = this;
         if (!turnOn) {
             return new this(view.set(
@@ -538,7 +540,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static toggleHistograms(turnOn) {
+     Graphistry.toggleHistograms = function (turnOn) {
         const { view } = this;
         if (!turnOn) {
             return new this(view.set(
@@ -572,7 +574,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static tickClustering(ticks = 1) {
+     Graphistry.tickClustering = function (ticks = 1) {
 
         let obs;
         const { view } = this;
@@ -607,7 +609,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static autocenter(percentile, cb) {
+     Graphistry.autocenter = function (percentile, cb) {
 
     }
 
@@ -628,7 +630,7 @@ class Graphistry extends Observable {
      *         alert('id: ' + workbook.id)
      *     });
      */
-    static getCurrentWorkbook() {
+     Graphistry.getCurrentWorkbook = function () {
         const { workbook } = this;
          return new this(workbook.get('id')
             .map(({ json }) => json.toJSON())
@@ -649,7 +651,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static saveWorkbook() {
+     Graphistry.saveWorkbook = function () {
 
         const { workbook } = this;
 
@@ -671,7 +673,7 @@ class Graphistry extends Observable {
      * <button onclick="window.graphistry.toggleToolbar(true)">Show toolbar</button>
      *
      */
-    static toggleToolbar(show) {
+     Graphistry.toggleToolbar = function (show) {
         return this.updateSetting('showToolbar', !!show);
     }
 
@@ -691,7 +693,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static addFilter(expr) {
+     Graphistry.addFilter = function (expr) {
 
         const { view } = this;
 
@@ -699,7 +701,7 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
-    static addFilters(expr) {
+    Graphistry.addFilters = function (expr) {
 
         if (typeof(expr) === 'string') {
             return this.addFilter(expr);
@@ -732,7 +734,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static addExclusion(expr) {
+     Graphistry.addExclusion = function (expr) {
         const { view } = this;
 
         return new this(view.call('exclusions.add', [expr])
@@ -740,7 +742,7 @@ class Graphistry extends Observable {
             .toPromise());
     }
 
-    static addExclusions(expr) {
+    Graphistry.addExclusions = function (expr) {
 
         if (typeof(expr) === 'string') {
             return this.addExclusion(expr);
@@ -792,7 +794,7 @@ class Graphistry extends Observable {
      * @param {string} val - the value to set the setting to.
      * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
      */
-    static updateSetting(name, val) {
+     Graphistry.updateSetting = function (name, val) {
 
         const lookup = {
 
@@ -853,7 +855,7 @@ class Graphistry extends Observable {
      * @param {string} val - the value to set the setting to.
      * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
      */
-    static updateZoom(level) {
+     Graphistry.updateZoom = function (level) {
         return this.updateSetting('zoom', level);
     }
 
@@ -897,7 +899,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-    static labelUpdates() {
+     Graphistry.labelUpdates = function () {
         return this.labelsStream || (this.labelsStream = this
             .fromEvent(window, 'message')
             .pluck('data')
@@ -970,7 +972,7 @@ class Graphistry extends Observable {
      * @param {Object} - An Object with `onChange` and `onExit` callbacks
      * @return {Subscription} A {@link Subscription} that can be used to stop reacting to label updates
      */
-    static subscribeLabels({ onChange, onExit }) {
+     Graphistry.subscribeLabels = function ({ onChange, onExit }) {
         return this.labelUpdates().mergeMap((group) => group
             .do((event) => onChange && onChange(event))
             .takeLast(1)
@@ -978,14 +980,15 @@ class Graphistry extends Observable {
         )
         .subscribe();
     }
-}
+
 Graphistry.view = null;
 Graphistry.model = null;
 Graphistry.workbook = null;
 
 /**
- * Function that creates a Graphistry Wrapped IFrame
+ * Function that creates a Graphistry Wrapped IFrame - see class {@link Graphistry} for returned API
  * @func GraphistryJS
+ * @exports module:Graphistry
  * @param {Object} IFrame - An IFrame that hosts a Graphistry visualization.
  * @return {@link Graphistry}
  * @example
