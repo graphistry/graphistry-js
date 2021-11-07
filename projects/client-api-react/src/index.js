@@ -190,8 +190,6 @@ const ETLUploader = (props) => {
 };
 
 function handleUpdates({g, isFirstRun, axesMap, props}) {
-    console.log('update any settings')
-
     const prevState = {};
     const currState = {};
     bindings.forEach(({name}) => {
@@ -200,6 +198,7 @@ function handleUpdates({g, isFirstRun, axesMap, props}) {
         prevState[name] = usePrevious(val);
     });
 
+    console.debug('update any settings', props, prevState, currState);
     useEffect(() => {
         if (isFirstRun) {
             console.log('firstRun; skip updates')
@@ -243,8 +242,14 @@ function handleUpdates({g, isFirstRun, axesMap, props}) {
                     (e) => { console.error('iframe prop change error', e, changed); },
                     () => { console.debug('iframe prop change done', changed); }
                 );
+        } else {
+            console.debug('no changes to settings', prevState, currState, changed);
         }
-    }, [...Object.values(currState), ...Object.values(prevState), g]);
+    }, [
+        ...Object.values(currState),
+        ...Object.values(prevState),
+        g
+    ]);
 }
 
 
