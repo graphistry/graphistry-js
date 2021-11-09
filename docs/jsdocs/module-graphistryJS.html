@@ -31,7 +31,7 @@
 
 
     <title>
-      Home
+      graphistryJS
     </title>
 
     <!--[if lt IE 9]>
@@ -97,13 +97,98 @@
 
     <div id="main" class="main-content">
       
+      <h1 id='page-title' class="page-title">
+        graphistryJS
+      </h1>
+      
 
       
 
 
 
+
+<section>
+
+
+<header>
+    
+        
+            
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Function that wraps an IFrame as an Observable GraphistryState - other methods in this library can be piped with it</p></div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Parameters:</strong>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
+        <tr>
+            
+                <td class="name"><code>IFrame</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>An IFrame that hosts a Graphistry visualization.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
 
 
 
@@ -111,22 +196,141 @@
 
 
 
+<dl class="details">
 
     
 
+    
 
-    <section class="readme">
-        <article><h1>Graphistry's JavaScript Client API</h1>
-<h2>Graphistry's client-side interactions API makes it easy for developers to interact with embedded graph visualizations.</h2>
-<h3>Instructions</h3>
-<ol>
-<li>To use this interactions API, call GraphistryJS with an IFrame containing a graphistry vizualizations.</li>
-<li>Refer to the Graphistry class for a list of the methods currently supported. More on the way!</li>
-<li>Refer to example in GraphistryJS</li>
-</ol></article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <div class="details-item-container">
+            <dt class="tag-source">Source:</dt>
+            <dd class="tag-source"><ul class="dummy"><li>
+                <a href="index.js.html">index.js</a>, <a href="index.js.html#line1125">line 1125</a>
+            </li></ul></dd>
+        </div>
+    
+
+    
+
+    
+
+    
+</dl>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="method-member-container mt-20">
+    <strong>Returns:</strong>
+        
+            
+<div class="param-desc">
+    <p><a href="Graphistry.html">Graphistry</a></p>
+</div>
+
+
+
+            
+    </div>
+
+
+
+    <div class="method-member-container flex flex-col w-100 overflow-auto mt-20">
+        <strong>Example</strong>
+        
+    <div class="rel">
+    <pre class="prettyprint"><code>&lt;iframe id="viz" src="https://hub.graphistry.com/graph/graph.html?dataset=Miserables" />
+&lt;script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    graphistryJS(document.getElementById('viz'))
+       .pipe(
+          tap((g) => {
+            console.log('iframe ready; opening filters, pausing, then adding columns');
+            document.getElementById('controls').style.opacity=1.0);
+            window.g = g;
+          }),
+          openFilters,
+          delay(5000),
+          switchMap((g) => {
+            console.log('filters opened &amp; delayed; adding columns');
+            const columns = [
+                ['edge', 'highways', [66, 101, 280], 'number'],
+                ['point', 'theme parks', ['six flags', 'disney world', 'great america'], 'string']
+            ];
+            return (
+                 forkJoin(columns.map(([type, name, values, type]) => addColumn(type, name, values, type)))
+                 .pipe(map(() => g)))
+       })
+       .subscribe(
+           (g) => { console.log('event', g); },
+           (err) => { console.log('error', err); },
+          () => { console.log('all done'); }
+        });
+&lt;/script></code></pre>
+    
+    
+    </div>
+
+    </div>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
