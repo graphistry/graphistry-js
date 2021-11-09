@@ -17,6 +17,21 @@ docker compose up storybook
 # All demos work except uploads
 ```
 
+* To mimic gha building:
+
+```bash
+docker compose build
+./tools/storybook.sh
+./tools/jsdocs.sh
+```
+
+=>
+
+```
+./docs-build  # storybook
+./docs-build  # jsdocs
+```
+
 ## Docker
 
 ### Build
