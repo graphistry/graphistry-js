@@ -5,6 +5,7 @@ import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
 import {
     ajax,
     catchError,
+    delay,
     filter,
     forkJoin,
     fromEvent,
@@ -1259,6 +1260,7 @@ export {
     //rxjs: reexport for end-user convenience without explicit dependency / rxjs expertise
     ajax,
     catchError,
+    delay,
     filter,
     forkJoin,
     Observable,

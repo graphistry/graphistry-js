@@ -13,6 +13,7 @@ import {
 import { ajax } from 'rxjs/ajax';
 
 import {
+    delay,
     filter,
     last,
     map,
@@ -28,6 +29,7 @@ export {
     ajax,
     AsyncSubject,
     catchError,
+    delay,
     filter,
     forkJoin,
     fromEvent,
