@@ -42,8 +42,10 @@ jobs:
 
     - name: "Storybook"
       run: |
+        mv docs-build/jsdocs jsdocs
         ./tools/storybook.sh
         du -sh ./docs-build
+        mv jsdocs docs-build/jsdocs
 
     - name: "Ensure binaries"
       run: |
