@@ -1,53 +1,85 @@
-import shallowEqual from 'shallowequal';
+//import shallowEqual from 'shallowequal';
 import { Model } from '@graphistry/falcor-model-rxjs';
 import { PostMessageDataSource } from '@graphistry/falcor-socket-datasource';
-import { $ref, $atom, $value, $invalidate } from '@graphistry/falcor-json-graph';
-import { $$observable, Subject, Scheduler, Observable, AsyncSubject, ReplaySubject } from './rxjs';
+import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
+import {
+    ajax,
+    catchError,
+    filter,
+    forkJoin,
+    fromEvent,
+    //last,
+    map,
+    Observable,
+    of,
+    pipe,
+    ReplaySubject,
+    share,
+    startWith,
+    //Subject,
+    switchMap,
+    tap
+} from './rxjs';  // abstract to simplify tolerating constant rxjs namespace manglings
 
 
-/**
- * @class Graphistry
- * @classdesc This object wraps a HTML IFrame of a Graphistry Visualization in order
- * to provide an API for interacting with the graph.
- * @extends Observable
- * @see {@link https://github.com/ReactiveX/rxjs/blob/master/doc/observable.md}
- */
-class Graphistry extends Observable {
+// //////////////////////////////////////////////////////////////////////////////
+
 
     /**
-     * Create Graphistry {@link Observable} by extending observable's methods
-     * @constructs Graphistry
-     * @param {Object} source - The source observable.
-     */
-    constructor(source) {
-        if (!source || typeof source === 'function' || typeof source !== 'object') {
-            super(source);
-        } else {
-            super();
-            if (typeof source[$$observable] === 'function') {
-                this.source = source[$$observable]();
-            } else {
-                this.source = this.constructor.from(source);
-            }
-        }
-    }
-
-    /**
-     * Creates a new {@link Observable} with this as the source, and the passed
-     * operator as the new Observable's operator.
-     * @method Graphistry~lift
-     * @param {Operator} operator - the operator defining the operation to apply to the {@link Observable}
-     * @return {@link Observable} a new {@link Observable} with the operator applied
-     */
-    lift(operator) {
-        const observable = new Graphistry(this);
-        observable.operator = operator;
-        return observable;
-    }
-
-    /**
+     * @function makeSetterWithModel
      * @private
-     */
+     * @description Serialization and coordination for formatting postMessage API calls, used with {@link GraphistryState} {@link Observable}s
+     * @param {string} modelName - 'view' or 'workbook'
+     * @param {string} value - {@link $value} path/value pair
+     * @return {@link GraphistryState} {@link Observable} 
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *    .pipe(makeSetterWithModel('view', model => myValuesFromModel(model)))
+     *    .subscribe();
+     **/
+    export function makeSetterWithModel(modelName, valuesFromModel) {
+        return switchMap((g) => {
+            const values = valuesFromModel(g.models[modelName]);
+            const out = g.models[modelName].set(...values);
+            //Wrap in Observable to insulate from PostMessageDataSource's rxjs version of Observable
+            return (new Observable((subscriber) => {
+                console.debug('starting makeSetterWithModel postMessage cmds', values);
+                const sub = out.subscribe(
+                    ((v) =>{ subscriber.next(v); }),
+                    ((e) =>{ subscriber.error('iframe setter fail', e); }),
+                    (() =>{ subscriber.complete(); }));
+                return () => {
+                    console.debug('finished makeSetterWithModel; unsubscribe postMessage', {sub, values});
+                    sub.unsubscribe();
+                };
+            }))
+                .pipe(
+                    tap((v) => { console.debug('setter resp pre', v); }),
+                    map(({ json }) => g.updateStateWithResult(json.toJSON())),
+                    tap((v) => { console.debug('setter resp post', v); }))
+        });
+    }
+
+    /**
+     * @function makeSetter
+     * @private
+     * @description Serialization and coordination for formatting postMessage API calls, used with {@link GraphistryState} {@link Observable}s
+     * @param {string} modelName - 'view' or 'workbook'
+     * @param {string} value - {@link $value} path/value pair
+     * @return {@link GraphistryState} {@link Observable} 
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *    .pipe(makeSetter('view', $value('viz.width', 500)))
+     *    .subscribe();
+     **/
+    export function makeSetter(modelName, ...values) {
+        return makeSetterWithModel(modelName, () => { return values; });
+    }
+
+// //////////////////////////////////////////////////////////////////////////////
+
+
+    /*
     static _getIds(componentType, name, dataType, values = []) {
         const { view } = this;
         return new this(view
@@ -65,13 +97,10 @@ class Graphistry extends Observable {
         );
     }
 }
+*/
 
     /**
      * Add columns to the current graph visuzliation's dataset
-     * @method Graphistry.addColumns
-     * @params {...Arrays} columns - One of more columns to be appended to the dataset
-     * @return {Graphistry<Array<Column>>} A {@link Graphistry} {@link Observable} that emits an Array of the new columns
-     * @example
      * GraphistryJS(document.getElementById('viz'))
      *     .flatMap(function(g) {
      *         window.g = g;
@@ -84,6 +113,7 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
+    /*
     Graphistry.addColumns = function (...columns) {
         const { view } = this;
         return new this(this
@@ -95,38 +125,51 @@ class Graphistry extends Observable {
             .toPromise()
         );
     }
+    */
 
 
     /**
-     * Change colors based on an attribute. Pass null for attribute, mapping to clear.
-     * @method Graphistry~encodeColor
+     * @function encodeColor
+     * @description Change colors based on an attribute. Pass null for attribute, mapping to clear.
      * @param {GraphType} [graphType] - 'point' or 'edge'
      * @param {Attribute} [attribute] - name of data column, e.g., 'degree'
      * @param {Variant} [variation] - If there are more bins than colors, use 'categorical' to repeat colors and 'continuous' to interpolate
      * @param {Array} [mapping] - array of color name or hex codes
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         return g.encodeColor('point', 'degree', 'categorical', ['black', 'white'])
-     *     })
+     *     .pipe(encodeColor('point', 'degree', 'categorical', ['black', 'white']))
      *     .subscribe();
      */
-     Graphistry.encodeColor = function (graphType, attribute, variation, mapping) {
-        const { view } = this;
-        return new this(view.set(
-            $value(`encodings.${graphType}.color`,
-                {   reset: attribute === undefined, variation, name: 'user_' + Math.random(),
-                    encodingType: 'color', graphType, attribute, mapping }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+    export function encodeColor(graphType, attribute, variation, mapping) {
+
+        const value = $value(`encodings.${graphType}.color`,
+        {   reset: attribute === undefined, variation, name: 'user_' + Math.random(),
+            encodingType: 'color', graphType, attribute, mapping });
+
+        return makeSetter('view', value);
     }
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // str, str, array (attr, variation, mapping)
-    Graphistry.encodePointColor = function (opts) {
+
+
+    /**
+     * @function encodePointColor
+     * @description Single-argument version of {@link encodeColor} used for React props
+     * @param {Array} array: undefined to reset; str to use directly; [str attr, 'categorical' or 'continuous', [ str ] or mapping]
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodePointColor())
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodePointColor('prebaked_colors_col'))
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodePointColor(['degree', 'categorical', ['black', 'white']]))
+     *     .subscribe();
+    **/
+    export function encodePointColor(opts) {
         const args = ['point'];
         if (opts !== undefined) {
             if (opts instanceof Array) {
@@ -137,13 +180,28 @@ class Graphistry extends Observable {
                 args.push(opts);
             }
         }
-        return this.encodeColor.apply(this, args);
-     }
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // str, str, array (attr, variation, mapping)
-    Graphistry.encodeEdgeColor = function (opts) {
+        return encodeColor.apply(this, args);
+    }
+
+    /**
+     * @function encodeEdgeColor
+     * @description Single-argument version of {@link encodeColor} used for React props
+     * @param {Array} array: undefined to reset; str to use directly; [str attr, 'categorical' or 'continuous', [ str ] or mapping]
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeEdgeColor())
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeEdgeColor('prebaked_colors_col'))
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeEdgeColor(['degree', 'categorical', ['black', 'white']]))
+     *     .subscribe();
+    **/
+    export function encodeEdgeColor (opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             if (opts instanceof Array) {
@@ -154,66 +212,66 @@ class Graphistry extends Observable {
                 args.push(opts);
             }
         }
-        return this.encodeColor.apply(this, args);
-     }
+        return encodeColor.apply(this, args);
+    }
 
 
     /**
-     * Change axis
-     * @method Graphistry.encodeAxis
-     * @param {Array} array of strings
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
-     * @example
-     *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         return g.encodeAxis({})
-     *     })
-     *     .subscribe();
+     * @function encodeAxis
+     * @description Add an axis to the graph
+     * @param {Object}
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      */
-     Graphistry.encodeAxis = function (axis) {
-        const { view } = this;
+     export function encodeAxis(axis) {
+        const value = $value(`encodings.point.axis`,
+        {   reset: axis === undefined, name: 'user_' + Math.random(),
+            encodingType: 'axis', graphType: 'point', attribute: 'degree', variation: 'categorical',
+            rows: axis });
 
-        return new this(view.set(
-            $value(`encodings.point.axis`,
-                {   reset: axis === undefined, name: 'user_' + Math.random(),
-                    encodingType: 'axis', graphType: 'point', attribute: 'degree', variation: 'categorical',
-                    rows: axis }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+        return makeSetter('view', value);
     }
 
 
 
     /**
-     * Change icons based on an attribute. Pass undefined for attribute, mapping to clear.
-     * @method Graphistry.encodeIcons
+     * @function encodeIcons
+     * @description Change icons based on an attribute. Pass undefined for attribute, mapping to clear.
      * @param {GraphType} [graphType] - 'point' or 'edge'
      * @param {Attribute} [attribute] - name of data column, e.g., 'icon'
      * @param {Mapping} [object] - optional value mapping, e.g., {categorical: {fixed: {ip: 'laptop', alert: 'alaram'}, other: 'question'}}
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         return g.encodeIcons('point', 'icon')
-     *     })
+     *     .pipe(encodeIcons('point', 'icon', 'some_attr'))
      *     .subscribe();
-     */
-     Graphistry.encodeIcons = function (graphType, attribute, mapping) {
-        const { view } = this;
-        return new this(view.set(
-            $value(`encodings.${graphType}.icon`,
-                {   reset: attribute === undefined, name: 'user_' + Math.random(),
-                    encodingType: 'icon', graphType, attribute, mapping }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+     **/
+    export function encodeIcons(graphType, attribute, mapping) {
+        const value = $value(`encodings.${graphType}.icon`,
+        {   reset: attribute === undefined, name: 'user_' + Math.random(),
+            encodingType: 'icon', graphType, attribute, mapping });
+        return makeSetter('view', value);
     }
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // str, array (attr, mapping)
-    Graphistry.encodePointIcons = function (opts) {
+
+
+    /**
+     * @function encodePointIcons
+     * @description Single-argument point change icons based on an attribute for React props
+     * @param {Array} array: undefined to reset; str to use directly; [str attr, mapping]
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodePointIcons())
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodePointIcons('some_attr'))
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodePointIcons(['some_attr', some_mapping]))
+     *     .subscribe();
+    **/
+    export function encodePointIcons(opts) {
         const args = ['point'];
         if (opts !== undefined) {
             if (opts instanceof Array) {
@@ -224,13 +282,28 @@ class Graphistry extends Observable {
                 args.push(opts);
             }
         }
-        return this.encodeIcons.apply(this, args);
-     }
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // str, array (attr, mapping)
-    Graphistry.encodeEdgeIcons = function (opts) {
+        return encodeIcons.apply(this, args);
+    }
+
+    /**
+     * @function encodeEdgeIcons
+     * @description Single-argument edge change icons based on an attribute for React props
+     * @param {Array} array: undefined to reset; str to use directly; [str attr, mapping]
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeEdgeIcons())
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeEdgeIcons('some_attr'))
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeEdgeIcons(['some_attr', some_mapping]))
+     *     .subscribe();
+    **/
+     export function encodeEdgeIcons(opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             if (opts instanceof Array) {
@@ -241,39 +314,48 @@ class Graphistry extends Observable {
                 args.push(opts);
             }
         }
-        return this.encodeIcons.apply(this, args);
-     }
-
-    /**
-     * Change size based on an attribute. Pass null for attribute, mapping to clear.
-     * @method Graphistry.encodeSize
-     * @param {GraphType} [graphType] - 'point'
-     * @param {Attribute} [attribute] - name of data column, e.g., 'degree'
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
-     * @example
-     *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         return g.encodeSize('point', 'community_infomap')
-     *     })
-     *     .subscribe();
-     */
-     Graphistry.encodeSize = function (graphType, attribute, mapping) {
-        const { view } = this;
-        return new this(view.set(
-            $value(`encodings.${graphType}.size`,
-                {   reset: attribute === undefined, name: 'user_' + Math.random(),
-                    encodingType: 'size', graphType, attribute, mapping }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+        return encodeIcons.apply(this, args);
     }
 
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // [str, obj] (attr, mapping)
-    Graphistry.encodePointSize = function (opts) {
-        const args = ['point'];
+
+    /**
+     * @function encodeSize
+     * @description Change size based on an attribute. Pass null for attribute, mapping to clear.
+     * @param {GraphType} [graphType] - 'point'
+     * @param {Attribute} [attribute] - name of data column, e.g., 'degree'
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeSize('point', 'community_infomap'))
+     *     .subscribe();
+     */
+     export function encodeSize(graphType, attribute, mapping) {
+        const value = $value(`encodings.${graphType}.size`,
+                {   reset: attribute === undefined, name: 'user_' + Math.random(),
+                    encodingType: 'size', graphType, attribute, mapping });
+        return makeSetter('view', value);
+    }
+
+    /**
+     * @function encodePointSize
+     * @description Single-argument point change size based on an attribute for React props
+     * @param {Array} array: undefined to reset; str to use directly; [str attr, mapping]
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodePointSize())
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodePointSize('some_attr'))
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodePointSize(['some_attr', some_mapping]))
+     *     .subscribe();
+    **/
+    export function encodePointSize(opts) {
+        const args = ['edge'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
             args.push(attribute);
@@ -282,71 +364,90 @@ class Graphistry extends Observable {
                 args.push(mapping);
             }
         }
-        return this.encodeSize.apply(this, args);
-     }
+        return encodeSize.apply(this, args);
+    }
 
 
     /**
-     * Toggle a leftside panel
-     * @method Graphistry.togglePanel
+     * @function togglePanel
+     * @description Toggle a top menu panel on/off
      * @param {string} [panel] - Name of panel: filters, exclusions, scene, labels, layout
      * @param {boolean} [turnOn] - Whether to make panel visible, or turn all off
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('opening filters');
-     *         return g.togglePanel('filters', true);
-     *     })
+     *     .pipe(togglePanel('filters', true));
      *     .subscribe();
      */
-     Graphistry.togglePanel = function (panel, turnOn) {
-        const { view } = this;
+     export function togglePanel(panel, turnOn) {
         if (turnOn) {
-            return new this(view.set(
-                $value(`filters.controls[0].selected`, panel === 'filters'),
-                $value(`scene.controls[1].selected`, panel === 'scene'),
-                $value(`labels.controls[0].selected`, panel === 'labels'),
-                $value(`layout.controls[0].selected`, panel === 'layout'),
-                $value(`exclusions.controls[0].selected`, panel === 'exclusions'),
-                $value(`panels.left`,
-                    panel === 'filters' ? $ref(view._path.concat(`filters`))
-                    : panel === 'scene' ? $ref(view._path.concat(`scene`))
-                    : panel === 'labels' ? $ref(view._path.concat(`labels`))
-                    : panel === 'layout' ? $ref(view._path.concat(`layout`))
-                    : $ref(view._path.concat(`exclusions`)))
-            )
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+            return makeSetterWithModel('view', (view) => {
+                const values = [
+                    $value(`filters.controls[0].selected`, panel === 'filters'),
+                    $value(`scene.controls[1].selected`, panel === 'scene'),
+                    $value(`labels.controls[0].selected`, panel === 'labels'),
+                    $value(`layout.controls[0].selected`, panel === 'layout'),
+                    $value(`exclusions.controls[0].selected`, panel === 'exclusions'),
+                    $value(`panels.left`,
+                        panel === 'filters' ? $ref(view._path.concat(`filters`))
+                        : panel === 'scene' ? $ref(view._path.concat(`scene`))
+                        : panel === 'labels' ? $ref(view._path.concat(`labels`))
+                        : panel === 'layout' ? $ref(view._path.concat(`layout`))
+                        : $ref(view._path.concat(`exclusions`)))
+                ];
+                return values;
+            });
         } else {
-            return new this(view.set(
+            const values = [
                 $value(`panels.left`, undefined),
                 $value(`filters.controls[0].selected`, false),
                 $value(`scene.controls[1].selected`, false),
                 $value(`labels.controls[0].selected`, false),
                 $value(`layout.controls[0].selected`, false),
                 $value(`exclusions.controls[0].selected`, false)
-            )
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+            ];
+            return makeSetter('view', ...values);
         }
     }
 
-    Graphistry.encodeDefaultIcons = function (graphType, attribute, mapping) {
-        const { view } = this;
-        return new this(view.set(
-            $value(`encodings.defaults.${graphType}.icon`,
+    /**
+     * @function encodeDefaultIcons
+     * @description Change default (user-unset) icons based on an attribute. Pass undefined for attribute, mapping to clear.
+     * @param {GraphType} [graphType] - 'point' or 'edge'
+     * @param {Attribute} [attribute] - name of data column, e.g., 'icon'
+     * @param {Mapping} [object] - optional value mapping, e.g., {categorical: {fixed: {ip: 'laptop', alert: 'alaram'}, other: 'question'}}
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeDefaultIcons('point', 'icon', 'some_attr'))
+     *     .subscribe();
+     **/
+    export function encodeDefaultIcons(graphType, attribute, mapping) {
+        const value = $value(`encodings.defaults.${graphType}.icon`,
                 {   reset: attribute === undefined, name: 'user_' + Math.random(),
-                    encodingType: 'icon', graphType, attribute, mapping }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+                    encodingType: 'icon', graphType, attribute, mapping });
+        return makeSetter('view', value);
     }
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // [str, obj] (attr, mapping)
-    Graphistry.encodeDefaultPointIcons = function (opts) {
+
+    /**
+     * @function encodeDefaultPointIcons
+     * @description Single-argument point default icons (user-unset) based on an attribute for React props
+     * @param {Array} array: undefined to reset; str to use directly; [str attr, mapping]
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeDefaultPointIcons())
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeDefaultPointIcons('some_attr'))
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeDefaultPointIcons(['some_attr', some_mapping]))
+     *     .subscribe();
+    **/
+   export function encodeDefaultPointIcons(opts) {
         const args = ['point'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -356,13 +457,28 @@ class Graphistry extends Observable {
                 args.push(mapping);
             }
         }
-        return this.encodeDefaultIcons.apply(this, args);
+        return encodeDefaultIcons.apply(this, args);
     }
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // [str, obj] (attr, mapping)
-    Graphistry.encodeDefaultEdgeIcons = function(opts) {
+
+    /**
+     * @function encodeDefaultEdgeIcons
+     * @description Single-argument edge default icons (user-unset) based on an attribute for React props
+     * @param {Array} array: undefined to reset; str to use directly; [str attr, mapping]
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeDefaultEdgeIcons())
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeDefaultEdgeIcons('some_attr'))
+     *     .subscribe();
+     * @example
+     *  GraphistryJS(document.getElementById('viz'))
+     *     .pipe(encodeDefaultEdgeIcons(['some_attr', some_mapping]))
+     *     .subscribe();
+    **/
+   export function encodeDefaultEdgeIcons(opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -372,10 +488,10 @@ class Graphistry extends Observable {
                 args.push(mapping);
             }
         }
-        return this.encodeDefaultIcons.apply(this, args);
+        return encodeDefaultIcons.apply(this, args);
     }
 
-    Graphistry.encodeDefaultSize = function(graphType, attribute, mapping) {
+    export function encodeDefaultSize(graphType, attribute, mapping) {
         const { view } = this;
         return new this(view.set(
             $value(`encodings.defaults.${graphType}.size`,
@@ -384,11 +500,8 @@ class Graphistry extends Observable {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // [str, obj] (attr, mapping)
-    Graphistry.encodeDefaultPointSize = function(opts) {
+
+    export function encodeDefaultPointSize(opts) {
         const args = ['point'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -398,13 +511,10 @@ class Graphistry extends Observable {
                 args.push(mapping);
             }
         }
-        return this.encodeDefaultSize.apply(this, args);
+        return encodeDefaultSize.apply(this, args);
     }
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // [str, obj] (attr, mapping)
-    Graphistry.encodeDefaultEdgeSize = function(opts) {
+
+    export function encodeDefaultEdgeSize(opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -414,23 +524,17 @@ class Graphistry extends Observable {
                 args.push(mapping);
             }
         }
-        return this.encodeDefaultSize.apply(this, args);
+        return encodeDefaultSize.apply(this, args);
     }
 
-    Graphistry.encodeDefaultColor = function (graphType, attribute, variation, mapping) {
-        const { view } = this;
-        return new this(view.set(
-            $value(`encodings.defaults.${graphType}.color`,
+    export function encodeDefaultColor(graphType, attribute, variation, mapping) {
+        const value = $value(`encodings.defaults.${graphType}.color`,
                 {   reset: attribute === undefined, variation, name: 'user_' + Math.random(),
-                    encodingType: 'color', graphType, attribute, mapping }))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+                    encodingType: 'color', graphType, attribute, mapping });
+        return makeSetter('view', value);
     }  
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // [str, obj] (attr, mapping)
-    Graphistry.encodeDefaultPointColor = function (opts) {
+
+    export function encodeDefaultPointColor(opts) {
         const args = ['point'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -440,13 +544,10 @@ class Graphistry extends Observable {
                 args.push(mapping);
             }
         }
-        return this.encodeDefaultColor.apply(this, args);
+        return encodeDefaultColor.apply(this, args);
     }
-    //helper just for react bindings
-    // undefined (reset)
-    // str (attr)
-    // [str, obj] (attr, mapping)
-    Graphistry.encodeDefaultEdgeColor = function (opts) {
+
+    export function encodeDefaultEdgeColor(opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -456,91 +557,76 @@ class Graphistry extends Observable {
                 args.push(mapping);
             }
         }
-        return this.encodeDefaultColor.apply(this, args);
+        return encodeDefaultColor.apply(this, args);
     }
 
-
     /**
-     * Toggle inspector panel
-     * @method Graphistry.toggleInspector
+     * @function toggleInspector
+     * @description Toggle inspector panel
      * @param {boolean} [turnOn] - Whether to make panel visible
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('opening inspector panel');
-     *         return g.toggleInspector(true);
-     *     })
+     *     .pipe(toggleInspector(true))
      *     .subscribe();
      */
-     Graphistry.toggleInspector = function (turnOn) {
-        const { view } = this;
+     export function toggleInspector(turnOn) {
         if (!turnOn) {
-            return new this(view.set(
+            const values = [
                 $value(`panels.bottom`, undefined),
-                $value(`inspector.controls[0].selected`, false),
-            )
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+                $value(`inspector.controls[0].selected`, false)
+            ];
+            return makeSetter('view', ...values);
         } else {
-            return new this(view.set(
-                $value(`inspector.controls[0].selected`, true),
-                $value(`panels.bottom`, $ref(view._path.concat(`inspector`)))
-            )
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+            return makeSetterWithModel('view', (view => {
+                const values = [
+                    $value(`inspector.controls[0].selected`, true),
+                    $value(`panels.bottom`, $ref(view._path.concat(`inspector`)))
+                ];
+                return values;
+            }));
         }
     }
 
     /**
-     * Toggle timebars panel
-     * @method Graphistry.toggleTimebars
+     * @function toggleTimebars
+     * @description Toggle timebars panel
      * @param {boolean} [turnOn] - Whether to make panel visible
      * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('opening timebards panel');
-     *         return g.toggleTimebars(true);
-     *     })
+     *     .pipe(toggleTimebars(true));
      *     .subscribe();
      */
-     Graphistry.toggleTimebars = function (turnOn) {
-        const { view } = this;
+     export function toggleTimebars(turnOn) {
         if (!turnOn) {
-            return new this(view.set(
+            const values = [
                 $value(`panels.bottom`, undefined),
-                $value(`timebars.controls[0].selected`, false),
-            )
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+                $value(`timebars.controls[0].selected`, false)
+            ];
+            return makeSetter('view', ...values);
         } else {
-            return new this(view.set(
-                $value(`timebars.controls[0].selected`, true),
-                $value(`panels.bottom`, $ref(view._path.concat(`timebars`)))
-            )
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+            return makeSetterWithModel('view', (view => {
+                const values = [
+                    $value(`timebars.controls[0].selected`, true),
+                    $value(`panels.bottom`, $ref(view._path.concat(`timebars`)))
+                ];
+                return values;
+            }));
         }
     }
 
     /**
-     * Toggle histogram panel
-     * @method Graphistry.toggleHistograms
+     * @function toggleHistograms
+     * @description Toggle histogram panel
      * @param {boolean} [turnOn] - Whether to make panel visible
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('opening histogram panel');
-     *         return g.toggleHistograms(true);
-     *     })
+     *     .pipe(toggleHistograms(true))
      *     .subscribe();
      */
-     Graphistry.toggleHistograms = function (turnOn) {
+     export function toggleHistograms(turnOn) {
         const { view } = this;
         if (!turnOn) {
             return new this(view.set(
@@ -560,21 +646,23 @@ class Graphistry extends Observable {
     }
 
     /**
-     * Run a number of steps of Graphistry's clustering algorithm
-     * @method Graphistry.tickClustering
-     * @static
+     * @function Graphistry.tickClustering
+     * @description Run a number of steps of Graphistry's clustering algorithm
      * @param {number} ticks - The number of ticks to run
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      * GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('starting to cluster');
-     *         return g.tickClustering();
-     *     })
+     *     .pipe(tickClustering())
+     *     .subscribe();
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *     .pipe(tickClustering(10))
      *     .subscribe();
      */
-     Graphistry.tickClustering = function (ticks = 1) {
+     export function tickClustering(ticks = 1) {
+
+        throw new Error('Not implemented', ticks);
+        /*
 
         let obs;
         const { view } = this;
@@ -590,100 +678,96 @@ class Graphistry extends Observable {
         }
 
         return new this(obs.toPromise());
+        */
     }
 
     /**
      * Center the view of the graph
-     * @method Graphistry.autocenter
+     * @function autocenter
      * @todo Implement this function
      * @static
      * @param {number} percentile - Controls sensitivity to outliers
      * @param {function} [cb] - Callback function of type callback(error, result)
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      * GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('centering');
-     *         return g.autocenter(.90);
-     *     })
+     *     .pipe(autocenter(.90))
      *     .subscribe();
      */
-     Graphistry.autocenter = function (percentile, cb) {
-
+     export function autocenter(percentile) {
+        throw new Error('Not implemented', percentile);
+        /*
+        const { view } = this;
+        return new this(view.call('autocenter', [percentile])
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+            */
     }
 
     /**
      * Read the workbook ID
-     * @method Graphistry.getCurrentWorkbook
-     * @static
+     * @function getCurrentWorkbook
      * @param {function} [cb] - Callback function of type callback(error, result)
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      * GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('getting workbook id');
-     *         return g.getCurrentWorkbook();
-     *     })
+     *     .pipe(getCurrentWorkbook())
      *     .subscribe(function (workbook) {
      *         alert('id: ' + workbook.id)
      *     });
      */
-     Graphistry.getCurrentWorkbook = function () {
+    export function getCurrentWorkbook () {
+        throw new Error('Not implemented');
+        /*
         const { workbook } = this;
-         return new this(workbook.get('id')
+        return new this(workbook.get('id')
             .map(({ json }) => json.toJSON())
             .toPromise());
+            */
     }
 
     /**
      * Save the current workbook. A saved workbook will persist the analytics state
      * of the visualization, including active filters and exclusions
-     * @method Graphistry.saveWorkbook
-     * @static
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @function saveWorkbook
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      * GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         return g.saveWorkbook();
-     *     })
+     *     .pipe(saveWorkbook())
      *     .subscribe();
      */
-     Graphistry.saveWorkbook = function () {
-
+     export function saveWorkbook() {
+        throw new Error('Not implemented');
+        /*
         const { workbook } = this;
-
         return new this(workbook.call('save', [])
             .map(({ json }) => json.toJSON())
             .toPromise());
+            */
     }
 
 
     /**
      * Hide or Show Toolbar UI
-     * @method Graphistry.toogleToolbar
-     * @static
+     * @function toogleToolbar
      * @param {boolean} show - Set to true to show toolbar, and false to hide toolbar.
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      *
-     * <button onclick="window.graphistry.toggleToolbar(false)">Hide toolbar</button>
-     * <button onclick="window.graphistry.toggleToolbar(true)">Show toolbar</button>
+     * <button onclick="g.pipe(toggleToolbar(false)).subcribe()">Hide toolbar</button>
+     * <button onclick="g.pipe(toggleToolbar(true)).subscribe()">Show toolbar</button>
      *
      */
-     Graphistry.toggleToolbar = function (show) {
-        return this.updateSetting('showToolbar', !!show);
+     export function toggleToolbar(show) {
+        return updateSetting('showToolbar', !!show);
     }
 
     /**
      * Add a filter to the visualization with the given expression
-     * @method Graphistry.addFilter
-     * @static
+     * @function addFilter
      * @param {string} expr - An expression using the same language as our in-tool
      * exclusion and filter panel
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      * GraphistryJS(document.getElementById('viz'))
      *     .flatMap(function (g) {
@@ -693,56 +777,63 @@ class Graphistry extends Observable {
      *     })
      *     .subscribe();
      */
-     Graphistry.addFilter = function (expr) {
+     export function addFilter(expr) {
+
+        throw new Error('Not implemented', expr);
+        /*
 
         const { view } = this;
 
         return new this(view.call('filters.add', [expr])
             .map(({ json }) => json.toJSON())
             .toPromise());
+            */
     }
-    Graphistry.addFilters = function (expr) {
+    export function addFilters(expr) {
+        throw new Error('Not implemented', expr);
+        /*
 
         if (typeof(expr) === 'string') {
-            return this.addFilter(expr);
+            return addFilter(expr);
         }
 
         let filtered = null;
         for (let e of expr) {
             if (filtered === null) {
-                filtered = this.addFilter(e);
+                filtered = addFilter(e);
             } else {
                 filtered = filtered.flatMap(() => this.addFilter(e));
             }
         }
         return filtered;
+        */
     }
 
     /**
      * Add an exclusion to the visualization with the given expression
-     * @method Graphistry.addExclusion
-     * @static
+     * @function addExclusion
      * @param {string} expr - An expression using the same language as our in-tool
      * exclusion and filter panel
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      * GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('Adding exclusion for "point:degree > 0"');
-     *         return g.addExclusion('point:degree > 0');
-     *     })
+     *     .pipe(addExclusion('point:degree > 0'))
      *     .subscribe();
      */
-     Graphistry.addExclusion = function (expr) {
+     export function addExclusion(expr) {
+        throw new Error('Not implemented', expr);
+        /*
         const { view } = this;
 
         return new this(view.call('exclusions.add', [expr])
             .map(({ json }) => json.toJSON())
             .toPromise());
+            */
     }
 
-    Graphistry.addExclusions = function (expr) {
+    export function addExclusions(expr) {
+        throw new Error('Not implemented', expr);
+        /*
 
         if (typeof(expr) === 'string') {
             return this.addExclusion(expr);
@@ -757,7 +848,51 @@ class Graphistry extends Observable {
             }
         }
         return filtered;
+        */
     }
+
+    const G_API_SETTINGS = {
+
+        //models/toolbar.js
+        'showToolbar': ['view', 'toolbar.visible'],
+
+        //models/scene/scene.js
+        'pruneOrphans': ['view', 'pruneOrphans'],
+        'showArrows':   ['view', 'scene.renderer.showArrows'],
+        'background':   ['view', 'scene.renderer.background.color'],
+        'edgeOpacity':  ['view', 'scene.renderer.edges.opacity'],
+        'edgeSize':     ['view', 'scene.renderer.edges.scaling'],
+        'edgeCurvature': ['view', 'scene.renderer.edges.curvature'],
+        'pointOpacity': ['view', 'scene.renderer.points.opacity'],
+        'pointSize':    ['view', 'scene.renderer.points.scaling'],
+
+        //models/camera.js
+        'zoom':   ['view', 'camera.zoom'],
+        'center': ['view', 'camera.center["x", "y", "z"]'],
+
+        //models/label.js
+        'labelOpacity':          ['view', 'labels.opacity'],
+        'labelEnabled':          ['view', 'labels.enabled'],
+        'labelPropertiesEnabled': ['view', 'labels.propertiesEnabled'],
+        'labelPOI':              ['view', 'labels.poiEnabled'],
+        'labelLabelPOI':              ['view', 'labels.poiLabelEnabled'],
+        'labelPOIMax':           ['view', 'labels.poiMax'],
+        'labelHighlightEnabled': ['view', 'labels.highlightEnabled'],
+        'labelColor':            ['view', 'labels.foreground.color'],
+        'labelBackground':       ['view', 'labels.background.color'],
+
+        //models/layout.js
+        'precisionVsSpeed': ['view', 'layout.options.forceatlas2barnes[0].value'],
+        'gravity':          ['view', 'layout.options.forceatlas2barnes[1].value'],
+        'scalingRatio':     ['view', 'layout.options.forceatlas2barnes[2].value'],
+        'edgeInfluence':    ['view', 'layout.options.forceatlas2barnes[3].value'],
+        'strongGravity':    ['view', 'layout.options.forceatlas2barnes[4].value'],
+        'dissuadeHubs':     ['view', 'layout.options.forceatlas2barnes[5].value'],
+        'linLog':           ['view', 'layout.options.forceatlas2barnes[6].value'],
+        'lockedX':          ['view', 'layout.options.forceatlas2barnes[7].value'],
+        'lockedY':          ['view', 'layout.options.forceatlas2barnes[8].value'],
+        'lockedR':          ['view', 'layout.options.forceatlas2barnes[9].value'],
+    };
 
     /**
      * @description
@@ -784,79 +919,44 @@ class Graphistry extends Observable {
      * | `labelColor` | color as hex or rgba `string` |
      * | `labelBackground` | color as hex or rgba `string` |
      * | `precisionVsSpeed` | `int` (-5 to +5) |
+     * | `gravity` | `number` (0 to 10) |
+     * | `scalingRatio` | `number` (0 to 10) |
+     * | `edgeInfluence` | `number` (0 to 10) |
+     * | `strongGravity` | `boolean` |
      * | `dissuadeHubs` | `boolean` | 
+     * | `linLog` | `boolean` |
      * | `lockedX` | `boolean` | 
      * | `lockedY` | `boolean` | 
      * | `lockedR` | `boolean` | 
-     * @method Graphistry.updateSetting
-     * @static
+     * @function updateSetting
      * @param {string} name - the name of the setting to change
      * @param {string} val - the value to set the setting to.
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * graphistryJS(document.getElementById('viz'))
+     *     .pipe(updateSetting('background', 'red'))
+     *     .subscribe();
      */
-     Graphistry.updateSetting = function (name, val) {
+    export function updateSetting (name, val) {
+        console.debug('updating setting called', {G_API_SETTINGS, name, val});
+        const [modelType, path] = G_API_SETTINGS[name];
 
-        const lookup = {
-
-            //models/toolbar.js
-            'showToolbar': ['view', 'toolbar.visible'],
-
-            //models/scene/scene.js
-            'pruneOrphans': ['view', 'pruneOrphans'],
-            'showArrows':   ['view', 'scene.renderer.showArrows'],
-            'background':   ['view', 'scene.renderer.background.color'],
-            'edgeOpacity':  ['view', 'scene.renderer.edges.opacity'],
-            'edgeSize':     ['view', 'scene.renderer.edges.scaling'],
-            'edgeCurvature': ['view', 'scene.renderer.edges.curvature'],
-            'pointOpacity': ['view', 'scene.renderer.points.opacity'],
-            'pointSize':    ['view', 'scene.renderer.points.scaling'],
-
-            //models/camera.js
-            'zoom':   ['view', 'camera.zoom'],
-            'center': ['view', 'camera.center["x", "y", "z"]'],
-
-            //models/label.js
-            'labelOpacity':          ['view', 'labels.opacity'],
-            'labelEnabled':          ['view', 'labels.enabled'],
-            'labelPropertiesEnabled': ['view', 'labels.propertiesEnabled'],
-            'labelPOI':              ['view', 'labels.poiEnabled'],
-            'labelLabelPOI':              ['view', 'labels.poiLabelEnabled'],
-            'labelPOIMax':           ['view', 'labels.poiMax'],
-            'labelHighlightEnabled': ['view', 'labels.highlightEnabled'],
-            'labelColor':            ['view', 'labels.foreground.color'],
-            'labelBackground':       ['view', 'labels.background.color'],
-
-            //models/layout.js
-            'precisionVsSpeed': ['view', 'layout.options.forceatlas2barnes[0].value'],
-            'gravity':          ['view', 'layout.options.forceatlas2barnes[1].value'],
-            'scalingRatio':     ['view', 'layout.options.forceatlas2barnes[2].value'],
-            'edgeInfluence':    ['view', 'layout.options.forceatlas2barnes[3].value'],
-            'strongGravity':    ['view', 'layout.options.forceatlas2barnes[4].value'],
-            'dissuadeHubs':     ['view', 'layout.options.forceatlas2barnes[5].value'],
-            'linLog':           ['view', 'layout.options.forceatlas2barnes[6].value'],
-            'lockedX':          ['view', 'layout.options.forceatlas2barnes[7].value'],
-            'lockedY':          ['view', 'layout.options.forceatlas2barnes[8].value'],
-            'lockedR':          ['view', 'layout.options.forceatlas2barnes[9].value'],
-        };
-
-        const [model, path] = lookup[name];
-
-        return new this(this[model]
-            .set($value(path, $atom(val, { $timestamp: Date.now() })))
-            .map(({ json }) => json.toJSON())
-            .toPromise());
+        const value = $value(path, $atom(val, { $timestamp: Date.now() }) );
+        return makeSetter(modelType, value);
     }
 
     /**
      * Update the camera zoom level
-     * @method Graphistry.updateZoom
-     * @static
+     * @function updateZoom
      * @param {number} level - Controls how far to zoom in or out.
-     * @param {string} val - the value to set the setting to.
-     * @return {@link Graphistry} A {@link Graphistry} {@link Observable} that emits the result of the operation
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * graphistryJS(document.getElementById('viz'))
+     *     .pipe(updateZoom(2), delay(2000), updateZoom(0.5))
+     *     .subscribe();
      */
-     Graphistry.updateZoom = function (level) {
-        return this.updateSetting('zoom', level);
+     export function updateZoom (level) {
+        return updateSetting('zoom', level);
     }
 
     /**
@@ -873,33 +973,29 @@ class Graphistry extends Observable {
      * </p><p>
      * The inner {@link Observable} for a label will complete if the label is removed from the screen.
      * </p><p>
-     * @method Graphistry.labelUpdates
-     * @static
+     * @function labelUpdates
      * @return {Observable<Observable<LabelEvent>>} An {@link Observable} of inner {Observables}, where each
      * inner {@link Observable} represents the lifetime of a label in the visualization.
      * @example
      * GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('Listening for label updates');
-     *         return g.labelUpdates();
-     *     })
-     *     .flatMap(function (labelUpdates) {
-     *         return labelUpdates
-     *             .do(function ({ id, tag, pageX, pageY }) {
+     *     .pipe(
+     *          labelUpdates(),
+     *          tap(({ id, tag, pageX, pageY }) => {
      *                 // prints messages like
      *                 // > 'Label 13 added at (200, 340)'
      *                 // > 'Label 74 updated at (750, 100)'
      *                 console.log(`Label ${id} ${tag} at (${pageX}, ${pageY})`);
-     *             })
-     *             .takeLast(1)
-     *             .do(function ({ id, pageX, pageY }) {
+     *          }),
+     *          takeLast(1),
+     *          tap(function ({ id, pageX, pageY }) {
      *                 console.log(`Label ${id} removed at (${pageX}, ${pageY})`);
-     *             });
+     *          });
      *     })
      *     .subscribe();
      */
-     Graphistry.labelUpdates = function () {
+     export function labelUpdates() {
+        throw new Error('labelUpdates not implemented');
+        /*
         return this.labelsStream || (this.labelsStream = this
             .fromEvent(window, 'message')
             .pluck('data')
@@ -963,31 +1059,68 @@ class Graphistry extends Observable {
             })
             .mergeMap(({ newSources }) => newSources)
         );
+        */
     }
 
     /**
      * Subscribe to label change and exit events
-     * @method Graphistry.subscribeLabels
-     * @static
+     * @function subscribeLabels
      * @param {Object} - An Object with `onChange` and `onExit` callbacks
      * @return {Subscription} A {@link Subscription} that can be used to stop reacting to label updates
      */
-     Graphistry.subscribeLabels = function ({ onChange, onExit }) {
+     export function subscribeLabels({ onChange, onExit }) {
+         throw new Error('subscribeLabels not implemented', onChange, onExit);
+         /*
         return this.labelUpdates().mergeMap((group) => group
             .do((event) => onChange && onChange(event))
             .takeLast(1)
             .do((event) => onExit && onExit(event))
         )
         .subscribe();
+        */
     }
 
-Graphistry.view = null;
-Graphistry.model = null;
-Graphistry.workbook = null;
+
+class GraphistryState {
+    
+    constructor(iFrame, models, result) {
+        this._iFrame = iFrame;
+        this._models = models;
+        this.result = result;
+    }
+
+    clone() {
+        return new GraphistryState(this.iFrame, this.models, this.result);
+    }
+
+    get iFrame() {
+        return this._iFrame;
+    }
+
+    get models() {
+        return this._models;
+    }
+
+    get workbook() {
+        return this.models.workbook;
+    }
+
+    get view() {
+        return this.models.view;
+    }
+
+    updateStateWithResult(result) {
+        const clone = this.clone();
+        clone.result = result;
+        return clone;
+    }
+
+}
+
 
 /**
- * Function that creates a Graphistry Wrapped IFrame - see class {@link Graphistry} for returned API
- * @func GraphistryJS
+ * Function that wraps an IFrame as an {@link Observable} {@link GraphistryState} - other methods in this library can be piped with it
+ * @func graphistryJS
  * @exports module:Graphistry
  * @param {Object} IFrame - An IFrame that hosts a Graphistry visualization.
  * @return {@link Graphistry}
@@ -997,174 +1130,152 @@ Graphistry.workbook = null;
  * <script>
  * document.addEventListener("DOMContentLoaded", function () {
  *
- *     GraphistryJS(document.getElementById('viz'))
- *         .flatMap(function (g) {
+ *     graphistryJS(document.getElementById('viz'))
+ *        .pipe(
+ *           tap((g) => {
+ *             console.log('iframe ready; opening filters, pausing, then adding columns');
+ *             document.getElementById('controls').style.opacity=1.0);
  *             window.g = g;
- *             document.getElementById('controls').style.opacity=1.0;
- *             console.log('opening filters');
- *             return g.openFilters();
- *         })
- *         .delay(5000)
- *         .flatMap(function() {
- *             console.log('filters opened');
+ *           }),
+ *           openFilters,
+ *           delay(5000),
+ *           switchMap((g) => {
+ *             console.log('filters opened & delayed; adding columns');
  *             const columns = [
  *                 ['edge', 'highways', [66, 101, 280], 'number'],
  *                 ['point', 'theme parks', ['six flags', 'disney world', 'great america'], 'string']
  *             ];
- *             console.log('adding columns', columns);
- *             return g.addColumns.apply(g, columns);
+ *             return (
+ *                  forkJoin(columns.map(([type, name, values, type]) => addColumn(type, name, values, type)))
+ *                  .pipe(map(() => g)))
  *        })
- *         .subscribe(function (result) {
- *             console.log('all columns: ', result);
- *         });
- * });
+ *        .subscribe(
+ *            (g) => { console.log('event', g); },
+ *            (err) => { console.log('error', err); },
+ *           () => { console.log('all done'); }
+*         });
  * </script>
  *
  */
-function GraphistryJS(iFrame) {
+function graphistryJS(iFrame) {
 
     if (!iFrame) {
         throw new Error('No iframe provided to Graphistry');
     }
 
-    return Graphistry
-        .fromEvent(iFrame, 'load', ({ target }) => target)
-        .startWith(iFrame) // say hello first and on each load
-        .map((target) => target.contentWindow)
-        .do((target) => target && target.postMessage && (
-            console.log(`Graphistry API: connecting to client`) ||
-            target.postMessage({
-                type: 'ready', agent: 'graphistryjs'
-            }, '*'))
-        )
-        .switchMap(
-            (target) => Graphistry
-                .fromEvent(window, 'message')
-                .filter(({ data }) => data && data.type === 'init' && data.cache),
-            (target, { cache }) => ({ target, cache })
-        )
-        .switchMap(({ target, cache }) => {
+    console.debug('init graphistryJS', {iFrame, fromEvent, updateSetting, ajax});
 
-            const model = new Model({
-                cache,
-                recycleJSON: true,
-                scheduler: Scheduler.async,
-                allowFromWhenceYouCame: true
-            });
+    const flow = (
+        fromEvent(iFrame, 'load')
+        .pipe(
+            tap((v) => { console.debug('Starting iframe protocol listen flow: Load trigger'), v }),
+            startWith(iFrame),
+            filter(target => target && target.contentWindow && target.contentWindow.postMessage),
+            map(target => target.contentWindow),
+            tap((target) => {
+                console.info(`Graphistry API: connecting to client`, target.contentWindow);
+                target.postMessage({type: 'ready', agent: 'graphistryjs'}, '*');
+            }),
+            switchMap(
+                ((target) => 
+                    fromEvent(window, 'message') //FIXME why not target? how to ensure proper frame?
+                    .pipe(
+                        filter(({ data, cache, ...rest }) => {
+                            if (data && data.type === 'init') {
+                                console.debug('received valid postMessage handshake', {data, cache, rest});
+                                return true;
+                            } else {
+                                console.debug('received irrelevant postMessage handshake', {data, cache, rest});
+                                return false;
+                            }
+                        }),
+                        map(({ data: { cache }, cache: cache2 }) => ({ target, cache, cache2 }))))),
+            switchMap(({ target, cache, cache2 }) => {
 
-            model._source = new PostMessageDataSource(window, target, model, '*');
+                console.debug('Graphistry API: init filter passed, handling', {target, cache, cache2});
 
-            class InstalledGraphistry extends Graphistry {
-                lift(operator) {
-                    const observable = new InstalledGraphistry(this);
-                    observable.operator = operator;
-                    return observable;
-                }
-            }
-            InstalledGraphistry.model = model;
+                //Observable wrapper insulating from Model's rxjs version
+                // ... assume just new/get/subscribe/unsubscribe
+                const model = new Model({
+                    cache: cache || cache2 || {},
+                    recycleJSON: true,
+                    //scheduler: Scheduler.async, //TODO use default?
+                    allowFromWhenceYouCame: true
+                });
+                model._source = new PostMessageDataSource(window, target, model, '*');
+                return (new Observable((subscriber) => {
+                    const sub = model.get(`workbooks.open.views.current.id`)
+                        .subscribe(
+                            (result) => { subscriber.next(result); },
+                            (error) => { subscriber.error('iframe model initialization error', error); },
+                            () => {
+                                console.debug('PostMessageDataSource: teardown');
+                                subscriber.complete();
+                            });
+                    return () => { sub.unsubscribe(); };
+                }))
+                    .pipe(
+                        map(({ json, ...rest }) => {
+                            console.debug('got postMessage model hit', json, rest)
+                            const workbook = model.deref(json.workbooks.open);
+                            const view = model.deref(json.workbooks.open.views.current);
+                            console.debug(`PostMessageDataSource: connected to client`, { workbook, view });
+                            return { workbook, view };
+                        }),
+                        map(({ workbook, view }) => new GraphistryState(iFrame, {model, view, workbook})),
+                        tap((result) => {
+                            console.info(`Graphistry API: connected to client`, result)
+                        }));
+            }),
+            tap((result) => {
+                console.debug(`Graphistry API (pre-replay): connected to client`, result)
+            })
+    ));
 
-            InstalledGraphistry = wrapStaticObservableMethods(Observable, InstalledGraphistry);
+    //https://rxjs.dev/deprecations/multicasting
+    const resubscribable = 
+        flow.pipe(
+            share({
+                connector: () => new ReplaySubject(1),
+                resetOnError: false,
+                resetOnComplete: false,
+                resetOnRefCountZero: false,
+            }),
+            tap((result) => { console.debug(`Graphistry API (replay): connected to client`, result) }),
+    );
 
-            return model.get(`workbooks.open.views.current.id`).map(({ json }) => {
-                InstalledGraphistry.workbook = model.deref(json.workbooks.open);
-                InstalledGraphistry.view = model.deref(json.workbooks.open.views.current);
-                console.log(`Graphistry API: connected to client`);
-                return InstalledGraphistry;
-            });
-        })
-        .multicast(() => new ReplaySubject(1))
-        .refCount();
+    return resubscribable;
 }
 
-Graphistry = wrapStaticObservableMethods(Observable, Graphistry);
 
-GraphistryJS.Subject = Subject;
-GraphistryJS.Scheduler = Scheduler;
-GraphistryJS.Observable = Observable;
-GraphistryJS.AsyncSubject = AsyncSubject;
-GraphistryJS.ReplaySubject = ReplaySubject;
-GraphistryJS.$$observable = $$observable;
+//https://github.com/evanw/esbuild/issues/1719
+//export default graphistryJS;
 
-export { GraphistryJS };
+export {
 
-function wrapStaticObservableMethods(Observable, Graphistry) {
-    function createStaticWrapper(staticMethodName) {
-        return function(...args) {
-            return new Graphistry(Observable[staticMethodName](...args));
-        }
-    }
-    for (const staticMethodName in Observable) {
-        Graphistry[staticMethodName] = createStaticWrapper(staticMethodName);
-    }
-    Graphistry.bindCallback = (...args) => (...args2) => new Graphistry(Observable.bindCallback(...args)(...args2));
-    Graphistry.bindNodeCallback = (...args) => (...args2) => new Graphistry(Observable.bindNodeCallback(...args)(...args2));
-    return Graphistry;
-}
+    //main
+    graphistryJS,
+
+    //rxjs: reexport for end-user convenience without explicit dependency / rxjs expertise
+    ajax,
+    catchError,
+    filter,
+    forkJoin,
+    Observable,
+    of,
+    map,
+    pipe,
+    startWith,
+    switchMap,
+    tap,
+    
+    //g api
+    //updateSetting, // exported upon definition
+};
 
 //esbuild not exposing some reason
 try {
-    window.GraphistryJS = GraphistryJS;
+    //window.graphistryJS = graphistryJS;
 } catch (e) {
     //not browser
 }
-
-/**
- * A LabelEvent is dispatched by the inner Observables emitted by the labelUpdates() {@link Observable}.
- * A LabelEvent is generated for each label update in the visualization.
- * @typedef {Object} LabelEvent
- * @property {number} id - the integer ID for the element the label describes
- * @property {String} tag - a string that describes the update kind, either 'added' or 'updated'
- * @property {String} type - the graph component type for the element the label describes, either 'edge' or 'point'
- * @property {number} size - the size in pixels of the element the label describes. This is 0 for edges, and the diameter for points
- * @property {number} pageX - the pageX of the element the label describes
- * @property {number} pageY - the pageY of the element the label describes
- * @property {boolean} selected - a boolean that describes whether element the label describes is selected
- * @property {boolean} highlight - a boolean that describes whether element the label describes is highlighted
- * @property {boolean} simulating - a boolean that indicates the visualization is running clustering
- * @property {number} semanticZoomLevel - the semantic zoom level of the visualization
- */
-
-/**
- * @constructor Observable
- * @see {@link https://github.com/ReactiveX/rxjs/blob/master/doc/observable.md}
- */
-
- /**
- * The subscribe method triggers the execution of the {@link Observable}, causing the values within to be pushed to a callback. An {@link Observable} is like a pipe of water that is closed. When subscribe is called, we open the valve and the values within are pushed at us.  These values can be received using either callbacks or an {@link Observer} object.
- * @name subscribe
- * @memberof Observable.prototype
- * @function
- * @arg {?Observable~nextCallback} next a callback that accepts the next value in the stream of values
- * @arg {?Observable~errorCallback} error a callback that accepts an error that occurred while evaluating the operation underlying the {@link Observable} stream
- * @arg {?Observable~completeCallback} completed a callback that is invoked when the {@link Observable} stream has ended, and the {@link Observable~nextCallback} will not receive any more values
- * @return {Subscription}
- */
-
-/**
- * This callback accepts a value that was emitted while evaluating the operation underlying the {@link Observable} stream.
- * @callback Observable~nextCallback
- * @param {Object} value the value that was emitted while evaluating the operation underlying the {@link Observable}
- */
-
-/**
- * This callback accepts an error that occurred while evaluating the operation underlying the {@link Observable} stream. When this callback is invoked, the {@link Observable} stream ends and no more values will be received by the {@link Observable~nextCallback}.
- * @callback Observable~errorCallback
- * @param {Error} error the error that occurred while evaluating the operation underlying the {@link Observable}
- */
-
- /**
- * This callback is invoked when the {@link Observable} stream ends. When this callback is invoked the {@link Observable} stream has ended, and therefore the {@link Observable~nextCallback} will not receive any more values.
- * @callback Observable~completeCallback
- */
-
-/**
- * @constructor Subscription
- * @see {@link https://github.com/ReactiveX/rxjs/blob/master/doc/subscription.md}
- */
-
-/**
- * When this method is called on the Subscription, the {@link Observable} that created the Subscription will stop sending values to the callbacks passed when the Subscription was created.
- * @name unsubscribe
- * @method
- * @memberof Subscription.prototype
- */
