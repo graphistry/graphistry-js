@@ -940,6 +940,9 @@ import {
      */
     export function updateSetting (name, val) {
         console.debug('updating setting called', {G_API_SETTINGS, name, val});
+        if (G_API_SETTINGS[name] === undefined) {
+            throw new Error(`Property "${name}" is not a valid setting, available are: ${Object.keys(G_API_SETTINGS).join(', ')}`);
+        }
         const [modelType, path] = G_API_SETTINGS[name];
 
         const value = $value(path, $atom(val, { $timestamp: Date.now() }) );
