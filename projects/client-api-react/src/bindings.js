@@ -100,7 +100,7 @@ const bindingsTable = {
 
 
 //[ {name: String, nameDefault: String, reactType: PropType, jsName: String, jsCommand: ?String} ]
-export const bindings = 
+const bindings = 
     Object.keys(bindingsTable).map( name => {
         const [ reactType, nameDefault, jsName, jsCommand ] = bindingsTable[name];
         return {
@@ -111,3 +111,5 @@ export const bindings =
             jsCommand
         };
     });
+
+export { bindings };

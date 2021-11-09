@@ -1,15 +1,24 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react'
-import uuidv4 from 'uuid/v4';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
+import uuidv4 from 'uuid/v4';
 
-import { GraphistryJS } from '@graphistry/client-api';
+import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api';
+import * as gAPI from '@graphistry/client-api';
+import { ajax, catchError, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings } from './bindings.js';
-import { usePrevious } from './usePrevious';
 
 
-const { Observable, Subject } = GraphistryJS;
+//https://blog.logrocket.com/how-to-get-previous-props-state-with-react-hooks/
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    });
+    return ref.current;
+}
+
 const loadingNavLogoStyle = {
     top: `5px`,
     width: `100%`,
@@ -37,8 +46,6 @@ const propTypes = {
     play: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
 
     onClientAPIConnected: PropTypes.func,
-
-    nodes: PropTypes.arrayOf([]),
 
     showInfo: PropTypes.bool,
     showMenu: PropTypes.bool,
@@ -149,7 +156,12 @@ const ETLUploader = (props) => {
     }&apiversion=1${''
     }&agent=${encodeURIComponent(`'client-api-react'`)}`
         console.debug('uploading', url, payload);
-        const sub = Observable.ajax.post(url, payload, { 'Content-Type': 'application/json' })
+        const sub = ajax({
+                url,
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body: payload
+            })
             .do(({ response }) => {
                 if (response && response.success) {
                     console.debug('upload response', response);
@@ -175,7 +187,7 @@ const ETLUploader = (props) => {
             );
 
         return () => {
-            console.debug('unsubscribing upload', url, payload);
+            console.debug('unsubscribing upload', {url, payload, sub});
             sub.unsubscribe();
         }
 
@@ -189,6 +201,30 @@ const ETLUploader = (props) => {
     return null;
 };
 
+
+function propsToCommands({g, props, prevState, axesMap}) {
+    const commands = {};        
+    bindings.forEach(({name, jsName, jsCommand}) => {
+        const val = props[name];
+        if (prevState[name] !== val) {
+            if (jsCommand) {
+                console.debug('js cmd', jsCommand)
+            }
+            commands[name] = of(g).pipe(!jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val));
+        }
+    });
+    if (props.axes && !axesMap.has(props.axes)) {
+        axesMap.set(props.axes, true);
+        commands['axes'] = of(g).pipe(encodeAxis(props.axes));
+    }
+    /*
+    //TODO
+    if (typeof props.workbook !== 'undefined') commands['saveWorkbook'] = saveWorkbook();
+    */
+    console.debug('commands', commands);
+    return commands;
+}
+
 function handleUpdates({g, isFirstRun, axesMap, props}) {
     const prevState = {};
     const currState = {};
@@ -198,52 +234,32 @@ function handleUpdates({g, isFirstRun, axesMap, props}) {
         prevState[name] = usePrevious(val);
     });
 
-    console.debug('update any settings', props, prevState, currState);
     useEffect(() => {
+        console.debug('update any settings', !isFirstRun && g && g.g, {isFirstRun, readyG: g && g.g, props, prevState, currState});
+
         if (isFirstRun) {
             console.log('firstRun; skip updates')
             return;
-        }
-    
-        if (!g || !g.g) {
+        } else if (!g) {
             console.log('no g; skip updates')
             return;
         }
 
-        const changes = [];        
-        const changed = {};
-        bindings.forEach(({name, jsName, jsCommand}) => {
-            const val = props[name];
-            if (prevState[name] !== val) {
-                changed[name] = val;
-                if (!jsCommand) {
-                    changes.push(g.g.updateSetting(jsName, val));
-                } else {
-                    changes.push(g.g[jsCommand](val));
-                }
-            }
-        });
-        if (typeof props.axes !== 'undefined' && !axesMap.has(props.axes)) {
-            axesMap.set(props.axes, true);
-            changes.push(g.g.encodeAxis(props.axes));
-            changed['axes'] = props.axes;
-        }
-        /*
-        //TODO
-        if (typeof props.workbook !== 'undefined') operations.push(g.saveWorkbook());
-        */
-        if (changes.length) {
-            console.debug('dispatched all updating settings', changed);
-            Observable
-                .merge(...changes)
-                .takeLast(1).startWith(null)
+        const commands = propsToCommands({g, props, prevState, axesMap});
+
+        if (Object.keys(commands).length) {
+            console.debug('dispatched all updating settings', commands);
+            const sub = forkJoin(commands)
                 .subscribe(
-                    (v) => {  },
-                    (e) => { console.error('iframe prop change error', e, changed); },
-                    () => { console.debug('iframe prop change done', changed); }
+                    () => { },
+                    (e) => { console.error('iframe prop change error', e, commands); },
+                    () => { console.debug('iframe prop change done', commands); }
                 );
+            return () => {
+                sub.unsubscribe();
+            }
         } else {
-            console.debug('no changes to settings', prevState, currState, changed);
+            console.debug('no changes to settings', prevState, currState, commands);
         }
     }, [
         ...Object.values(currState),
@@ -265,77 +281,58 @@ function generateIframeRef({
             let loaded = false;
             setLoading(true);
             setLoadingMessage('Fetching session');
-            console.log('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
-            const sub = (new GraphistryJS(iframe))
-                .do((g2) => {
-                    if (!loaded) {
-                        console.log('leading, disable loader!')
-                        loaded = true;
-                        setG({g: g2});
-                        setLoading(false);
-                        setLoadingMessage('');
-                        setFirstRun(true);
-                    } else {
-                        console.log('trailing, no loader!')
-                    }
-                })
-                .do((g2) => {
-                    const changes = [];        
-                    const changed = {};
-                    bindings.forEach(({name, jsName, jsCommand}) => {
-                        const val = props[name];
-                        if (val !== undefined) {
-                            console.log('not undefined', {val, jsCommand, jsName});
-                            if (!jsCommand) {
-                                console.log('pushing init setting', {name, jsName, val});
-                                changes.push(g2.updateSetting(jsName, val));
-                                changed[name] = val;
-                            } else {
-                                console.log('pushing init command', {name, jsName, jsCommand, val});
-                                changes.push(g2[jsCommand](val));
-                            }
+            console.info('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
+            const sub = (graphistryJS(iframe))
+                .pipe(
+                    switchMap(
+                        (g) => of(g).pipe(
+                            tap((g) => {
+                                if (!loaded) {
+                                    console.debug('iframe loader taking over', g)
+                                    loaded = true;
+                                    setG(g);
+                                    setLoading(false);
+                                    setLoadingMessage('');
+                                    setFirstRun(true);
+                                } else {
+                                    console.debug('iframe init not ready yet', g)
+                                }
+                            }),
+                            switchMap((g) => {
+                                const commands = propsToCommands({g, props, prevState: {}, axesMap});
+                                if (Object.keys(commands).length) {
+                                    console.debug('created all new settings commands', commands);
+                                    return forkJoin(commands)
+                                        .pipe(
+                                            tap((hits) => { console.debug('commands all returned', {hits} ); }),
+                                            map(hits => g.updateStateWithResult(hits)))
+                                }
+                                return of(g.updateStateWithResult([]))
+                            }),
+                            catchError(exn => {
+                                console.error('error in iframe initialization', exn);
+                                return g.updateStateWithResult(exn);
+                            }))),
+                    tap((g) => {
+                        console.debug('all init updates handled, if any', g);
+                        setFirstRun(false);
+                        if (props.onClientAPIConnected) {
+                            props.onClientAPIConnected.call(undefined, g);
                         }
-                    });
-                    if (typeof props.axes !== 'undefined' && !axesMap.has(props.axes)) {
-                        axesMap.set(props.axes, true);
-                        changes.push(g2.encodeAxis(props.axes));
-                        changed['axes'] = props.axes;
-                    }
-                    /*
-                    //TODO
-                    if (typeof props.workbook !== 'undefined') operations.push(g.saveWorkbook());
-                    */
-                    Observable
-                        .merge(...changes)
-                        .takeLast(1).startWith(null)
-                        .do(() => {
-                            setFirstRun(false);
-                        })
-                        .subscribe(
-                            (v) => { console.log('iframe prop init updates', v, changed); },
-                            (e) => { console.error('iframe prop init error', e, changed); },
-                            () => {
-                                console.log('iframe prop init done', changed);
-                            }
-                        )
-                })
-                .do((g2) => {
-                    if (props.onClientAPIConnected) {
-                        props.onClientAPIConnected.call(undefined, g2);
-                    }
-                })
+                    }),
+                )
                 .subscribe(
-                    (v) => console.log('sub hit', v),
-                    (e) => console.error('sub error', e),
-                    () => console.log('sub complete'));
+                    (v) => console.debug('iframe init sub hit', v),
+                    (e) => console.error('iframe init sub error', e),
+                    () => console.debug('iframe init sub complete'));
             setGSub(sub);
             return () => {
                 // Not called in practice; maybe only if <Graphistry> itself is unmounted?
-                console.log('iframe unmounted!', iframe);
+                console.debug('iframe unmounted!', iframe);
                 sub.unsubscribe();
             }    
         } else {
-            console.log('no iframe', typeof(iframe), {iframe, dataset});
+            console.debug('no iframe', typeof(iframe), {iframe, dataset});
             return () => {};
         }
     }, [
@@ -442,7 +439,6 @@ function Graphistry(props) {
                     key={`g_iframe_${url}_${props.key}`}
                     ref={iframeRef}
                     scrolling='no'
-                    key='vizframe'
                     style={iframeStyle}
                     className={iframeClassName}
                     allowFullScreen={!!allowFullScreen}
