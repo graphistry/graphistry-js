@@ -31,14 +31,19 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: "Build"
+    - name: "Build and lint"
       run: |
         docker-compose build
 
-    # Requires eslint 8 for class statics, but eslint-plugin-react not yet 8-compatible
-    #- name: "Lint"
-    #  run: |
-    #    docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/cli.js run lint
+    - name: "JSDocs"
+      run: |
+        ./tools/jsdocs.sh
+        du -sh ./docs-build/jsdocs
+
+    - name: "Storybook"
+      run: |
+        ./tools/storybook.sh
+        du -sh ./docs-build
 
     - name: "Ensure binaries"
       run: |
