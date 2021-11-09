@@ -11,7 +11,7 @@ mkdir -p docs-build/jsdocs
 docker run --rm \
     --entrypoint=/bin/bash \
     -w=/opt/graphistry-js/projects/client-api \
-    -v `pwd`/projects/client-api/.jsdoc-conf.json:/opt/graphistry-js/projects/client-api/.jsdoc-conf.json:ro \
+    -v `pwd`/projects/client-api/jsdoc-conf.json:/opt/graphistry-js/projects/client-api/jsdoc-conf.json:ro \
     -v `pwd`/projects/client-api/src:/opt/graphistry-js/projects/client-api/src:ro \
     -v `pwd`/docs-build/jsdocs:/opt/graphistry-js/projects/client-api/jsdocs/@graphistry/client-api/${VERSION} \
     graphistry/graphistry-js:latest -c "./node_modules/.bin/jsdoc -c jsdoc-conf.json -p package.json --pedantic -R README.md -d ./jsdocs"

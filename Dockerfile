@@ -17,12 +17,14 @@ COPY projects/client-api /opt/graphistry-js/projects/client-api
 RUN echo "=== Building client-api ===" \
     && ls -alh ./node_modules/lerna \
     && find /usr/src/app/.npm \
+    && ./node_modules/lerna/cli.js run lint --scope="@graphistry/client-api" \
     && ./node_modules/lerna/cli.js run build --scope="@graphistry/client-api"
 
 FROM base_js as base_react
 WORKDIR /opt/graphistry-js
 COPY projects/client-api-react /opt/graphistry-js/projects/client-api-react
 RUN echo "=== Building client-api-react ===" \
+    && ./node_modules/lerna/cli.js run lint --scope="@graphistry/client-api-react" \
     && ./node_modules/lerna/cli.js run build --scope="@graphistry/client-api-react"
 
 
