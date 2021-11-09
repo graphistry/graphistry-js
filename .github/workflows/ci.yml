@@ -35,17 +35,11 @@ jobs:
       run: |
         docker-compose build
 
-    - name: "JSDocs"
-      run: |
-        ./tools/jsdocs.sh
-        du -sh ./docs-build/jsdocs
+    #- name: Storybook 🔧
+    #  run: ./tools/storybook.sh
 
-    - name: "Storybook"
-      run: |
-        mv docs-build/jsdocs jsdocs
-        ./tools/storybook.sh
-        du -sh ./docs-build
-        mv jsdocs docs-build/jsdocs
+    #- name: JSDocs 🔧
+    #  run: ./tools/jsdocs.sh
 
     - name: "Ensure binaries"
       run: |

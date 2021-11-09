@@ -27,16 +27,13 @@ jobs:
       - name: Build
         run: |
           docker-compose build
+
       - name: Storybook 🔧
-        run: |
-          mkdir -p docs-build
-          docker run --rm \
-            --entrypoint=/bin/bash \
-            -w=/opt/graphistry-js/projects/client-api-react \
-            -v `pwd`/docs-build:/opt/graphistry-js/projects/client-api-react/docs-build \
-            graphistry/graphistry-js:latest -c "npm run build-storybook"
-      - name: JSDocs
+        run: ./tools/storybook.sh
+ 
+      - name: JSDocs 🔧
         run: ./tools/jsdocs.sh
+ 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
