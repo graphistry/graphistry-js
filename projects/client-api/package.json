@@ -2,31 +2,32 @@
   "name": "@graphistry/client-api",
   "version": "3.7.6",
   "description": "Client-side API for interacting with a Graphistry embedded visualization.",
-  "main": "lib/index.js",
-  "module": "es/index.js",
-  "jsnext:main": "es/index.js",
-  "config": {
-    "port": 8000,
-    "entry": {
-      "GraphistryJS": [
-        "./src/index.js"
-      ]
+  "main": "dist/index.cjs.js",
+  "module": "src/index.js",
+  "browser": {
+    "./index.cjs": "./dist/GraphistryJS.cjs.js",
+    "./index.js": "./dist/GraphistryJS.esm.js"
+  },
+  "exports": {
+    "node": {
+      "import": "./dist/GraphistryJS.esm.js",
+      "require": "./dist/GraphistryJS.cjs.js"
     },
-    "output": {
-      "library": null,
-      "umdNamedDefine": true
-    }
+    "default": "./dist/GraphistryJS.esm.js"
   },
   "scripts": {
-    "build": "npm run build:prod && npm run build:cjs && npm run build:esm && npm run build:docs",
-    "build:prod": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=lib/index.js --minify --target=chrome58,firefox57,safari11,edge18 && mkdir -p dist && cp lib/index.js dist/GraphistryJS.js",
-    "build:dev":  "esbuild --bundle src/index.js --loader:.js=jsx --outfile=www/main.js --sourcemap ",
-    "build:cjs":  "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=cjs --outfile=dist/client-api.cjs.js --minify",
-    "build:esm":  "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.js",
-    "build:esm2": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.mjs",
+    "build": "npm run build:prod && npm run build:dev && npm run build:cjs && npm run build:esm",
+    "build:prod": "esbuild src/index.js --bundle --format=iife --outfile=dist/GraphistryJS.js --minify --target=chrome58,firefox57,safari11,edge18",
+    "build:dev":  "esbuild src/index.js --bundle --format=iife --outfile=dist/GphistryJS.dev.js --sourcemap ",
+    "build:cjs":  "esbuild src/index.js --bundle --format=cjs  --outfile=dist/GraphistryJS.cjs.js --minify",
+    "build:esm":  "esbuild src/index.js --bundle --format=esm  --outfile=dist/GraphistryJS.esm.js --minify",
     "build:docs": "rimraf docs && mkdir -p docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
     "prebuild:docs": "rimraf docs",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "clean": "npm run clean:install && npm run clean:build && npm run clean:docs",
+    "clean:install": "rimraf node_modules",
+    "clean:build": "rimraf dist es libs",
+    "clean:docs": "rimraf docs jsdocs"
   },
   "repository": {
     "type": "git",
@@ -38,9 +39,8 @@
   ],
   "files": [
     "dist",
-    "es",
-    "lib",
-    "docs"
+    "jsdocs",
+    "src"
   ],
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "Apache-2.0",
@@ -49,14 +49,13 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api#readme",
   "devDependencies": {
+    "@babel/core": "^7.16.0",
     "@babel/preset-env": "7.16.0",
     "esbuild": "0.13.12",
     "eslint": "7.32.0",
     "jsdoc": "3.6.7",
     "jsdoc-babel": "~0.5.0",
     "clean-jsdoc-theme": "3.2.10",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
     "rimraf": "3.0.2",
     "shallowequal": "1.1.0"
   },
@@ -64,7 +63,6 @@
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-model-rxjs": "2.9.11",
     "@graphistry/falcor-socket-datasource": "2.9.11",
-    "rxjs": "5.4.3",
-    "symbol-observable": "^4.0.0"
+    "rxjs": ">=7.2.0"
   }
 }

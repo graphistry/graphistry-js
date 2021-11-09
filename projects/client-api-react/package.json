@@ -2,21 +2,11 @@
   "name": "@graphistry/client-api-react",
   "version": "3.7.6",
   "description": "Embed a Graphistry visualization via React",
-  "main": "lib/index.js",
-  "module": "es/index.mjs",
-  "jsnext:main": "es/index.js",
-  "config": {
-    "port": 8000,
-    "entry": {
-      "Graphistry": [
-        "./assets/index.less",
-        "./src/index.js"
-      ]
-    },
-    "output": {
-      "library": null,
-      "umdNamedDefine": true
-    }
+  "type": "commonjs",
+  "main": "./dist/GraphistryReact.cjs.js",
+  "exports": {
+    "import": "./dist/GraphistryReact.esm.js",
+    "require": "./dist/GraphistryReact.cjs.js"
   },
   "repository": {
     "type": "git",
@@ -24,15 +14,18 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api-react#readme",
   "scripts": {
-    "build": "npm run build:prod && npm run build:cjs && npm run build:esm",
-    "build:prod": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=lib/index.js --minify",
-    "build:dev": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=www/main.js --sourcemap",
-    "build:cjs": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=cjs --outfile=dist/client-api-react.cjs.js --minify",
-    "build:esm": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.js",
-    "build:esm2": "esbuild --bundle src/index.js --loader:.js=jsx --jsx=preserve --external:react --external:react-dom --format=esm --outfile=es/index.mjs",
+    "build": "npm run build:prod && npm run  build:dev && npm run  build:cjs && npm run build:esm",
+    "build:prod": "esbuild src/index.js --bundle --loader:.js=jsx --format=iife --outfile=dist/GraphistryReact.js --minify --target=chrome58,firefox57,safari11,edge18",
+    "build:dev":  "esbuild src/index.js --bundle --loader:.js=jsx --format=iife --outfile=dist/GraphistryReact.dev.js --sourcemap ",
+    "build:cjs":  "esbuild src/index.js --bundle --loader:.js=jsx --format=cjs  --outfile=dist/GraphistryReact.cjs.js --minify",
+    "build:esm":  "esbuild src/index.js --bundle --loader:.js=jsx --format=esm  --outfile=dist/GraphistryReact.esm.js",
     "build:docs": "rimraf docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
     "prebuild:docs": "rimraf docs",
     "lint": "eslint src",
+    "clean": "npm run clean:install && npm run clean:build && npm run clean:docs",
+    "clean:install": "rimraf node_modules",
+    "clean:build": "rimraf dist es libs",
+    "clean:docs": "rimraf docs jsdocs docs-build",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -o docs-build -s ./assets"
   },

@@ -12,3 +12,5 @@ tools/
 docs-build/
 .github/
 projects/client-api/jsdocs/
+projects/client-api/www/
+projects/client-api-react/www/

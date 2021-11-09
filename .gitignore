@@ -70,3 +70,5 @@ lib
 es
 docs-build
 projects/client-api/jsdocs/
+projects/client-api/www/
+projects/client-api-react/www/
