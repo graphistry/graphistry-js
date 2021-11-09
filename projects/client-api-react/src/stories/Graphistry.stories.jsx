@@ -37,8 +37,12 @@ export const CustomContainerStyleAndSize = (args) => <Graphistry {...defaultSett
     }}
 />;
 
-export const ColorLabelsAndBackground = (args) => <Graphistry {...defaultSettings}
+export const ColorBackground = (args) => <Graphistry {...defaultSettings}
     backgroundColor= '#f0f0f0'
+    {...args}
+/>;
+
+export const ColorLabels = (args) => <Graphistry {...defaultSettings}
     labelOpacity={0.5}
     labelColor='magenta'
     labelBackground='#ffffff'

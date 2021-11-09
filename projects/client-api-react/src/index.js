@@ -203,7 +203,7 @@ const ETLUploader = (props) => {
 
 
 function propsToCommands({g, props, prevState, axesMap}) {
-    const commands = {};        
+    const commands = {};
     bindings.forEach(({name, jsName, jsCommand}) => {
         const val = props[name];
         if (prevState[name] !== val) {

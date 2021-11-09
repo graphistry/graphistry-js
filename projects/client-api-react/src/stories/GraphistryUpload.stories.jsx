@@ -13,7 +13,7 @@ export const Empty = (args) => <Graphistry {...args} />;
 export const PredefinedDataset = (args) => <Graphistry {...args} dataset='Miserables' showSplashScreen={true} />;
 
 const defaultSettings = {
-  dataset: 'Miserables',
+  //dataset: 'Miserables',
   play: 1,
   showSplashScreen: true
 };
