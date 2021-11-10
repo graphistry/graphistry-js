@@ -19,16 +19,19 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **nodes proptype:** Set to `arrayOf([])` to work around webpack build crashes
 * **props:** Changing props such as background no longer triggers a page reload
+* **filters:** Demos run on a delay to avoid racy load issue
 
 ### Breaking Changes
 
-* React now a required peer dependency when used from React
+* Version bump for rxjs
+* ... and corresponding removal of prototype dot chaining, replaced with composition (pipe)
+* React now a required peer dependency when used from client-api-react
 * Removed `withClientAPI`; instead use `Graphistry` directly
 * Changed styling override fields and behavior:
   * Removed `vizStyle`, `vizClassName`, `style`, `className`
   * Added `containerStyle`, `containerClassName`, `containerProps`
   * Added `iframeStyle`, `iframeClassName`, `iframeProps`
-* Added new experimental props
+* Added new experimental props and callers
 * **Hooks:** Removed recompose in favor of hooks, pushing minimum React version to 16.8
 
 
