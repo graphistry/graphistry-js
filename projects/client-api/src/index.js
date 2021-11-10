@@ -5,10 +5,12 @@ import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
 import {
     ajax,
     catchError,
+    concatMap,
     delay,
     filter,
     forkJoin,
     fromEvent,
+    isEmpty,
     //last,
     map,
     Observable,
@@ -19,12 +21,144 @@ import {
     startWith,
     //Subject,
     switchMap,
-    tap
+    take,
+    takeLast,
+    tap,
+    timer
 } from './rxjs';  // abstract to simplify tolerating constant rxjs namespace manglings
 
 
 // //////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * @function makeCaller
+     * @private
+     * @description Serialization and coordination for formatting postMessage API calls, used with {@link GraphistryState} {@link Observable}s
+     * @param {string} modelName - 'view' or 'workbook'
+     * @param {any} args - anything to pass as falcor .call(...args)
+     * @return {@link GraphistryState} {@link Observable} 
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *    .pipe(
+     *          makeCaller('view', 'tick', []),
+     *          delay(2000),
+     *          makeCaller('view', 'tick', []))
+     *    .subscribe();
+     **/
+    export function makeCaller(modelName, ...args) {
+        return switchMap(g => {
+            console.debug('makeCaller switchMap', {g});
+            //Wrap in Observable to insulate from PostMessageDataSource's rxjs version of Observable
+            return (new Observable((subscriber) => {
+                console.debug('caller hit', modelName, args, {g});
+                let runs = 0;
+                const sub = g.models[modelName]
+                    .call(...args)
+                    .subscribe(
+                        (x) => { 
+                            runs++;
+                            console.debug('caller tick', x, {runs});
+                            subscriber.next(x);
+                        },
+                        (e) => {
+                            runs++;
+                            console.error('caller error', e, {runs});
+                            subscriber.error(e);
+                        },
+                        () => { 
+                            console.debug('caller complete', modelName, args, {runs});
+                            subscriber.complete();
+                        });
+                return () => {
+                    console.debug('caller unsub skip', modelName, args, {runs});
+                    sub.unsubscribe();
+                };
+            }))            
+            .pipe(
+                tap(v => console.debug('caller got', modelName, args, v, {g})),
+                map(v => g.updateStateWithResult(v)));
+        });
+    }
+
+    /**
+     * @function makeCallerJSON
+     * @private
+     * @description Serialization and coordination for formatting postMessage API calls, used with {@link GraphistryState} {@link Observable}s. Adds json desrialization to {@link makeCaller}.
+     * @param {string} modelName - 'view' or 'workbook'
+     * @param {any} args - anything to pass as falcor .call(...args)
+     * @return {@link GraphistryState} {@link Observable} 
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *    .pipe(
+     *          makeCaller('view', 'tick', []),
+     *          delay(2000),
+     *          makeCaller('view', 'tick', []))
+     *    .subscribe();
+     **/
+    export function makeCallerJSON(modelName, ...args) {
+        return switchMap(g => 
+            of(g)
+                .pipe(
+                    makeCaller(modelName, ...args),
+                    map(({ json }) => json.toJSON())));
+    }
+
+
+    /**
+     * 
+     * @function makeGetter
+     * @description Serialization and coordination for formatting postMessage API calls, used with {@link GraphistryState} {@link Observable}
+     * @param {string} modelName 
+     * @param  {...any} args - anything to pass as falcor .get(...args)
+     * @returns {@link GraphistryState} {@link Observable}
+     */
+    export function makeGetter(modelName, ...args) {
+        return switchMap(g => {
+            //Wrap in Observable to insulate from PostMessageDataSource's rxjs version of Observable
+            return (new Observable((subscriber) => {
+                console.debug('getter hit', modelName, args);
+                const sub = g.models[modelName]
+                    .get(...args)
+                    .subscribe(
+                        (x) => { subscriber.next(x); },
+                        (e) => { subscriber.error(e); },
+                        () => { 
+                            console.debug('getter complete', modelName, args);
+                            subscriber.complete();
+                        });
+                return () => {
+                    console.debug('getter unsub', modelName, args);
+                    sub.unsubscribe();
+                };
+            }))
+            .pipe(
+                tap(v => console.debug('getter got', modelName, args, v)),
+                map(v => g.updateStateWithResult(v)));
+        });
+    }
+
+    /**
+     * @function makeGetterJSON
+     * @description Serialization and coordination for formatting postMessage API calls, used with {@link GraphistryState} {@link Observable}. Adds json desrialization to {@link makeGetter}.
+     * @param {string} modelName 
+     * @param  {...any} args 
+     * @returns {@link GraphistryState} {@link Observable}
+     */
+    export function makeGetterJSON(modelName, ...args) {
+        return switchMap(g => 
+            of(g)
+                .pipe(
+                    makeGetter(modelName, ...args)));
+    }
+
+
+    /*
+    *       /*
+        const { workbook } = this;
+        return new this(workbook.get('id')
+            .map(({ json }) => json.toJSON())
+            .toPromise());
+            */
 
     /**
      * @function makeSetterWithModel
@@ -135,18 +269,20 @@ import {
      * @param {GraphType} [graphType] - 'point' or 'edge'
      * @param {Attribute} [attribute] - name of data column, e.g., 'degree'
      * @param {Variant} [variation] - If there are more bins than colors, use 'categorical' to repeat colors and 'continuous' to interpolate
-     * @param {Array} [mapping] - array of color name or hex codes
+     * @param {any} [colorsOrMapping] - array of color name or hex codes, or object mapping
      * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      *  GraphistryJS(document.getElementById('viz'))
      *     .pipe(encodeColor('point', 'degree', 'categorical', ['black', 'white']))
      *     .subscribe();
      */
-    export function encodeColor(graphType, attribute, variation, mapping) {
+    export function encodeColor(graphType, attribute, variation, colorsOrMapping) {
+
+        const colorDict = Array.isArray(colorsOrMapping) ? {colors: colorsOrMapping} : {mapping: colorsOrMapping};
 
         const value = $value(`encodings.${graphType}.color`,
         {   reset: attribute === undefined, variation, name: 'user_' + Math.random(),
-            encodingType: 'color', graphType, attribute, mapping });
+            encodingType: 'color', graphType, attribute, ...colorDict });
 
         return makeSetter('view', value);
     }
@@ -333,7 +469,7 @@ import {
      export function encodeSize(graphType, attribute, mapping) {
         const value = $value(`encodings.${graphType}.size`,
                 {   reset: attribute === undefined, name: 'user_' + Math.random(),
-                    encodingType: 'size', graphType, attribute, mapping });
+                    encodingType: 'size', graphType, attribute, ...(mapping ? {mapping} : {}) });
         return makeSetter('view', value);
     }
 
@@ -356,7 +492,7 @@ import {
      *     .subscribe();
     **/
     export function encodePointSize(opts) {
-        const args = ['edge'];
+        const args = ['point'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
             args.push(attribute);
@@ -371,7 +507,7 @@ import {
 
     /**
      * @function togglePanel
-     * @description Toggle a top menu panel on/off
+     * @description Toggle a top menu panel on/off. If panel is an array, interpret as [panel, turnOn]
      * @param {string} [panel] - Name of panel: filters, exclusions, scene, labels, layout
      * @param {boolean} [turnOn] - Whether to make panel visible, or turn all off
      * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
@@ -381,6 +517,10 @@ import {
      *     .subscribe();
      */
      export function togglePanel(panel, turnOn) {
+        if (Array.isArray(panel)) {
+            turnOn = panel.length > 1 ? panel[1] : undefined;
+            panel = panel[0];
+        }
         if (turnOn) {
             return makeSetterWithModel('view', (view) => {
                 const values = [
@@ -628,22 +768,19 @@ import {
      *     .subscribe();
      */
      export function toggleHistograms(turnOn) {
-        const { view } = this;
-        if (!turnOn) {
-            return new this(view.set(
-                $value(`panels.right`, undefined),
-                $value(`histograms.controls[0].selected`, false)
-            )
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-        } else {
-            return new this(view.set(
-                $value(`histograms.controls[0].selected`, true),
-                $value(`panels.right`, $ref(view._path.concat(`histograms`)))
-            )
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-        }
+        return makeSetterWithModel('view', (view => {
+            if (!turnOn) {
+                return [
+                    $value(`panels.right`, undefined),
+                    $value(`histograms.controls[0].selected`, false)
+                ];
+            } else {
+                return [
+                    $value(`histograms.controls[0].selected`, true),
+                    $value(`panels.right`, $ref(view._path.concat(`histograms`)))
+                ];
+            }
+        }));
     }
 
     /**
@@ -662,24 +799,27 @@ import {
      */
      export function tickClustering(ticks = 1) {
 
-        throw new Error('Not implemented', ticks);
-        /*
+        throw new Error('Not implemented');
 
-        let obs;
-        const { view } = this;
+        console.debug('tickClustering', {ticks});
 
         if (typeof ticks !== 'number') {
-            obs = Observable.of({});
-        } else {
-            obs = Observable
-                .timer(0, 40)
-                .take(Math.abs(ticks) || 1)
-                .concatMap(() => view.call('tick', []))
-                .takeLast(1);
+            return map(g => g);
         }
-
-        return new this(obs.toPromise());
-        */
+        return switchMap(g => {
+            return (
+                timer(0, 40)
+                .pipe(
+                    tap((v) => console.debug('tick', v, g)),
+                    take(Math.abs(ticks) || 1),
+                    tap((v) => console.debug('tick b', v, g)),
+                    map(() => g),
+                    makeCaller('view', 'tick', [{}]),
+                    isEmpty(),
+                    tap((v) => console.debug('tick result', v, g)),
+                    takeLast(1)
+                ));
+        });
     }
 
     /**
@@ -696,13 +836,7 @@ import {
      *     .subscribe();
      */
      export function autocenter(percentile) {
-        throw new Error('Not implemented', percentile);
-        /*
-        const { view } = this;
-        return new this(view.call('autocenter', [percentile])
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-            */
+        return makeCallerJSON('view', 'autocenter', [percentile]);
     }
 
     /**
@@ -718,13 +852,7 @@ import {
      *     });
      */
     export function getCurrentWorkbook () {
-        throw new Error('Not implemented');
-        /*
-        const { workbook } = this;
-        return new this(workbook.get('id')
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-            */
+        return makeGetterJSON('workbook', 'id');
     }
 
     /**
@@ -738,13 +866,7 @@ import {
      *     .subscribe();
      */
      export function saveWorkbook() {
-        throw new Error('Not implemented');
-        /*
-        const { workbook } = this;
-        return new this(workbook.call('save', [])
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-            */
+        return makeCallerJSON('workbook', 'save', []);
     }
 
 
@@ -771,43 +893,40 @@ import {
      * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
      * @example
      * GraphistryJS(document.getElementById('viz'))
-     *     .flatMap(function (g) {
-     *         window.g = g;
-     *         console.log('Adding filter for "point:degree > 0"');
-     *         return g.addFilter('point:degree > 0');
-     *     })
+     *     .pipe(
+     *          addFilter('point:degree > 0'),
+     *          addFilter('edge:value > 0'))
      *     .subscribe();
      */
-     export function addFilter(expr) {
-
-        throw new Error('Not implemented', expr);
-        /*
-
-        const { view } = this;
-
-        return new this(view.call('filters.add', [expr])
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-            */
+    export function addFilter(expr) {
+        return makeCaller('view', 'filters.add', [expr]);
     }
+
+    /**
+     * Add filters to the visualization with the given expression
+     * @function addFilter
+     * @param {array} expr - An array of expressions using the same language as our in-tool
+     * exclusion and filter panel
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *     .pipe(addFilters(['point:degree > 0', 'edge:value > 0'])));
+     *     .subscribe();
+     */
     export function addFilters(expr) {
-        throw new Error('Not implemented', expr);
-        /*
 
         if (typeof(expr) === 'string') {
             return addFilter(expr);
         }
 
-        let filtered = null;
-        for (let e of expr) {
-            if (filtered === null) {
-                filtered = addFilter(e);
-            } else {
-                filtered = filtered.flatMap(() => this.addFilter(e));
-            }
+        if (!Array.isArray(expr)) {
+            throw new Error('Expected an array of filters');
         }
-        return filtered;
-        */
+
+        return switchMap(g => {
+            return forkJoin(expr.map(e => of(g).pipe(addFilter(e))))
+                .pipe(map((results) => g.updateStateWithResult(results)));
+        });
     }
 
     /**
@@ -822,34 +941,34 @@ import {
      *     .subscribe();
      */
      export function addExclusion(expr) {
-        throw new Error('Not implemented', expr);
-        /*
-        const { view } = this;
-
-        return new this(view.call('exclusions.add', [expr])
-            .map(({ json }) => json.toJSON())
-            .toPromise());
-            */
+        return makeCaller('view', 'exclusions.add', [expr]);
     }
 
+    /**
+     * Add an exclusion to the visualization with the given expression
+     * @function addExclusions
+     * @param {array} expr - Expressions using the same language as our in-tool
+     * exclusion and filter panel
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *     .pipe(addExclusions(['point:degree > 0'], ['edge:value > 0']))
+     *     .subscribe();
+     */
     export function addExclusions(expr) {
-        throw new Error('Not implemented', expr);
-        /*
 
         if (typeof(expr) === 'string') {
-            return this.addExclusion(expr);
+            return addExclusion(expr);
         }
 
-        let filtered = null;
-        for (let e of expr) {
-            if (filtered === null) {
-                filtered = this.addExclusion(e);
-            } else {
-                filtered = filtered.flatMap(() => this.addExclusion(e));
-            }
+        if (!Array.isArray(expr)) {
+            throw new Error('Expected an array of exclusions');
         }
-        return filtered;
-        */
+
+        return switchMap(g => {
+            return forkJoin(expr.map(e => of(g).pipe(addExclusion(e))))
+                .pipe(map((results) => g.updateStateWithResult(results)));
+        });
     }
 
     const G_API_SETTINGS = {
