@@ -80,6 +80,9 @@ const propTypes = {
     axes: PropTypes.array,
     controls: PropTypes.string,
     workbook: PropTypes.string,
+
+    //ticks
+    ticks: PropTypes.number
 };
 
 const defaultProps = {
@@ -208,7 +211,11 @@ function propsToCommands({g, props, prevState, axesMap}) {
         const val = props[name];
         if (prevState[name] !== val) {
             if (jsCommand) {
-                console.debug('js cmd', jsCommand)
+                console.debug('js cmd', jsCommand);
+                if (!gAPI[jsCommand]) {
+                    throw new Error(`Resolved operator ${jsCommand} not in GraphistryJS; GraphistryJS<>GraphistryReac version mismatch?`);
+                }
+
             }
             commands[name] = of(g).pipe(!jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val));
         }
@@ -301,12 +308,13 @@ function generateIframeRef({
                             switchMap((g) => {
                                 const commands = propsToCommands({g, props, prevState: {}, axesMap});
                                 if (Object.keys(commands).length) {
-                                    console.debug('created all new settings commands', commands);
+                                    console.debug('created all iframe init settings commands', commands);
                                     return forkJoin(commands)
                                         .pipe(
-                                            tap((hits) => { console.debug('commands all returned', {hits} ); }),
+                                            tap((hits) => { console.debug('new iframe commands all returned', {hits} ); }),
                                             map(hits => g.updateStateWithResult(hits)))
                                 }
+                                console.debug('new iframe with no commands');
                                 return of(g.updateStateWithResult([]))
                             }),
                             catchError(exn => {
@@ -314,10 +322,11 @@ function generateIframeRef({
                                 return g.updateStateWithResult(exn);
                             }))),
                     tap((g) => {
-                        console.debug('all init updates handled, if any', g);
+                        console.debug('new iframe all init updates handled, if any', g);
                         setFirstRun(false);
                         if (props.onClientAPIConnected) {
-                            props.onClientAPIConnected.call(undefined, g);
+                            console.debug('has onClientAPIConnected(), calling', props.onClientAPIConnected);
+                            props.onClientAPIConnected(g);
                         }
                     }),
                 )
