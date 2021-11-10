@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../assets/index.css';
 
 import { Graphistry } from '../index';
@@ -19,6 +19,22 @@ const defaultSettings = {
 };
 
 export const NoSplashScreen = (args) => <Graphistry {...defaultSettings} {...args} showSplashScreen={false} />;
+
+export const OnClientAPIConnected = (args) => {
+
+  const [ loaded, setLoaded ] = useState(false);
+  
+  return (<div>
+    { loaded ? '...loaded!' : 'not loaded...'}
+    <Graphistry {...defaultSettings}
+      {...args}
+      onClientAPIConnected={ () => { setLoaded(true); } }
+    />
+  </div>);
+}
+
+
+
 export const NoClusteringOnLoad = (args) => <Graphistry {...defaultSettings} {...args} play={0} />;
 export const OneSecondClusteringOnLoad = (args) => <Graphistry {...defaultSettings} {...args} play={1} />;
 export const CustomContainerStyleAndSize = (args) => <Graphistry {...defaultSettings} {...args}
@@ -37,25 +53,25 @@ export const CustomContainerStyleAndSize = (args) => <Graphistry {...defaultSett
     }}
 />;
 
-export const ColorBackground = (args) => <Graphistry {...defaultSettings}
+export const BackgroundColor = (args) => <Graphistry {...defaultSettings}
     backgroundColor= '#f0f0f0'
     {...args}
 />;
 
-export const ColorLabels = (args) => <Graphistry {...defaultSettings}
+export const LabelStyle = (args) => <Graphistry {...defaultSettings}
     labelOpacity={0.5}
     labelColor='magenta'
     labelBackground='#ffffff'
     {...args}
 />;
 
-export const PointSettings = (args) => <Graphistry {...defaultSettings}
+export const PointStyle = (args) => <Graphistry {...defaultSettings}
     pointSize={10}
     pointOpacity={0.5}
     {...args}
 />;
 
-export const EdgeSettings = (args) => <Graphistry {...defaultSettings}
+export const EdgeStyle = (args) => <Graphistry {...defaultSettings}
     edgeCurvature={0.5}
     edgeOpacity={0.5}
     showArrows={false}
@@ -99,52 +115,71 @@ export const HideChromeButShowTools = (args) => <Graphistry {...defaultSettings}
   {...args}
 />;
 
-export const BindPointSize = (args) => <Graphistry {...defaultSettings}
+export const ScalePointSize = (args) => <Graphistry {...defaultSettings}
   encodePointSize={'betweenness'}
   pointSize={0.2}
   {...args}
 />;
 
-export const BindPointSizeCategorical = (args) => <Graphistry {...defaultSettings}
-  encodePointSize={[
-    'community_infomap',
-    {
-      encodingType: 'size',
-      graphType: 'point',
-      attribute: 'community_infomap',
-      mapping: {
-          categorical: {
-              fixed: {
-                  0: 2,   // -> 'red', or '#fff', or '2.0'
-                  1: 1,
-                  2: 1,
-                  3: 1,
-                  4: 1
-              },
-              other: 1
-          }
-      }
-  }
-  ]}
-  pointSize={0.2}
-  {...args}
-/>;
+export const BindPointSizeCategorical = (args) => {
 
-export const BindPointColorContinuous = (args) => <Graphistry {...defaultSettings}
-  encodePointColor={[
-    'betweenness',
-    'continuous',
-    {
-      encodingType: 'color',
-      graphType: 'point',
-      attribute: 'betweenness',
-      variation: 'continuous',
-      colors: ['#fff', '#f00', '#0f0', '#00f']
-    }
-  ]}
-  pointSize={0.2}
-  {...args}
-/>;
+  //Load sizes 3s after client connected (workaround timing bug)
+  const [ sizes, setSizes ] = useState();
+
+  return <Graphistry {...defaultSettings}
+    dataset={'6fbdc5fb9ca64f37ade8a7a5ccb337f0'}
+    {...args}
+    onClientAPIConnected={ () => {
+      setTimeout(() => {
+        console.debug('Setting sizes 3s after client connected');
+        setSizes(args.encodePointSize || [
+          'tag_wearamask',
+          {
+            encodingType: 'size',
+            graphType: 'point',
+            attribute: 'tag_wearamask',
+            mapping: {
+                categorical: {
+                    fixed: {
+                        0: 1,
+                        1: 1,
+                        2: 10,
+                        3: 1,
+                        4: 1
+                    },
+                    other: 1
+                }
+            }
+          }
+        ]);
+      }, 3000);
+    }}
+    encodePointSize={sizes}
+    pointSize={0.5}
+  />;
+}
+
+export const BindPointColorContinuous = (args) => {
+
+  //Load colors 3s after client connected (workaround timing bug)
+  const [ colors, setColors ] = useState();
+  
+  return <Graphistry {...defaultSettings}
+    dataset={'6fbdc5fb9ca64f37ade8a7a5ccb337f0'}
+    {...args}
+    onClientAPIConnected={ () => {
+      setTimeout(() => {
+        console.debug('Setting colors 3s after client connected');
+        setColors(args.encodePointColor || [
+          'degree',
+          'continuous',
+          ['#00f', '#f00', 'yellow']
+        ]);
+      }, 3000);
+    }}
+    encodePointColor={colors}
+  />;
+}
 
 export const LayoutSettings = (args) => <Graphistry {...defaultSettings}
   precisionVsSpeed={0.5}
@@ -172,42 +207,29 @@ export const LayoutLockedRadius = (args) => <Graphistry {...defaultSettings}
   {...args}
 />;
 
-export const Filters = (args) => <Graphistry {...defaultSettings}
-  filters={['point:community_infomap in (4, 5, 6)', 'point:degree > 1']}
-  exclusions={['edge:id = 1']}
-  pruneOrphans={true}
-  {...args}
-/>;
+export const Filters = (args) => {
 
-export const UploadEdges = (args) => <Graphistry {...defaultSettings}
-  play={1}
-  apiKey={'PUT_KEY_HERE'}
-  bindings={{
-    'sourceField': 's',
-    'destinationField': 'd'
-  }}
-  edges={[
-    {'s': 'a', 'd': 'b', 'v': 2},
-    {'s': 'b', 'd': 'c', 'v': 3}
-  ]}
-  {...args}
-/>;
+  //Load filters 1s after client connected (workaround timing bug)
+  const [ filter, setFilter ] = useState();
+  const [ exclusion, setExclusion ] = useState();
+  const [ panel, setPanel ] = useState();
+  
+  return <Graphistry {...defaultSettings}
+    pruneOrphans={true}
+    {...args}
+    onClientAPIConnected={ () => {
+      console.debug('Client connected, setting filters and exclusions after 3s');
+      setTimeout(() => {
+        setFilter(args.filters || ['point:community_infomap in (4, 5, 6)', 'point:degree > 1']);
+        setExclusion(args.exclusions || ['edge:id = 1']);
+        setPanel(['filters', false])
+      }, 3000);
+    } }
+    togglePanel={panel}
+    exclusions={exclusion}
+    filters={filter}
+  />;
+}
 
-export const UploadEdgesAndNodes = (args) => <Graphistry {...defaultSettings}
-  play={1}
-  apiKey='PUT_KEY_HERE'
-  bindings={{
-    'sourceField': 's',
-    'destinationField': 'd',
-    'idField': 'n'
-  }}
-  edges={[
-    {'s': 'a', 'd': 'b', 'v1': 2},
-    {'s': 'b', 'd': 'c', 'v1': 3}
-  ]}
-  nodes={[
-    {'n': 'a', 'v2': 2},
-    {'n': 'b', 'v2': 4},
-  ]}
-  {...args}
-/>;
+//export const Ticks = (args) => <Graphistry {...defaultSettings} play={0} ticks={20} {...args} />;
+export const Ticks = (args) => <h2>Not implemented</h2>;

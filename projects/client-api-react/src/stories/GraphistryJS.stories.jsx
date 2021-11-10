@@ -1,7 +1,19 @@
 import React, { useRef, useState, useEffect } from 'react';
 import '../../assets/index.css';
 
-import { graphistryJS, updateSetting, tap, delay } from '@graphistry/client-api';
+import {
+    //graphistry
+    graphistryJS,
+    updateSetting,
+    addFilters,
+    addExclusions,
+    togglePanel,
+
+    //rxjs
+    tap,
+    delay
+} from '@graphistry/client-api';
+import { addExclusion } from '@graphistry/client-api/src';
 
 function GraphistryIFrame (args) {
     return <iframe
@@ -10,39 +22,20 @@ function GraphistryIFrame (args) {
     />;
 }
 
-function GraphistryJS (args) {
-    const iframe = useRef(null);
-    const [g, setG] = useState(null);
-    const [showToolbar, setShowToolbar] = useState(true);
-
-    useEffect(() => {
-        console.debug('iframe effect', {iframe, graphistryJS, updateSetting});
-        setG(graphistryJS(iframe.current));
-    }, [iframe]);
-
-    useEffect(() => {
-        if (g) {
-            console.debug('toggling showToolbar', {showToolbar, updateSetting, g})
-            g.pipe(updateSetting('showToolbar', showToolbar)).subscribe();
-        }
-    }, [g, showToolbar]);
-
-    return (
-        <div>
-            <h3>GraphistryJS</h3>
-            <div>
-                <button onClick={() => setShowToolbar(v => !v)}>
-                    {showToolbar ? 'Hide' : 'Show'} toolbar
-                </button>
-            </div>
-            <iframe ref={iframe} src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=1000"} />
-        </div>
-    );
-}
-
 export default {
   title: 'Graphistry: Vanilla JS',
   component: GraphistryIFrame
+};
+
+
+const defaultIframeProps = {
+    style: {
+        width: '100%',
+        height: '100%',
+        minHeight: '500px',
+        border: 'none'
+    },
+    allowFullScreen: true,
 };
 
 //no default args
@@ -72,7 +65,12 @@ export const InstantiateGraphistryJS = (args) => {
         <div>
         <h3>Instantiate GraphistryJS session for iframe</h3>
         <ol>{ messages.map((m, i) => <li key={i}>{m}</li>) }</ol>
-        <iframe ref={iframe} src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"} {...args} />
+        <iframe
+            {...defaultIframeProps}
+            ref={iframe}
+            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            {...args}
+        />
         </div>
     );
 }
@@ -85,10 +83,10 @@ export const SetSettings = (args) => {
         //////// Instantiate GraphistryJS for an iframe
         const sub = (
             graphistryJS(iframe.current)
-                .pipe(tap(() => setMessages(arr => arr.concat([`graphistryJS instantiated; changing settings`]))))
-                .pipe(updateSetting('background', '#ff0000'))
-                .pipe(updateSetting('showToolbar', false))
                 .pipe(
+                    tap(() => setMessages(arr => arr.concat([`graphistryJS instantiated; changing settings`]))),
+                    updateSetting('background', '#ff0000'),
+                    updateSetting('showToolbar', false),
                     tap(() => setMessages(arr => arr.concat([`Delaying 3s and changing settings again`]))),
                     delay(3000),
                     updateSetting('background', '#00ff00'),
@@ -111,7 +109,47 @@ export const SetSettings = (args) => {
         <div>
         <h3>Set settings over time:</h3>
         <ol>{ messages.map((m, i) => <li key={i}>{m}</li>) }</ol>
-        <iframe ref={iframe} src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"} {...args} />
+        <iframe
+            {...defaultIframeProps}
+            ref={iframe}
+            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            {...args}
+        />
         </div>
+    );
+};
+
+export const setFilters = (args) => {
+    const iframe = useRef(null);
+    const [messages, setMessages] = useState(['loading...']);
+    
+    useEffect(() => {
+        //////// Instantiate GraphistryJS for an iframe
+        const sub = (
+            graphistryJS(iframe.current)
+                .pipe(
+                    tap(() => setMessages(arr => arr.concat([`graphistryJS instantiated; pausing 3s...`]))),
+                    delay(3000),
+                    tap(() => setMessages(arr => arr.concat([`adding filters`]))),
+                    addFilters(args.filters || ['point:community_infomap in (4, 5, 6)', 'point:degree > 1']),
+                    addExclusions(args.exclusions || ['edge:id = 1']),
+                    togglePanel('filters', false)
+                )
+                .subscribe(
+                    () => null),
+                    (err) => setMessages(arr => arr.concat([`Error: ${err}`])),
+                    () => setMessages(arr => arr.concat(['Completed']))
+        );
+        ////////
+        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+    }, [iframe]);
+    
+    return (
+        <iframe 
+            {...defaultIframeProps}
+            ref={iframe}
+            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            {...args}
+        />
     );
 };
