@@ -3,10 +3,11 @@
 .gitignore
 .bak
 .pyc
-node_modules
+node_modules/
 Dockerfile
 docker-compose.yml
 
 dist/
 tools/
+www/
 

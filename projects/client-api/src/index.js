@@ -1,7 +1,7 @@
 import shallowEqual from 'shallowequal';
 import { Model } from '@graphistry/falcor-model-rxjs';
 import { PostMessageDataSource } from '@graphistry/falcor-socket-datasource';
-import { $ref, $atom, $value, $invalidate } from '@graphistry/falcor-json-graph';
+import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
 import { $$observable, Subject, Scheduler, Observable, AsyncSubject, ReplaySubject } from './rxjs';
 
 
@@ -477,8 +477,7 @@ class Graphistry extends Observable {
         if (!turnOn) {
             return new this(view.set(
                 $value(`panels.bottom`, undefined),
-                $value(`inspector.controls[0].selected`, false),
-            )
+                $value(`inspector.controls[0].selected`, false))
             .map(({ json }) => json.toJSON())
             .toPromise());
         } else {
@@ -510,7 +509,7 @@ class Graphistry extends Observable {
         if (!turnOn) {
             return new this(view.set(
                 $value(`panels.bottom`, undefined),
-                $value(`timebars.controls[0].selected`, false),
+                $value(`timebars.controls[0].selected`, false)
             )
             .map(({ json }) => json.toJSON())
             .toPromise());
@@ -608,7 +607,7 @@ class Graphistry extends Observable {
      *     .subscribe();
      */
     static autocenter(percentile, cb) {
-
+        throw new Error('Not implemented', percentile, cb);
     }
 
     /**
@@ -1035,7 +1034,7 @@ function GraphistryJS(iFrame) {
             }, '*'))
         )
         .switchMap(
-            (target) => Graphistry
+            () => Graphistry
                 .fromEvent(window, 'message')
                 .filter(({ data }) => data && data.type === 'init' && data.cache),
             (target, { cache }) => ({ target, cache })
@@ -1060,7 +1059,7 @@ function GraphistryJS(iFrame) {
             }
             InstalledGraphistry.model = model;
 
-            InstalledGraphistry = wrapStaticObservableMethods(Observable, InstalledGraphistry);
+            InstalledGraphistry = wrapStaticObservableMethods(Observable, InstalledGraphistry); // eslint-disable-line no-class-assign
 
             return model.get(`workbooks.open.views.current.id`).map(({ json }) => {
                 InstalledGraphistry.workbook = model.deref(json.workbooks.open);
@@ -1073,7 +1072,7 @@ function GraphistryJS(iFrame) {
         .refCount();
 }
 
-Graphistry = wrapStaticObservableMethods(Observable, Graphistry);
+Graphistry = wrapStaticObservableMethods(Observable, Graphistry); // eslint-disable-line no-class-assign
 
 GraphistryJS.Subject = Subject;
 GraphistryJS.Scheduler = Scheduler;

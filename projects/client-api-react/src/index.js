@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import uuidv4 from 'uuid/v4';
 import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
@@ -8,8 +8,10 @@ import { bg } from './bg';
 import { bindings } from './bindings.js';
 import { usePrevious } from './usePrevious';
 
+window.React2 = React;
+console.log('component', window.React1 === window.React2, window.React1 === React);
 
-const { Observable, Subject } = GraphistryJS;
+const { Observable } = GraphistryJS;
 const loadingNavLogoStyle = {
     top: `5px`,
     width: `100%`,
@@ -37,8 +39,6 @@ const propTypes = {
     play: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
 
     onClientAPIConnected: PropTypes.func,
-
-    nodes: PropTypes.arrayOf([]),
 
     showInfo: PropTypes.bool,
     showMenu: PropTypes.bool,
@@ -429,7 +429,6 @@ function Graphistry(props) {
                     key={`g_iframe_${url}`}
                     ref={iframeRef}
                     scrolling='no'
-                    key='vizframe'
                     style={iframeStyle}
                     className={iframeClassName}
                     allowFullScreen={!!allowFullScreen}
