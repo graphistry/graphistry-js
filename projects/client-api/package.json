@@ -26,11 +26,11 @@
 
   "scripts": {
     "build": "npm run build:js && npm run build:docs",
-    "build:js": "npm run build:cjs && npm run build:esm && npm run build:esm2 && npm run build:iifi",
+    "build:js": "npm run build:cjs && npm run build:esm && npm run build:esm2 && npm run build:iife",
     "build:cjs":  "esbuild --bundle src/index.js --sourcemap --target=es6 --format=cjs --outfile=dist/client-api.cjs.js --minify",
     "build:esm":  "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.js",
     "build:esm2": "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.mjs",
-    "build:iifi": "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.iifi.js --global-name=GraphistryJS",
+    "build:iife": "esbuild --bundle src/index.js --sourcemap --target=es6 --format=iife --outfile=dist/index.iife.js --global-name=graphistryJS",
     "build:docs": "rimraf docs && mkdir -p docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
     "lock:fix": "npm i --package-lock-only",
     "prebuild:docs": "rimraf docs",

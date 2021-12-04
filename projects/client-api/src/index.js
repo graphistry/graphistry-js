@@ -1382,6 +1382,7 @@ export {
     //rxjs: reexport for end-user convenience without explicit dependency / rxjs expertise
     ajax,
     catchError,
+    concatMap,
     delay,
     filter,
     forkJoin,
@@ -1397,9 +1398,9 @@ export {
     //updateSetting, // exported upon definition
 };
 
-//esbuild not exposing some reason
 try {
-    //window.graphistryJS = graphistryJS;
+    //backward compatibility
+    window.GraphistryJS = graphistryJS;
 } catch (e) {
     //not browser
 }
