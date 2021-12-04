@@ -26,7 +26,7 @@
 
   "scripts": {
     "build": "npm run build:js && npm run build:docs",
-    "build:js": "npm run build:cjs && npm run build:esm && npm run build:esm2 && npm run build:iife",
+    "build:js": "npm run build:cjs && npm run build:esm && npm run build:esm2 && npm run build:iife && cp dist/GraphistryJS.js",
     "build:cjs":  "esbuild --bundle src/index.js --sourcemap --target=es6 --format=cjs --outfile=dist/client-api.cjs.js --minify",
     "build:esm":  "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.js",
     "build:esm2": "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.mjs",
