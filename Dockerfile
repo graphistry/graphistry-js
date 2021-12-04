@@ -5,8 +5,15 @@ RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm set cache /usr/src/app/.npm \
     && echo "=== Installing build tools ===" \
     && npm install
-COPY projects/client-api/package.json /opt/graphistry-js/projects/client-api/package.json
-COPY projects/client-api-react/package.json /opt/graphistry-js/projects/client-api-react/package.json
+COPY \
+    projects/client-api/package.json \
+    projects/client-api/package-lock.json \
+    /opt/graphistry-js/projects/client-api/
+COPY \
+    projects/client-api-react/package.json \
+    projects/client-api-react/package-lock.json \
+    /opt/graphistry-js/projects/client-api-react/
+# Rebuild esbuild due to exec format err: https://github.com/evanw/esbuild/issues/1223
 RUN --mount=type=cache,target=/usr/src/app/.npm\
     echo "=== Installing and linking project dependencies ===" \
     && npm run bootstrap
