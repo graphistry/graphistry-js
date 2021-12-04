@@ -66,6 +66,16 @@ Will copy from `graphistry/graphistry-js:latest` into folder `DIST_PATH=dist`
 
 You may want to run `docker rm graphistry-js-tmp` if a stale container
 
+## Native
+
+```bash
+npm install
+npm run bootstrap
+npm run build
+( cd projects/client-api-react && ./node_modules/.bin/start-storybook -p 6006 )
+# => http://localhost:6006/
+```
+
 
 ## Native - outdated
 
