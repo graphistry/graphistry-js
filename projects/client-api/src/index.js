@@ -797,9 +797,10 @@ import {
      *     .pipe(tickClustering(10))
      *     .subscribe();
      */
-     export function tickClustering(ticks = 1) {
+     export function tickClustering(/*ticks = 1*/) {
 
         throw new Error('Not implemented');
+        /*
 
         console.debug('tickClustering', {ticks});
 
@@ -820,6 +821,7 @@ import {
                     takeLast(1)
                 ));
         });
+        */
     }
 
     /**
@@ -1386,13 +1388,17 @@ export {
     delay,
     filter,
     forkJoin,
+    isEmpty,
     Observable,
     of,
     map,
     pipe,
     startWith,
     switchMap,
+    take,
+    takeLast,
     tap,
+    timer
     
     //g api
     //updateSetting, // exported upon definition
