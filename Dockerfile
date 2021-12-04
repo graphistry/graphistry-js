@@ -16,14 +16,14 @@ COPY \
 # Rebuild esbuild due to exec format err: https://github.com/evanw/esbuild/issues/1223
 RUN --mount=type=cache,target=/usr/src/app/.npm\
     echo "=== Installing and linking project dependencies ===" \
-    && npm run bootstrap
+    && npm run bootstrap \
+    && ( cd projects/client-api && npm rebuild esbuild ) \
+    && ( cd projects/client-api-react && npm rebuild esbuild ) \
 
 FROM base as base_js
 WORKDIR /opt/graphistry-js
 COPY projects/client-api /opt/graphistry-js/projects/client-api
 RUN echo "=== Building client-api ===" \
-    && ls -alh ./node_modules/lerna \
-    && find /usr/src/app/.npm \
     && ./node_modules/lerna/cli.js run build --scope="@graphistry/client-api"
 
 FROM base_js as base_react
