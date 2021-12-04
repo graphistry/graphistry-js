@@ -9,7 +9,7 @@
 
 # GraphistryJS - Explore relationships with GPU visual graph analytics
 
-GraphistryJS is a visual graph analytics library to extract, transform, and load big graphs into Graphistry's GPU visual graph analytics platform and control the style and interactions. It is typically used by developers on problems like visually mapping the behavior of devices and users, especially when there are many events or entities involved.  GraphistryJS controls embedded Graphistry server sessions, such as for [free Graphistry Hub accounts](https://www.graphistry.com/get-started) and private servers.
+GraphistryJS is a rich and scalable graph visualization library to extract, transform, and load big graphs into Graphistry's GPU visual graph intelligence platform and dynamically control the style and interactions. It is typically used by developers on problems like visually mapping the behavior of devices and users, especially when there are many events or entities involved.  GraphistryJS controls embedded Graphistry server sessions, such as for [free Graphistry Hub accounts](https://www.graphistry.com/get-started) and private servers.
 
 If JavaScript is not your thing, data scientists and analysts should consider exploring initial GPU-accelerated prototype iterations in [Python notebooks with PyGraphistry](https://github.com/graphistry/pygraphistry) and [Graph-App-Kit for StreamLit dashboards](https://github.com/graphistry/graph-app-kit). Likewise, the underlying [Graphistry REST APIs](https://hub.graphistry.com/docs/api/) work with any language and with many data formats.
 
@@ -24,7 +24,7 @@ The JavaScript client APIs makes it easy to embed visual graph analytics into Ja
 GraphistryJS comes in 2 flavors:
 
 * [client-api](projects/client-api/README.md): Pure JavaScript API taking advantage of reactive/observable style code for chaining async code
-* [client-api-react](projects/client-api-react/README.md): React component for simple embedding, configuration, and lightweight dynamic control 
+* [client-api-react](projects/client-api-react/README.md) ([interactive storybook docs](https://graphistry.github.io/graphistry-js/)): React component for typical cases
 
 ### Architecture
 

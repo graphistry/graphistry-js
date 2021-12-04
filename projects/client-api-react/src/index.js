@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
 import uuidv4 from 'uuid/v4';
@@ -8,7 +8,6 @@ import * as gAPI from '@graphistry/client-api';
 import { ajax, catchError, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings } from './bindings.js';
-
 
 //https://blog.logrocket.com/how-to-get-previous-props-state-with-react-hooks/
 function usePrevious(value) {

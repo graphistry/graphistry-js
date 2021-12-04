@@ -12,7 +12,8 @@
     "build:prod": "lerna run build:prod",
     "build:examples": "lerna run build:examples",
     "lint": "lerna run lint",
-    "clean": "lerna clean && lerna run clean"
+    "clean": "lerna clean && lerna run clean",
+    "lock:fix": "npm i --package-lock-only"
   },
   "repository": {
     "type": "git",

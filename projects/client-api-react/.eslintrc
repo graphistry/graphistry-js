@@ -1,9 +1,4 @@
 {
-    "env": {
-        "browser": true,
-        "node": false,
-        "es6": true
-    },
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended"
@@ -11,5 +6,8 @@
     "parserOptions": {
         "sourceType": "module",
         "ecmaVersion": 2018
+    },
+    "env": {
+        "browser": true
     }
 }

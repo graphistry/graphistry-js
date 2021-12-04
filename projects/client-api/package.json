@@ -2,26 +2,37 @@
   "name": "@graphistry/client-api",
   "version": "3.7.6",
   "description": "Client-side API for interacting with a Graphistry embedded visualization.",
-  "main": "dist/index.cjs.js",
-  "module": "src/index.js",
-  "browser": {
-    "./index.cjs": "./dist/GraphistryJS.cjs.js",
-    "./index.js": "./dist/GraphistryJS.esm.js"
-  },
-  "exports": {
-    "node": {
-      "import": "./dist/GraphistryJS.esm.js",
-      "require": "./dist/GraphistryJS.cjs.js"
+  "jsnext:main": "es/index.js",
+  "config": {
+    "port": 8000,
+    "entry": {
+      "GraphistryJS": [
+        "./src/index.js"
+      ]
     },
     "default": "./dist/GraphistryJS.esm.js"
   },
+
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "source": "src/index.js",
+  "files": [
+    "dist",
+    "docs",
+    "jsdocs",
+    "src",
+    "README.md"
+  ],
+
   "scripts": {
-    "build": "npm run build:prod && npm run build:dev && npm run build:cjs && npm run build:esm",
-    "build:prod": "esbuild src/index.js --bundle --format=iife --outfile=dist/GraphistryJS.js --minify --target=chrome58,firefox57,safari11,edge18",
-    "build:dev":  "esbuild src/index.js --bundle --format=iife --outfile=dist/GphistryJS.dev.js --sourcemap ",
-    "build:cjs":  "esbuild src/index.js --bundle --format=cjs  --outfile=dist/GraphistryJS.cjs.js --minify",
-    "build:esm":  "esbuild src/index.js --bundle --format=esm  --outfile=dist/GraphistryJS.esm.js --minify",
+    "build": "npm run build:js && npm run build:docs",
+    "build:js": "npm run build:cjs && npm run build:esm && npm run build:esm2 && npm run build:iifi",
+    "build:cjs":  "esbuild --bundle src/index.js --sourcemap --target=es6 --format=cjs --outfile=dist/client-api.cjs.js --minify",
+    "build:esm":  "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.js",
+    "build:esm2": "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.mjs",
+    "build:iifi": "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.iifi.js --global-name=GraphistryJS",
     "build:docs": "rimraf docs && mkdir -p docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
+    "lock:fix": "npm i --package-lock-only",
     "prebuild:docs": "rimraf docs",
     "lint": "eslint src",
     "clean": "npm run clean:install && npm run clean:build && npm run clean:docs",
@@ -36,11 +47,6 @@
   "keywords": [
     "graphistry",
     "graph-viz"
-  ],
-  "files": [
-    "dist",
-    "jsdocs",
-    "src"
   ],
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "Apache-2.0",
