@@ -37,13 +37,9 @@ fi
 echo "3. Copy distro files from container '$CONTAINER_NAME' to path '$DIST_PATH'"
 docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api/dist ${DIST_PATH}/client-api/dist
 docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api/docs ${DIST_PATH}/client-api/docs
-docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api/es   ${DIST_PATH}/client-api/es
-docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api/lib  ${DIST_PATH}/client-api/lib
 docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api/examples ${DIST_PATH}/client-api/examples
 docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api-react/dist ${DIST_PATH}/client-api-react/dist
 #docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api-react/docs ${DIST_PATH}/client-api-react/docs
-docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api-react/es   ${DIST_PATH}/client-api-react/es
-docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api-react/lib  ${DIST_PATH}/client-api-react/lib
 docker cp graphistry-js-tmp:/opt/graphistry-js/projects/client-api-react/examples ${DIST_PATH}/client-api-react/examples
 
 echo "4. Clean up container '$CONTAINER_NAME"
