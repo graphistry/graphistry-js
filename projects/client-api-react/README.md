@@ -11,7 +11,7 @@
 ```javascript
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Graphistry} from '@graphistry/client-api-react';
+import { Graphistry } from '@graphistry/client-api-react';
 import '@graphistry/client-api-react/assets/index.less';
 
 ReactDOM.render(
