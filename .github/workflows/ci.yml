@@ -35,10 +35,9 @@ jobs:
       run: |
         docker-compose build
 
-    # Requires eslint 8 for class statics, but eslint-plugin-react not yet 8-compatible
-    #- name: "Lint"
-    #  run: |
-    #    docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/cli.js run lint
+    - name: "Lint"
+      run: |
+        docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/cli.js run lint
 
     - name: "Ensure binaries"
       run: |
