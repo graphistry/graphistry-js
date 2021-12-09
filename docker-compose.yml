@@ -42,6 +42,9 @@ services:
   storybook:
     << : *production_opts
     image:  graphistry/graphistry-js:${APP_BUILD_TAG:-latest}
+    build:
+      << : *build_kwargs
+      dockerfile: ./Dockerfile
     ports:
       - "6006:6006"
     init: true
