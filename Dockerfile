@@ -1,6 +1,6 @@
 FROM node:16.13.0-slim as base
 WORKDIR /opt/graphistry-js
-COPY lerna.json package.json packge-lock.json ./
+COPY lerna.json package.json package-lock.json ./
 RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm set cache /usr/src/app/.npm \
     && echo "=== Installing build tools ===" \
