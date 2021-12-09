@@ -9,8 +9,8 @@
 
 
   "private": true,
-  "main": "dist/index.cjs.min.js",
-  "module": "dist/index.esm.min.js",
+  "main": "dist/index.full.cjs.min.js",
+  "module": "dist/index.full.esm.min.js",
   "source": "src/index.js",
   "files": [
     "assets",
