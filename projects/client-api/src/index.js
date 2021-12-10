@@ -1249,6 +1249,7 @@ const chainList = {};
      * The inner {@link Observable} for a label will complete if the label is removed from the screen.
      * </p><p>
      * @function labelUpdates
+     * @param {object} [cache] - An optional cache object (empty object) to use for caching label updates across subscriptions.
      * @return {Observable<Observable<LabelEvent>>} An {@link Observable} of inner {Observables}, where each
      * inner {@link Observable} represents the lifetime of a label in the visualization.
      * @example
@@ -1267,92 +1268,118 @@ const chainList = {};
      *          });
      *     })
      *     .subscribe();
+     * @example
+     * var cache = {};
+     * //first use
+     * GraphistryJS(document.getElementById('viz'))
+     *    .pipe(labelUpdates(cache))
+     *    .subscribe();
+     * //second time reuse the cache to avoid excess event queue slowdowns 
+     * GraphistryJS(document.getElementById('viz'))
+     *      .pipe(labelUpdates(cache))
+     *     .subscribe()
      */
-     export function labelUpdates() {
-        throw new Error('labelUpdates not implemented');
-        /*
-        return this.labelsStream || (this.labelsStream = this
-            .fromEvent(window, 'message')
-            .pluck('data')
-            .filter((data) => data && data.type === 'labels-update')
-            .multicast(() => new ReplaySubject(1))
-            .let((connectable) => connectable.connect() && connectable.refCount())
-            .scan((memo, { labels, simulating, semanticZoomLevel }) => {
 
-                labels = labels || [];
-                const updates = [], newSources = [];
-                const labelsById = Object.create(null);
-                const nextSources = Object.create(null);
-                const { sources, prevLabelsById } = memo;
-                let idx = -1, len = labels.length, label;
+    export function labelUpdates(cache = {}) {
 
-                while (++idx < len) {
-                    let source;
-                    label = labels[idx];
-                    const { id } = label;
+        //FIXME cache on specific iframe
+        return cache.labelsStream || (cache.labelsStream = fromEvent(window, 'message')
+            .pipe(
+                map(o => o.data),
+                filter(o => o && o.type === 'labels-update'),
+                shareReplay({ bufferSize: 1, refCount: true }),
+                scan((memo, { labels, simulating, semanticZoomLevel }) => {
 
-                    if (id in sources) {
-                        source = sources[id];
-                        delete sources[id];
-                        if (memo.simulating !== simulating ||
-                            memo.semanticZoomLevel !== semanticZoomLevel ||
-                            !shallowEqual(prevLabelsById[id], label)) {
-                            updates.push({ ...label, simulating, semanticZoomLevel, tag: 'updated' });
+                        labels = labels || [];
+                        const updates = [], newSources = [];
+                        const labelsById = Object.create(null);
+                        const nextSources = Object.create(null);
+                        const { sources, prevLabelsById } = memo;
+                        let idx = -1, len = labels.length, label;
+        
+                        while (++idx < len) {
+                            let source;
+                            label = labels[idx];
+                            const { id } = label;
+        
+                            if (id in sources) {
+                                source = sources[id];
+                                delete sources[id];
+                                if (memo.simulating !== simulating ||
+                                    memo.semanticZoomLevel !== semanticZoomLevel ||
+                                    !shallowEqual(prevLabelsById[id], label)) {
+                                    updates.push({ ...label, simulating, semanticZoomLevel, tag: 'updated' });
+                                }
+                            } else {
+                                newSources.push(source = new ReplaySubject(1));
+                                updates.push({ ...label, simulating, semanticZoomLevel, tag: 'added' });
+                                source.key = id;
+                            }
+        
+                            labelsById[id] = label;
+                            nextSources[id] = source;
                         }
-                    } else {
-                        newSources.push(source = new ReplaySubject(1));
-                        updates.push({ ...label, simulating, semanticZoomLevel, tag: 'added' });
-                        source.key = id;
-                    }
+        
+                        for (const id in sources) {
+                            sources[id].complete();
+                        }
+        
+                        idx = -1;
+                        len = updates.length;
+                        while (++idx < len) {
+                            label = updates[idx];
+                            nextSources[label.id].next(label);
+                        }
+        
+                        return {
+                            newSources,
+                            simulating,
+                            semanticZoomLevel,
+                            sources: nextSources,
+                            prevLabelsById: labelsById
+                        };
 
-                    labelsById[id] = label;
-                    nextSources[id] = source;
-                }
 
-                for (const id in sources) {
-                    sources[id].complete();
-                }
-
-                idx = -1;
-                len = updates.length;
-                while (++idx < len) {
-                    label = updates[idx];
-                    nextSources[label.id].next(label);
-                }
-
-                return {
-                    newSources,
-                    simulating,
-                    semanticZoomLevel,
-                    sources: nextSources,
-                    prevLabelsById: labelsById
-                };
-            }, {
-                newSources: [],
-                sources: Object.create(null),
-                prevLabelsById: Object.create(null),
-            })
-            .mergeMap(({ newSources }) => newSources)
-        );
-        */
+                    },
+                    {
+                        newSources: [],
+                        sources: Object.create(null),
+                        prevLabelsById: Object.create(null),
+                    }),
+                mergeMap(({ newSources }) => newSources)));
     }
+    //subscribable (g.labelUpdates())
 
     /**
      * Subscribe to label change and exit events
      * @function subscribeLabels
      * @param {Object} - An Object with `onChange` and `onExit` callbacks
      * @return {Subscription} A {@link Subscription} that can be used to stop reacting to label updates
+     * @example
+     * var sub = graphistryJS(document.getElementById('viz'))
+     *    .pipe(subscribeLabels({
+     *       onChange: (label) => {
+     *         console.log(`Label ${label.id} changed at (${label.pageX}, ${label.pageY})`);
+     *      },
+     *     onExit: (label) => {
+     *        console.log(`Label ${label.id} removed at (${label.pageX}, ${label.pageY})`);
+     *    }
+     * }));
+     * setTimeout(() => { sub.unsubscribe(); }, 5000);
      */
-     export function subscribeLabels({ onChange, onExit }) {
-         throw new Error('subscribeLabels not implemented', onChange, onExit);
-         /*
-        return this.labelUpdates().mergeMap((group) => group
-            .do((event) => onChange && onChange(event))
-            .takeLast(1)
-            .do((event) => onExit && onExit(event))
-        )
-        .subscribe();
-        */
+    export function subscribeLabels({ onChange, onExit, cache = {} }) {
+        //throw new Error('subscribeLabels not implemented', onChange, onExit);
+
+        return labelUpdates(cache)
+            .pipe(
+                mergeMap((group) =>  {
+                    return group
+                        .pipe(
+                            tap((event) => onChange && onChange(event)),
+                            takeLast(1),
+                            tap((event) => onExit && onExit(event)));
+                        }))
+            .subscribe();
     }
 
 
