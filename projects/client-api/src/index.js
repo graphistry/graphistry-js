@@ -1626,10 +1626,3 @@ export {
     //g api
     //updateSetting, // exported upon definition
 };
-
-try {
-    //backward compatibility
-    window.GraphistryJS = graphistryJS;
-} catch (e) {
-    //not browser
-}
