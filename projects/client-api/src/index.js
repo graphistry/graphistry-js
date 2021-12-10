@@ -1434,7 +1434,7 @@ function wrapCallback(obs, pipeable, withCB = false) {
                 () => { hasVal && cb(null, val) }
             ));
     };
-};
+}
 
 
 //Convenience functions that match the old API
