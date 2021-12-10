@@ -9,6 +9,7 @@ docker-compose.yml
 
 dist/
 tools/
+docs/
 
 docs-build/
 .github/
