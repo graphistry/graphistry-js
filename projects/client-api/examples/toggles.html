@@ -48,26 +48,30 @@
             }
         </style>
 
-        <script src="../dist/GraphistryJS.js"></script>
+        <!-- <script src="../dist/index.full.iife.min.js"></script> -->
+        <script src="../dist/index.full.iife.js"></script>
         <!-- <script src="/static/docs/graphistry-js/client-api/examples/GraphistryJS.2.js"></script> -->
         
         <script>
 
-        console.log('GraphistryJS', GraphistryJS);
+        const G = GraphistryModule;
+        window.G = G;
 
-        function settingsButtons (g) {
+        console.debug('pipeFromArray', G.pipeFromArray);
+
+        function settingsButtons () {
             console.log('Binding settings');
             [
                 ['showArrows', true],
                 ['showArrows', false],
                 ['pruneOrphans', true],
                 ['pruneOrphans', false],
-                //['background', new g.Color('#CCCCCC').rgb()],
-                //['background', new g.Color('#444444').rgb()],
+                ['background', 'blue'],
+                ['background', 'grey'],
                 ['edgeOpacity', 0.5],
                 ['edgeOpacity', 1],
-                ['edgeSize', 0.5],
-                ['edgeSize', 1.0],
+                //['edgeSize', 0.5],
+                //['edgeSize', 1.0],
                 ['edgeSize', 3.0],
                 ['pointOpacity', 0.5],
                 ['pointOpacity', 1],
@@ -97,32 +101,33 @@
         document.addEventListener("DOMContentLoaded", function () {
 
             var viz = document.getElementById('viz');
-            console.log('DOMContentLoaded', viz);
+            console.info('DOMContentLoaded', viz);
 
-            GraphistryJS(viz)
-                .do(function (g) {
-                    console.log('GraphistryJS instance as window.g', g); 
-                    window.g = g; 
-                })
-                .do(settingsButtons)
-                .do(function () {
-                    document.getElementById('controls').style.opacity = 1.0;
-                })
+            var g = G.graphistryJS(viz);
+            window.g = g;
+
+            settingsButtons();
+            
+            //Use rxjs operators for fine-grained async orchestration (optional)
+            g.pipe(
+                    G.tap(() => console.log('GraphistryJS ready instance as window.g')),
+                    G.tap(() => {
+                        //Enable test controls
+                        document.getElementById('controls').style.opacity = 1.0;
+                    }),
+                    G.delay(5000),
+                    G.addFilter('point:degree > 1'),
+                    G.updateSetting('background', '#FF0000')
+                )
                 .subscribe(
                     function () {},
                     function (err) { console.error('exn on setup', err); },
                     function () { console.log('finished setup'); });
 
-                // g.addFilter('degree > 0');
-                // g.updateSetting('background-color', '#FF0000');
-                // g.tickClustering();
-            // GraphistryLoader(document.getElementById('viz'), function (err, g) {
-            //     window.g = g;
-            //     document.getElementById('controls').style.opacity=1.0;
-            // });
         });
 
         var subscription, cache ={ point: {}, edge: {} };
+        var sc = {};
         function overlay(on) {
             var labels = document.getElementById('labels');
             if (on) {
@@ -133,6 +138,7 @@
                 }
                 window.g.updateSetting('labelEnabled', false);
                 subscription = window.g.subscribeLabels({
+                    cache: sc,
                     onChange: function (event) {
                         var x = event.pageX;
                         var y = event.pageY;
@@ -189,7 +195,7 @@
         }
 
         function openInNewWindow() {
-            window.g.getCurrentWorkbook().subscribe(function (workbook) {
+            window.g.pipe(G.getCurrentWorkbook()).subscribe(function (workbook) {
                 window.open(
                     '/graph/graph.html?dataset=Miserables&workbook=' + workbook.id,
                     '_blank');
@@ -219,17 +225,17 @@
                 
             <h2>Script</h2>
             <table>
+                <!--
                 <tr>
                     <td>Clustering</td>
                     <td>
                         <button onclick="window.g.tickClustering(1)">Run one tick</button>
                         <button onclick="window.g.tickClustering(10)">Run ten ticks</button>
-                <!--
                         <button onclick="window.g.tickClustering(true)">Start Clustering</button>
                         <button onclick="window.g.tickClustering(false)">Stop Clustering</button>
-                -->
                     </td>
                 </tr>
+                -->
                 <!--
                 <tr>
                     <td>API callback</td>
@@ -246,28 +252,30 @@
                         <button onclick="window.g.addExclusion('point:degree < 5')">exclude: point:degree < 5</button>
                     </td>
                 </tr>
+                <!--
                 <tr>
                     <td>Camera</td>
                     <td>
-                        <!--
                         <button onclick="window.g.autocenter()">autocenter</button>
                         <button onclick="window.g.autocenter(0.95)">... on 95% entities</button>
-                        -->
                         <button onclick="window.g.updateSetting('zoom', 1.5)">zoom out</button>
                         <button onclick="window.g.updateSetting('zoom', 0.5)">zoom in</button>
                         <button onclick="window.g.updateSetting('zoom', 1);
                                          window.g.updateSetting('center', 0);">zoom regular (bounding box)</button>
                     </td>
                 </tr>
+                -->
+                <!--
                 <tr>
                     <td>Save</td>
                     <td>
                         <button onclick="window.g.getCurrentWorkbook().subscribe(function (workbook) { alert(workbook.id); })">get workbook id</button>
                         <button onclick="window.g.saveWorkbook()">save workbook</button>
                         <button onclick="openInNewWindow()">open in new window</button>
-                        <!--
-                        <button onclick="window.g.exportStatic('mytest', function (err, url) { alert('view at: ' + url); })">export static: "mytest"</button>-->
+                        <button onclick="window.g.exportStatic('mytest', function (err, url) { alert('view at: ' + url); })">export static: "mytest"</button>
                     </td>
+                </tr>
+                -->
                 <!--
                 <tr style="opacity: 0.5">
                     <td>Encodings</td>
@@ -300,7 +308,6 @@
                     </td>
                 </tr>
                 -->
-
                 <tr>
                     <td>Settings</td>
                     <td><div id="settings"></div></td>
@@ -324,7 +331,7 @@
                 <tr>
                     <td>Icons</td>
                     <td>
-                        <button onclick="window.g.encodeIcons('point', 'community_infomap')">Override icon encoding</button>
+                        <button onclick="window.g.encodeIcons('point', 'community_infomap', {categorical: {fixed: {0: 'laptop', 1: 'alaram'}, other: 'question'}})">Override icon encoding</button>
                         <button onclick="window.g.resetIcons('point')">Reset icon encoding</button>
                     </td>
                 </tr>
@@ -385,6 +392,6 @@
             </table>
         </div>
         <div id="labels"></div>
-        <iframe id="viz" src="https://hub.graphistry.com/graph/graph.html?dataset=Miserables" allowfullscreen></iframe>
+        <iframe id="viz" src="https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=1000" allowfullscreen></iframe>
     </body>
 </html>
