@@ -31,6 +31,8 @@ import {
 } from './rxjs';  // abstract to simplify tolerating constant rxjs namespace manglings
 
 
+const chainList = {};
+
 // //////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -289,7 +291,22 @@ import {
 
         return makeSetter('view', value);
     }
+    chainList.encodeColor = encodeColor;
 
+    /**
+     * @function resetColor
+     * @description Reset color encoding
+     * @param {GraphType} [graphType] - 'point' or 'edge'
+     * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *    .pipe(resetColor('point'))
+     *    .subscribe();
+     */
+    export function resetColor(graphType) {
+        return encodeColor(graphType);
+    }
+    chainList.resetColor = resetColor;
 
     /**
      * @function encodePointColor
@@ -322,6 +339,21 @@ import {
         }
         return encodeColor.apply(this, args);
     }
+    chainList.encodePointColor = encodePointColor;
+
+    /**
+     * @function resetPointColor
+     * @description Reset the point color encoding
+     * @returns {GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *    .pipe(resetPointColor())
+     *    .subscribe();
+     */
+    export function resetPointColor() {
+        return encodePointColor(undefined);
+    }
+    chainList.resetPointColor = resetPointColor;
 
     /**
      * @function encodeEdgeColor
@@ -354,6 +386,21 @@ import {
         }
         return encodeColor.apply(this, args);
     }
+    chainList.encodeEdgeColor = encodeEdgeColor;
+
+    /**
+     * @function resetEdgeColor
+     * @description Reset the edge color encoding
+     * @returns {GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *   .pipe(resetEdgeColor())
+     *   .subscribe();
+    */
+    export function resetEdgeColor() {
+        return encodeEdgeColor(undefined);
+    }
+    chainList.resetEdgeColor = resetEdgeColor; 
 
 
     /**
@@ -370,6 +417,7 @@ import {
 
         return makeSetter('view', value);
     }
+    chainList.encodeAxis = encodeAxis;
 
 
 
@@ -391,7 +439,22 @@ import {
             encodingType: 'icon', graphType, attribute, mapping });
         return makeSetter('view', value);
     }
+    chainList.encodeIcons = encodeIcons;
 
+    /**
+     * @function resetIcons
+     * @description Reset the icon encoding
+     * @param {GraphType} [graphType] - 'point' or 'edge'
+     * @returns {GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *  .pipe(resetIcons())
+     *  .subscribe();
+     */
+    export function resetIcons(graphType) {
+        return encodeIcons(graphType);
+    }
+    chainList.resetIcons = resetIcons;
 
     /**
      * @function encodePointIcons
@@ -424,6 +487,20 @@ import {
         }
         return encodeIcons.apply(this, args);
     }
+    chainList.encodePointIcons = encodePointIcons;
+
+    /**
+     * @function resetPointIcons
+     * @description Reset the point icon encoding
+     * @returns {GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *  .pipe(resetPointIcons())
+     *  .subscribe();
+     */
+    export function resetPointIcons() {
+        return encodeIcons('point');
+    }
 
     /**
      * @function encodeEdgeIcons
@@ -443,7 +520,7 @@ import {
      *     .pipe(encodeEdgeIcons(['some_attr', some_mapping]))
      *     .subscribe();
     **/
-     export function encodeEdgeIcons(opts) {
+    export function encodeEdgeIcons(opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             if (opts instanceof Array) {
@@ -456,6 +533,21 @@ import {
         }
         return encodeIcons.apply(this, args);
     }
+    chainList.encodeEdgeIcons = encodeEdgeIcons;
+
+    /**
+     * @function resetEdgeIcons
+     * @description Reset the edge icon encoding
+     * @returns {GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     * .pipe(resetEdgeIcons())
+     * .subscribe();
+     */
+    export function resetEdgeIcons() {
+        return encodeIcons('edge');
+    }
+    chainList.resetEdgeIcons = resetEdgeIcons;
 
 
     /**
@@ -475,6 +567,22 @@ import {
                     encodingType: 'size', graphType, attribute, ...(mapping ? {mapping} : {}) });
         return makeSetter('view', value);
     }
+    chainList.encodeSize = encodeSize;
+
+    /**
+     * @function resetSize
+     * @description Reset the size encoding
+     * @param {GraphType} [graphType] - 'point'
+     * @returns {GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     *   .pipe(resetSize())
+     *   .subscribe();
+     */
+    export function resetSize(graphType) {
+        return encodeSize(graphType);
+    }
+    chainList.resetSize = resetSize;
 
     /**
      * @function encodePointSize
@@ -506,6 +614,21 @@ import {
         }
         return encodeSize.apply(this, args);
     }
+    chainList.encodePointSize = encodePointSize;
+
+    /**
+     * @function resetPointSize
+     * @description Reset the point size encoding
+     * @returns {GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+     * @example
+     * GraphistryJS(document.getElementById('viz'))
+     * .pipe(resetPointSize())
+     * .subscribe();
+     */
+    export function resetPointSize() {
+        return encodeSize('point');
+    }
+    chainList.resetPointSize = resetPointSize;
 
 
     /**
@@ -519,7 +642,7 @@ import {
      *     .pipe(togglePanel('filters', true));
      *     .subscribe();
      */
-     export function togglePanel(panel, turnOn) {
+    export function togglePanel(panel, turnOn) {
         if (Array.isArray(panel)) {
             turnOn = panel.length > 1 ? panel[1] : undefined;
             panel = panel[0];
@@ -553,6 +676,7 @@ import {
             return makeSetter('view', ...values);
         }
     }
+    chainList.togglePanel = togglePanel;
 
     /**
      * @function encodeDefaultIcons
@@ -572,6 +696,7 @@ import {
                     encodingType: 'icon', graphType, attribute, mapping });
         return makeSetter('view', value);
     }
+    chainList.encodeDefaultIcons = encodeDefaultIcons;
 
     /**
      * @function encodeDefaultPointIcons
@@ -591,7 +716,7 @@ import {
      *     .pipe(encodeDefaultPointIcons(['some_attr', some_mapping]))
      *     .subscribe();
     **/
-   export function encodeDefaultPointIcons(opts) {
+    export function encodeDefaultPointIcons(opts) {
         const args = ['point'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -603,6 +728,7 @@ import {
         }
         return encodeDefaultIcons.apply(this, args);
     }
+    chainList.encodeDefaultPointIcons = encodeDefaultPointIcons;
 
     /**
      * @function encodeDefaultEdgeIcons
@@ -622,7 +748,7 @@ import {
      *     .pipe(encodeDefaultEdgeIcons(['some_attr', some_mapping]))
      *     .subscribe();
     **/
-   export function encodeDefaultEdgeIcons(opts) {
+    export function encodeDefaultEdgeIcons(opts) {
         const args = ['edge'];
         if (opts !== undefined) {
             const attribute = opts instanceof Array ? opts[0] : opts;
@@ -634,6 +760,7 @@ import {
         }
         return encodeDefaultIcons.apply(this, args);
     }
+    chainList.encodeDefaultEdgeIcons = encodeDefaultEdgeIcons;
 
     export function encodeDefaultSize(graphType, attribute, mapping) {
         const { view } = this;
@@ -644,6 +771,7 @@ import {
             .map(({ json }) => json.toJSON())
             .toPromise());
     }
+    chainList.encodeDefaultSize = encodeDefaultSize;
 
     export function encodeDefaultPointSize(opts) {
         const args = ['point'];
@@ -657,6 +785,7 @@ import {
         }
         return encodeDefaultSize.apply(this, args);
     }
+    chainList.encodeDefaultPointSize = encodeDefaultPointSize;
 
     export function encodeDefaultEdgeSize(opts) {
         const args = ['edge'];
@@ -670,13 +799,15 @@ import {
         }
         return encodeDefaultSize.apply(this, args);
     }
+    chainList.encodeDefaultEdgeSize = encodeDefaultEdgeSize;
 
     export function encodeDefaultColor(graphType, attribute, variation, mapping) {
         const value = $value(`encodings.defaults.${graphType}.color`,
                 {   reset: attribute === undefined, variation, name: 'user_' + Math.random(),
                     encodingType: 'color', graphType, attribute, mapping });
         return makeSetter('view', value);
-    }  
+    }
+    chainList.encodeDefaultColor = encodeDefaultColor;
 
     export function encodeDefaultPointColor(opts) {
         const args = ['point'];
@@ -690,6 +821,7 @@ import {
         }
         return encodeDefaultColor.apply(this, args);
     }
+    chainList.encodeDefaultPointColor = encodeDefaultPointColor;
 
     export function encodeDefaultEdgeColor(opts) {
         const args = ['edge'];
@@ -703,6 +835,7 @@ import {
         }
         return encodeDefaultColor.apply(this, args);
     }
+    chainList.encodeDefaultEdgeColor = encodeDefaultEdgeColor;
 
     /**
      * @function toggleInspector
@@ -731,6 +864,7 @@ import {
             }));
         }
     }
+    chainList.toggleInspector = toggleInspector;
 
     /**
      * @function toggleTimebars
@@ -759,6 +893,7 @@ import {
             }));
         }
     }
+    chainList.toggleTimebars = toggleTimebars;
 
     /**
      * @function toggleHistograms
@@ -785,6 +920,7 @@ import {
             }
         }));
     }
+    chainList.toggleHistograms = toggleHistograms;
 
     /**
      * @function Graphistry.tickClustering
@@ -826,6 +962,7 @@ import {
         });
         */
     }
+    chainList.tickClustering = tickClustering;
 
     /**
      * Center the view of the graph
@@ -840,9 +977,10 @@ import {
      *     .pipe(autocenter(.90))
      *     .subscribe();
      */
-     export function autocenter(percentile) {
+    export function autocenter(percentile) {
         return makeCallerJSON('view', 'autocenter', [percentile]);
     }
+    chainList.autocenter = autocenter;
 
     /**
      * Read the workbook ID
@@ -859,6 +997,7 @@ import {
     export function getCurrentWorkbook () {
         return makeGetterJSON('workbook', 'id');
     }
+    chainList.getCurrentWorkbook = getCurrentWorkbook;
 
     /**
      * Save the current workbook. A saved workbook will persist the analytics state
@@ -870,9 +1009,10 @@ import {
      *     .pipe(saveWorkbook())
      *     .subscribe();
      */
-     export function saveWorkbook() {
+    export function saveWorkbook() {
         return makeCallerJSON('workbook', 'save', []);
     }
+    chainList.saveWorkbook = saveWorkbook;
 
 
     /**
@@ -886,9 +1026,10 @@ import {
      * <button onclick="g.pipe(toggleToolbar(true)).subscribe()">Show toolbar</button>
      *
      */
-     export function toggleToolbar(show) {
+    export function toggleToolbar(show) {
         return updateSetting('showToolbar', !!show);
     }
+    chainList.toggleToolbar = toggleToolbar;
 
     /**
      * Add a filter to the visualization with the given expression
@@ -906,6 +1047,7 @@ import {
     export function addFilter(expr) {
         return makeCaller('view', 'filters.add', [expr]);
     }
+    chainList.addFilter = addFilter;
 
     /**
      * Add filters to the visualization with the given expression
@@ -933,6 +1075,7 @@ import {
                 .pipe(map((results) => g.updateStateWithResult(results)));
         });
     }
+    chainList.addFilters = addFilters;
 
     /**
      * Add an exclusion to the visualization with the given expression
@@ -945,9 +1088,10 @@ import {
      *     .pipe(addExclusion('point:degree > 0'))
      *     .subscribe();
      */
-     export function addExclusion(expr) {
+    export function addExclusion(expr) {
         return makeCaller('view', 'exclusions.add', [expr]);
     }
+    chainList.addExclusion = addExclusion;
 
     /**
      * Add an exclusion to the visualization with the given expression
@@ -975,6 +1119,7 @@ import {
                 .pipe(map((results) => g.updateStateWithResult(results)));
         });
     }
+    chainList.addExclusions = addExclusions;
 
     const G_API_SETTINGS = {
 
@@ -1072,6 +1217,7 @@ import {
         const value = $value(path, $atom(val, { $timestamp: Date.now() }) );
         return makeSetter(modelType, value);
     }
+    chainList.updateSetting = updateSetting;
 
     /**
      * Update the camera zoom level
@@ -1083,9 +1229,10 @@ import {
      *     .pipe(updateZoom(2), delay(2000), updateZoom(0.5))
      *     .subscribe();
      */
-     export function updateZoom (level) {
+    export function updateZoom (level) {
         return updateSetting('zoom', level);
     }
+    chainList.updateZoom = updateZoom;
 
     /**
      * Get or create an {@link Observable} stream of all label updates from the visualization.
@@ -1245,6 +1392,49 @@ class GraphistryState {
 
 }
 
+function wrapCallback(obs, pipeable, withCB = false) {
+    return function (...args) {
+        var val, hasVal = false;
+        const cb = withCB 
+            && args.length && (args[args.length - 1] instanceof Function)
+            ? args[args.length - 1]
+            : function () {};
+        return (obs
+            .pipe(pipeable(...args))
+            .subscribe(
+                x => { hasVal = true; val = x; },
+                e => cb(e),
+                () => { hasVal && cb(null, val) }
+            ));
+    };
+};
+
+
+//Convenience functions that match the old API
+//(Deprecate?)
+function addCallbacks(obs) {
+
+    //We used to extend Observable to make chaining extensions monadic...
+    //... but RxJS is phasing that out, so we no longer, and just keep initial top-level
+
+    //returns Subscriptions
+    Object.keys(chainList).forEach(key => {
+        obs[key] = wrapCallback(obs, chainList[key]);
+        obs[key + 'CB'] = wrapCallback(obs, chainList[key], true);
+    });
+
+    /*
+    const lift = function (obs, f) {
+        return function (...args) {
+            return obs.pipe(f(...args));
+        };
+    };
+    */
+    obs.labelUpdates = labelUpdates;// lift(obs, labelUpdates);
+    obs.subscribeLabels = subscribeLabels;//lift(obs, subscribeLabels);
+    return obs;
+}
+
 
 /**
  * Function that wraps an IFrame as an {@link Observable} {@link GraphistryState} - other methods in this library can be piped with it
@@ -1371,6 +1561,8 @@ function graphistryJS(iFrame) {
             }),
             tap((result) => { console.debug(`Graphistry API (replay): connected to client`, result) }),
     );
+
+    addCallbacks(resubscribable);
 
     return resubscribable;
 }
