@@ -1,4 +1,4 @@
-//import shallowEqual from 'shallowequal';
+import shallowEqual from 'shallowequal';
 import { Model } from '@graphistry/falcor-model-rxjs';
 import { PostMessageDataSource } from '@graphistry/falcor-socket-datasource';
 import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
@@ -13,11 +13,14 @@ import {
     isEmpty,
     //last,
     map,
+    mergeMap,
     Observable,
     of,
     pipe,
     ReplaySubject,
+    scan,
     share,
+    shareReplay,
     startWith,
     //Subject,
     switchMap,
@@ -1392,6 +1395,7 @@ export {
     Observable,
     of,
     map,
+    mergeMap,
     pipe,
     startWith,
     switchMap,
