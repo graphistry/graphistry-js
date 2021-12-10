@@ -69,18 +69,18 @@
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "7.16.0",
-    "esbuild": "0.13.12",
+    "esbuild": "0.14.2",
     "eslint": "7.32.0",
     "jsdoc": "3.6.7",
     "jsdoc-babel": "~0.5.0",
     "clean-jsdoc-theme": "3.2.10",
-    "rimraf": "3.0.2",
-    "shallowequal": "1.1.0"
+    "rimraf": "3.0.2"
   },
   "dependencies": {
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-model-rxjs": "2.9.11",
-    "@graphistry/falcor-socket-datasource": "2.9.11"
+    "@graphistry/falcor-socket-datasource": "2.9.11",
+    "shallowequal": "1.1.0"
   },
   "peerDependencies": {
     "rxjs": ">=7.2.0"
