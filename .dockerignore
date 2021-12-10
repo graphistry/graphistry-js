@@ -9,5 +9,10 @@ docker-compose.yml
 
 dist/
 tools/
-www/
+docs/
 
+docs-build/
+.github/
+projects/client-api/jsdocs/
+projects/client-api/www/
+projects/client-api-react/www/

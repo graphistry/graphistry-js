@@ -1,3 +1,5 @@
+import theme from './theme';
+
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
   controls: {
@@ -6,4 +8,7 @@ export const parameters = {
       date: /Date$/,
     },
   },
+  docs: {
+    theme: theme
+  }
 }

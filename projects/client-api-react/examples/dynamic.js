@@ -12,7 +12,7 @@ ReactDOM.render(
                 showPointsOfInterest={false}
                 apiKey='<your API Key here>'
                 style={{ border: `1px solid #ccc` }}
-                graphistryHost='https://labs.graphistry.com'
+                graphistryHost='https://hub.graphistry.com'
                 nodes={[
                     { nodeId: 'node1', pointTitle: 'Point 1', aNodeField: `I'm a node!`, pointColor: 5 },
                     { nodeId: 'node2', pointTitle: 'Point 2', aNodeField: `I'm a node too!`, pointColor: 4 },

@@ -35,6 +35,10 @@ const bindingsTable = {
     gravity:				[ PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)), 'defaultGravity',  undefined,  undefined],
     scalingRatio:			[ PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)), 'defaultScalingRatio', undefined,  undefined],
 
+    togglePanel:            [ PropTypes.array,      undefined,                   undefined,      'togglePanel'],
+    
+    ticks:                  [PropTypes.number,      undefined,                   undefined,        'tickClustering'],
+
     filters:                [
         PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
                                                      undefined,                   undefined,      'addFilters'],
@@ -100,7 +104,7 @@ const bindingsTable = {
 
 
 //[ {name: String, nameDefault: String, reactType: PropType, jsName: String, jsCommand: ?String} ]
-export const bindings = 
+const bindings = 
     Object.keys(bindingsTable).map( name => {
         const [ reactType, nameDefault, jsName, jsCommand ] = bindingsTable[name];
         return {
@@ -111,3 +115,5 @@ export const bindings =
             jsCommand
         };
     });
+
+export { bindings };

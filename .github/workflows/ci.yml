@@ -31,13 +31,19 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: "Build"
+    - name: "Build and lint"
       run: |
         docker-compose build
 
     - name: "Lint"
       run: |
         docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/cli.js run lint
+
+    #- name: Storybook 🔧
+    #  run: ./tools/storybook.sh
+
+    #- name: JSDocs 🔧
+    #  run: ./tools/jsdocs.sh
 
     - name: "Ensure binaries"
       run: |

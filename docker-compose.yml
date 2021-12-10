@@ -42,6 +42,9 @@ services:
   storybook:
     << : *production_opts
     image:  graphistry/graphistry-js:${APP_BUILD_TAG:-latest}
+    build:
+      << : *build_kwargs
+      dockerfile: ./Dockerfile
     ports:
       - "6006:6006"
     init: true
@@ -59,7 +62,8 @@ services:
       #- --port=${STORYBOOK_PORT:-6006}
     volumes:
       # TODO does not seem to get picked up
-      #- ./projects/client-api/src:/opt/graphistry-js/projects/client-api/src:ro
+      - ./projects/client-api/src:/opt/graphistry-js/projects/client-api/src:ro
+      - ./projects/client-api-react/package.json:/opt/graphistry-js/projects/client-api-react/package.json:ro
       - ./projects/client-api-react/src:/opt/graphistry-js/projects/client-api-react/src:ro
       - ./projects/client-api-react/assets:/opt/graphistry-js/projects/client-api-react/assets:ro
       - ./projects/client-api-react/.storybook:/opt/graphistry-js/projects/client-api-react/.storybook:ro

@@ -12,8 +12,9 @@
     ],
     "opts": {
         "encoding": "utf8",
-        "private": false,
-        "recurse": true
+        "private": true,
+        "recurse": true,
+        "template": "./node_modules/clean-jsdoc-theme"
     },
     "babel": {
         "presets": ["@babel/preset-env"]

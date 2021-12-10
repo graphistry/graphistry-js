@@ -2,7 +2,7 @@
   "name": "@graphistry/client-api",
   "version": "3.7.6",
   "description": "Client-side API for interacting with a Graphistry embedded visualization.",
-  "jsnext:main": "es/index.js",
+  "jsnext:main": "dist/index.js",
   "config": {
     "port": 8000,
     "entry": {
@@ -10,32 +10,47 @@
         "./src/index.js"
       ]
     },
-    "output": {
-      "library": null,
-      "umdNamedDefine": true
-    }
+    "default": "./dist/index.full.esm.min.js"
   },
 
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
+  "main": "dist/index.cjs.full.min.js",
+  "module": "dist/index.esm.full.min.js",
   "source": "src/index.js",
   "files": [
     "dist",
     "docs",
+    "jsdocs",
+    "src",
     "README.md"
   ],
 
   "scripts": {
-    "build": "npm run build:js && npm run build:docs",
-    "build:js": "npm run build:cjs && npm run build:esm && npm run build:esm2 && npm run build:iifi",
-    "build:cjs":  "esbuild --bundle src/index.js --sourcemap --target=es6 --format=cjs --outfile=dist/client-api.cjs.js --minify",
-    "build:esm":  "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.js",
-    "build:esm2": "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.mjs",
-    "build:iifi": "esbuild --bundle src/index.js --sourcemap --target=es6 --format=esm --outfile=dist/index.iifi.js --global-name=GraphistryJS",
+    "build": "npm run build:js && npm run build:js:full && npm run build:docs",
+
+    "build:js": "npm run build:js-core && npm run build:js-aliases",
+    "build:js-core": "npm run build:cjs && npm run build:esm && npm run build:iife && npm run build:iife-raw",
+    "build:js-aliases": "cp dist/index.esm.min.js dist/index.min.mjs",
+    "build:cjs":  "esbuild --bundle src/index.js      --minify --sourcemap --target=es6 --external:rxjs --format=cjs  --outfile=dist/index.cjs.min.js",
+    "build:esm":  "esbuild --bundle src/index.js      --minify --sourcemap --target=es6 --external:rxjs --format=esm  --outfile=dist/index.esm.min.js",
+    "build:iife": "esbuild --bundle src/index.js      --minify --sourcemap --target=es6 --external:rxjs --format=iife --outfile=dist/index.iife.min.js --global-name=GraphistryModule",
+    "build:iife-raw": "esbuild --bundle src/index.js           --sourcemap --target=es6 --external:rxjs --format=iife --outfile=dist/index.iife.js --global-name=GraphistryModule",
+
+    "build:js:full": "npm run build:js-core:full && npm run build:js-aliases:full",
+    "build:js-core:full": "npm run build:cjs:full && npm run build:esm:full && npm run build:iife:full && npm run build:iife:full-raw",
+    "build:js-aliases:full": "cp dist/index.full.esm.min.js dist/index.full.min.mjs && cp dist/index.full.iife.min.js dist/GraphistryJS.min.js && cp dist/index.full.iife.js dist/GraphistryJS.full.js",
+    "build:cjs:full":  "esbuild --bundle src/index.js --minify --sourcemap --target=es6 --format=cjs  --outfile=dist/index.full.cjs.min.js",
+    "build:esm:full":  "esbuild --bundle src/index.js --minify --sourcemap --target=es6 --format=esm  --outfile=dist/index.full.esm.min.js",
+    "build:iife:full": "esbuild --bundle src/index.js --minify --sourcemap --target=es6 --format=iife --outfile=dist/index.full.iife.min.js --global-name=GraphistryModule",
+    "build:iife:full-raw": "esbuild --bundle src/index.js      --sourcemap --target=es6 --format=iife --outfile=dist/index.full.iife.js --global-name=GraphistryModule",
+
     "build:docs": "rimraf docs && mkdir -p docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
     "lock:fix": "npm i --package-lock-only",
     "prebuild:docs": "rimraf docs",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "clean": "npm run clean:install && npm run clean:build && npm run clean:docs",
+    "clean:install": "rimraf node_modules",
+    "clean:build": "rimraf dist es libs",
+    "clean:docs": "rimraf docs jsdocs"
   },
   "repository": {
     "type": "git",
@@ -52,21 +67,22 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api#readme",
   "devDependencies": {
+    "@babel/core": "^7.16.0",
     "@babel/preset-env": "7.16.0",
-    "esbuild": "0.13.12",
+    "esbuild": "0.14.2",
     "eslint": "7.32.0",
     "jsdoc": "3.6.7",
     "jsdoc-babel": "~0.5.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "rimraf": "3.0.2",
-    "shallowequal": "1.1.0"
+    "clean-jsdoc-theme": "3.2.10",
+    "rimraf": "3.0.2"
   },
   "dependencies": {
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-model-rxjs": "2.9.11",
     "@graphistry/falcor-socket-datasource": "2.9.11",
-    "rxjs": "5.4.3",
-    "symbol-observable": "^4.0.0"
+    "shallowequal": "1.1.0"
+  },
+  "peerDependencies": {
+    "rxjs": ">=7.2.0"
   }
 }

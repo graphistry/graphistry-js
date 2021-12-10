@@ -1,17 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import uuidv4 from 'uuid/v4';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
+import uuidv4 from 'uuid/v4';
 
-import { GraphistryJS } from '@graphistry/client-api';
+import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api';
+import * as gAPI from '@graphistry/client-api';
+import { ajax, catchError, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings } from './bindings.js';
-import { usePrevious } from './usePrevious';
 
-window.React2 = React;
-console.log('component', window.React1 === window.React2, window.React1 === React);
+//https://blog.logrocket.com/how-to-get-previous-props-state-with-react-hooks/
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    });
+    return ref.current;
+}
 
-const { Observable } = GraphistryJS;
 const loadingNavLogoStyle = {
     top: `5px`,
     width: `100%`,
@@ -73,6 +79,9 @@ const propTypes = {
     axes: PropTypes.array,
     controls: PropTypes.string,
     workbook: PropTypes.string,
+
+    //ticks
+    ticks: PropTypes.number
 };
 
 const defaultProps = {
@@ -104,83 +113,125 @@ const defaultProps = {
 // apiKey, graphistryHost, vizStyle, vizClassName, allowFullScreen, backgroundColor,
 const ETLUploader = (props) => {
 
-    const { dataset, edges, nodes, bindings } =  props;
+    const {
+        dataset, edges, nodes, bindings,
+        setLoading, setDataset, setLoadingMessage,
+        apiKey, graphistryHost
+    } =  props;
 
     const prevEdges = usePrevious(edges);
     const prevNodes = usePrevious(nodes);
     const prevBindings = usePrevious(bindings);
 
-    if (typeof dataset === 'string' || (
+    const hasDatasetOrUnchangedGraph = typeof dataset === 'string' || (
         shallowEqual(prevEdges, edges) &&
         shallowEqual(prevNodes, nodes) &&
-        shallowEqual(prevBindings, bindings))) {
-        console.log('has dataset or unchanged data: no upload');
-        return null;
-    }
+        shallowEqual(prevBindings, bindings));
 
-    const { setLoading, setDataset, setLoadingMessage,
-            apiKey, graphistryHost = {} } = props;
-    if (!edges ||
+    const lacksGraphConfig = !edges ||
         !edges.length ||
         !apiKey ||
         !bindings ||
         !bindings.sourceField ||
         !bindings.destinationField || (
-            !bindings.idField && nodes && nodes.length)) {
-        setLoading(false);
-        setDataset(null);
-        //TODO is this reachable during progressive rendering?
-        console.error('upload missing data, skipping', {
-            edges,
-            apiKey,
-            bindings: { sourceField: bindings.sourceField, destinationField: bindings.destinationField, idField: bindings.idField },
-            nodes,
-        });
-        return null;
-    }
+            !bindings.idField && nodes && nodes.length);
 
-    console.log('uploading');
-    const type = 'edgelist';
-    const name = uuidv4();
-    setLoading(true);
-    setDataset(null);
-    setLoadingMessage('Uploading graph');
-    Observable.ajax.post(`${graphistryHost || ''}/etl${''
-        }?key=${apiKey
-        }&apiversion=1${''
-        }&agent=${encodeURIComponent(`'client-api-react'`)}`,
-        { type, name, graph: edges, labels: nodes, bindings },
-        { 'Content-Type': 'application/json' }
-    ).do(({ response }) => {
-        if (response && response.success) {
-            console.log('response', response);
-            setLoading(!props.showSplashScreen)
-            return response;
-        } else {
-            console.error('upload failed', response);
-            throw new Error('Error uploading graph');
+    useEffect(() => {
+        if (hasDatasetOrUnchangedGraph) {
+            return;
         }
-    })
-    .first()
-    .subscribe(
-        (response) => {
-            setLoading(false);
-            setDataset(response.dataset);
-        },
-        (error) => {
+        if (lacksGraphConfig) {
             setLoading(false);
             setDataset(null);
-            setLoadingMessage('Error uploading graph');
-            console.error('error uploading graph', error);
+            return;
         }
-    );
+
+        setLoading(true);
+        setDataset(null);
+        setLoadingMessage('Uploading graph');
+ 
+        const type = 'edgelist';
+        const name = uuidv4();
+        const payload = { type, name, graph: edges, labels: nodes, bindings };
+        const url = `${graphistryHost || ''}/etl${''
+    }?key=${apiKey
+    }&apiversion=1${''
+    }&agent=${encodeURIComponent(`'client-api-react'`)}`
+        console.debug('uploading', url, payload);
+        const sub = ajax({
+                url,
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body: payload
+            })
+            .do(({ response }) => {
+                if (response && response.success) {
+                    console.debug('upload response', response);
+                    setLoading(!props.showSplashScreen)
+                    return response;
+                } else {
+                    console.error('upload failed', response);
+                    throw new Error('Error uploading graph');
+                }
+            })
+            .first()
+            .subscribe(
+                (response) => {
+                    setLoading(false);
+                    setDataset(response.dataset);
+                },
+                (error) => {
+                    setLoading(false);
+                    setDataset(null);
+                    setLoadingMessage('Error uploading graph');
+                    console.error('error uploading graph', error);
+                }
+            );
+
+        return () => {
+            console.debug('unsubscribing upload', {url, payload, sub});
+            sub.unsubscribe();
+        }
+
+    }, [
+        dataset, edges, nodes, bindings,
+        prevEdges, prevNodes, prevBindings,
+        apiKey, graphistryHost,
+        setLoading, setDataset, setLoadingMessage,
+    ]);
 
     return null;
 };
 
-function handleUpdates({g, isFirstRun, props}) {
-    console.log('update any settings')
 
+function propsToCommands({g, props, prevState, axesMap}) {
+    const commands = {};
+    bindings.forEach(({name, jsName, jsCommand}) => {
+        const val = props[name];
+        if (prevState[name] !== val) {
+            if (jsCommand) {
+                console.debug('js cmd', jsCommand);
+                if (!gAPI[jsCommand]) {
+                    throw new Error(`Resolved operator ${jsCommand} not in GraphistryJS; GraphistryJS<>GraphistryReac version mismatch?`);
+                }
+
+            }
+            commands[name] = of(g).pipe(!jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val));
+        }
+    });
+    if (props.axes && !axesMap.has(props.axes)) {
+        axesMap.set(props.axes, true);
+        commands['axes'] = of(g).pipe(encodeAxis(props.axes));
+    }
+    /*
+    //TODO
+    if (typeof props.workbook !== 'undefined') commands['saveWorkbook'] = saveWorkbook();
+    */
+    console.debug('commands', commands);
+    return commands;
+}
+
+function handleUpdates({g, isFirstRun, axesMap, props}) {
     const prevState = {};
     const currState = {};
     bindings.forEach(({name}) => {
@@ -190,52 +241,37 @@ function handleUpdates({g, isFirstRun, props}) {
     });
 
     useEffect(() => {
+        console.debug('update any settings', !isFirstRun && g && g.g, {isFirstRun, readyG: g && g.g, props, prevState, currState});
+
         if (isFirstRun) {
             console.log('firstRun; skip updates')
             return;
-        }
-    
-        if (!g || !g.g) {
+        } else if (!g) {
             console.log('no g; skip updates')
             return;
         }
 
-        const changes = [];        
-        const changed = {};
-        bindings.forEach(({name, jsName, jsCommand}) => {
-            const val = props[name];
-            if (prevState[name] !== val) {
-                changed[name] = val;
-                if (!jsCommand) {
-                    changes.push(g.g.updateSetting(jsName, val));
-                } else {
-                    console.log('pushing update command', {jsCommand, val});
-                    changes.push(g.g[jsCommand](val));
-                }
-            }
-        });
-        /*
-        //TODO
-        if (typeof props.workbook !== 'undefined') operations.push(g.saveWorkbook());
-        if (typeof props.axes !== 'undefined' && !axesMap.has(props.axes)) {
-            axesMap.set(props.axes, true);
-            operations.push(g.encodeAxis(props.axes));
-        }
-        */
-        if (changes.length) {
-            console.log('dispatched all updating settings', changed);
-            Observable
-                .merge(...changes)
-                .takeLast(1).startWith(null)
+        const commands = propsToCommands({g, props, prevState, axesMap});
+
+        if (Object.keys(commands).length) {
+            console.debug('dispatched all updating settings', commands);
+            const sub = forkJoin(commands)
                 .subscribe(
-                    (v) => { console.log('iframe prop change updates', v, changed); },
-                    (e) => { console.error('iframe prop change error', e, changed); },
-                    () => { console.log('iframe prop change done', changed); }
+                    () => { },
+                    (e) => { console.error('iframe prop change error', e, commands); },
+                    () => { console.debug('iframe prop change done', commands); }
                 );
+            return () => {
+                sub.unsubscribe();
+            }
         } else {
-            console.log('no updating settings to dispatch');
+            console.debug('no changes to settings', prevState, currState, commands);
         }
-    }, [...Object.values(currState), ...Object.values(prevState), g]);
+    }, [
+        ...Object.values(currState),
+        ...Object.values(prevState),
+        g
+    ]);
 }
 
 
@@ -243,6 +279,7 @@ function handleUpdates({g, isFirstRun, props}) {
 function generateIframeRef({
     setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
     url, dataset, props,
+    axesMap,
     iframeStyle, iframeClassName, iframeProps, allowFullScreen
 }) {
     return useCallback(iframe => {
@@ -250,76 +287,60 @@ function generateIframeRef({
             let loaded = false;
             setLoading(true);
             setLoadingMessage('Fetching session');
-            console.log('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
-            const sub = (new GraphistryJS(iframe))
-                .do((g2) => {
-                    if (!loaded) {
-                        console.log('leading, disable loader!')
-                        loaded = true;
-                        setG({g: g2});
-                        setLoading(false);
-                        setLoadingMessage('');
-                        setFirstRun(true);
-                    } else {
-                        console.log('trailing, no loader!')
-                    }
-                })
-                .do((g2) => {
-                    const changes = [];        
-                    const changed = {};
-                    bindings.forEach(({name, jsName, jsCommand}) => {
-                        const val = props[name];
-                        if (val !== undefined) {
-                            console.log('not undefined', {val, jsCommand, jsName});
-                            if (!jsCommand) {
-                                console.log('pushing init setting', {name, jsName, val});
-                                changes.push(g2.updateSetting(jsName, val));
-                                changed[name] = val;
-                            } else {
-                                console.log('pushing init command', {name, jsName, jsCommand, val});
-                                changes.push(g2[jsCommand](val));
-                            }
+            console.info('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
+            const sub = (graphistryJS(iframe))
+                .pipe(
+                    switchMap(
+                        (g) => of(g).pipe(
+                            tap((g) => {
+                                if (!loaded) {
+                                    console.debug('iframe loader taking over', g)
+                                    loaded = true;
+                                    setG(g);
+                                    setLoading(false);
+                                    setLoadingMessage('');
+                                    setFirstRun(true);
+                                } else {
+                                    console.debug('iframe init not ready yet', g)
+                                }
+                            }),
+                            switchMap((g) => {
+                                const commands = propsToCommands({g, props, prevState: {}, axesMap});
+                                if (Object.keys(commands).length) {
+                                    console.debug('created all iframe init settings commands', commands);
+                                    return forkJoin(commands)
+                                        .pipe(
+                                            tap((hits) => { console.debug('new iframe commands all returned', {hits} ); }),
+                                            map(hits => g.updateStateWithResult(hits)))
+                                }
+                                console.debug('new iframe with no commands');
+                                return of(g.updateStateWithResult([]))
+                            }),
+                            catchError(exn => {
+                                console.error('error in iframe initialization', exn);
+                                return g.updateStateWithResult(exn);
+                            }))),
+                    tap((g) => {
+                        console.debug('new iframe all init updates handled, if any', g);
+                        setFirstRun(false);
+                        if (props.onClientAPIConnected) {
+                            console.debug('has onClientAPIConnected(), calling', props.onClientAPIConnected);
+                            props.onClientAPIConnected(g);
                         }
-                    });
-                    /*
-                    //TODO
-                    if (typeof props.workbook !== 'undefined') operations.push(g.saveWorkbook());
-                    if (typeof props.axes !== 'undefined' && !axesMap.has(props.axes)) {
-                        axesMap.set(props.axes, true);
-                        operations.push(g.encodeAxis(props.axes));
-                    }
-                    */
-                    Observable
-                        .merge(...changes)
-                        .takeLast(1).startWith(null)
-                        .do(() => {
-                            setFirstRun(false);
-                        })
-                        .subscribe(
-                            (v) => { console.log('iframe prop init updates', v, changed); },
-                            (e) => { console.error('iframe prop init error', e, changed); },
-                            () => {
-                                console.log('iframe prop init done', changed);
-                            }
-                        )
-                })
-                .do((g2) => {
-                    if (props.onClientAPIConnected) {
-                        props.onClientAPIConnected.call(undefined, g2);
-                    }
-                })
+                    }),
+                )
                 .subscribe(
-                    (v) => console.log('sub hit', v),
-                    (e) => console.error('sub error', e),
-                    () => console.log('sub complete'));
+                    (v) => console.debug('iframe init sub hit', v),
+                    (e) => console.error('iframe init sub error', e),
+                    () => console.debug('iframe init sub complete'));
             setGSub(sub);
             return () => {
                 // Not called in practice; maybe only if <Graphistry> itself is unmounted?
-                console.log('iframe unmounted!', iframe);
+                console.debug('iframe unmounted!', iframe);
                 sub.unsubscribe();
             }    
         } else {
-            console.log('no iframe', typeof(iframe), {iframe, dataset});
+            console.debug('no iframe', typeof(iframe), {iframe, dataset});
             return () => {};
         }
     }, [
@@ -351,12 +372,12 @@ function Graphistry(props) {
     const [gSub, setGSub] = useState(null);
     const prevSub = usePrevious(gSub);
 
-    console.log('update any settings')
+    const [axesMap] = useState(new WeakMap());
+
     const [isFirstRun, setFirstRun] = useState(true);
-    handleUpdates({g, isFirstRun, props});
+    handleUpdates({g, isFirstRun, axesMap, props});
 
-
-    //props changes override latest etl?
+    //props changes override latest etl
     const prevDataset = usePrevious(props.dataset);
     useEffect(() => {
         if ((prevDataset !== props.dataset) && (props.dataset !== dataset)) {
@@ -365,12 +386,9 @@ function Graphistry(props) {
     }, [props.dataset, prevDataset, dataset]);
 
     useEffect(() => {
-        if (prevSub != gSub) {
-            console.log('iframe sub changed!', prevSub, gSub);
-            if (prevSub) {
-                console.log('unsubscribing prev iframe g sub');
-                prevSub.unsubscribe();
-            }
+        if ((prevSub != gSub) && prevSub) {
+            console.debug('unsubscribing prev iframe g sub');
+            prevSub.unsubscribe();
         }
     }, [prevSub, gSub]);
 
@@ -391,12 +409,13 @@ function Graphistry(props) {
     const iframeRef = generateIframeRef({
         setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
         url, dataset, props,
+        axesMap,
         iframeStyle, iframeClassName, iframeProps, allowFullScreen
     });
 
     const children = [
         <ETLUploader 
-            key={'g_etl'}
+            key={`g_etl_${props.key}`}
             {...props}
             {...{setLoading, setDataset, setLoadingMessage}}
         />
@@ -405,7 +424,7 @@ function Graphistry(props) {
     if (loading && !showSplashScreen) {
         const showHeader = showMenu && showToolbar;
         children.push(
-            <div key='graphistry-loading-placeholder'
+            <div key={`graphistry-loading-placeholder-${props.key}`}
                  className='graphistry-loading-placeholder'>
                 {showHeader &&
                 <div className='graphistry-loading-placeholder-nav'>
@@ -423,10 +442,9 @@ function Graphistry(props) {
     }
 
     if (dataset) {
-        console.log('<Graphistry> render iframe', dataset, url);
         children.push(
             <iframe
-                    key={`g_iframe_${url}`}
+                    key={`g_iframe_${url}_${props.key}`}
                     ref={iframeRef}
                     scrolling='no'
                     style={iframeStyle}

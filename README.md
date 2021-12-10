@@ -23,7 +23,9 @@ The JavaScript client APIs makes it easy to embed visual graph analytics into Ja
 
 GraphistryJS comes in 2 flavors:
 
-* [client-api](projects/client-api/README.md): Pure JavaScript API taking advantage of reactive/observable style code for chaining async code
+http://localhost:60863/?path=/story/graphistry-vanilla-js--instantiate-graphistry-js
+
+* [client-api](projects/client-api/README.md) ([interactive storybook docs](https://graphistry.github.io/graphistry-js/?path=/story/graphistry-vanilla-js)): Pure JavaScript API taking advantage of reactive/observable style code for chaining async code
 * [client-api-react](projects/client-api-react/README.md) ([interactive storybook docs](https://graphistry.github.io/graphistry-js/)): React component for typical cases
 
 ### Architecture
