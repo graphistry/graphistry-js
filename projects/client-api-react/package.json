@@ -42,7 +42,7 @@
 
     "build:dev": "esbuild --bundle src/index.js  --target=es6 --loader:.js=jsx --outfile=www/main.js --sourcemap",
 
-    "build:linked": "npm run build:linked:js && build:linked:min:js",
+    "build:linked": "npm run build:linked:js && npm run build:linked:min:js",
     "build:linked:js": "npm run build:cjs:js && npm run build:esm:js && npm run build:iife:js",
     "build:cjs:js": "esbuild --bundle src/index.js       --sourcemap --target=es6 --loader:.js=jsx --format=cjs  --external:react --external:react-dom --outfile=dist/index.cjs.js",
     "build:esm:js": "esbuild --bundle src/index.js       --sourcemap --target=es6 --loader:.js=jsx --format=esm  --external:react --external:react-dom --outfile=dist/index.esm.js",
