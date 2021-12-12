@@ -77,22 +77,20 @@ npm run build
 ```
 
 
-## Native - outdated
+## Publish for public consumption (Maintainer only)
 
-### Publish for public consumption (Maintainer only)
+1. Local build
 
-1. Follow above build steps
+2. Ensure git clean (`git status`) + npm auth (`npm login`)
 
-2. Ensure git + npm auth
+3. Publish:
 
-3. npm run deploy
+```bash
+lerna version X.Y.Z-alpha.2
+lerna publish #  if failed: lerna publish from-package
+```
 
-This will update the changelog, push that to github, and then lerna publish
-
-
-### Update downstream (Maintainer only)
-
-Most likely, you want to update version dependencies in:
+4. Most likely, you also want to update version dependencies in:
 
 * pivot-app
 * viz-app
