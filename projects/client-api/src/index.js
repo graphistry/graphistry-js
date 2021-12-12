@@ -1436,18 +1436,38 @@ function wrapCallback(obs, pipeable, withCB = false) {
     };
 }
 
+function aliasLegacyToplevels(o) {
+    o.do = function (f) {
+        const out = this.pipe(tap(f));
+        return aliasLegacyToplevels(out);
+    };
+    o.map = function (f) {
+        const out = this.pipe(map(f));
+        return aliasLegacyToplevels(out);
+    };
+    o.switchMap = function (f) {
+        const out = this.pipe(switchMap(f));
+        return aliasLegacyToplevels(out);
+    };
+    return o;
+}
+
 
 //Convenience functions that match the old API
 //(Deprecate?)
-function addCallbacks(obs) {
+function addCallbacks(obs, target) {
+
+    if (!target) {
+        target = obs;
+    }
 
     //We used to extend Observable to make chaining extensions monadic...
     //... but RxJS is phasing that out, so we no longer, and just keep initial top-level
 
     //returns Subscriptions
     Object.keys(chainList).forEach(key => {
-        obs[key] = wrapCallback(obs, chainList[key]);
-        obs[key + 'CB'] = wrapCallback(obs, chainList[key], true);
+        target[key] = wrapCallback(obs, chainList[key]);
+        target[key + 'CB'] = wrapCallback(obs, chainList[key], true);
     });
 
     /*
@@ -1457,9 +1477,9 @@ function addCallbacks(obs) {
         };
     };
     */
-    obs.labelUpdates = labelUpdates;// lift(obs, labelUpdates);
-    obs.subscribeLabels = subscribeLabels;//lift(obs, subscribeLabels);
-    return obs;
+    target.labelUpdates = labelUpdates;// lift(obs, labelUpdates);
+    target.subscribeLabels = subscribeLabels;//lift(obs, subscribeLabels);
+    return target;
 }
 
 
@@ -1468,7 +1488,7 @@ function addCallbacks(obs) {
  * @func graphistryJS
  * @exports module:Graphistry
  * @param {Object} IFrame - An IFrame that hosts a Graphistry visualization.
- * @return {@link Graphistry}
+ * @return {@link GraphistryState} - Observable that emits {@link GraphistryState} (must .subscribe() to start listening)
  * @example
  *
  * <iframe id="viz" src="https://hub.graphistry.com/graph/graph.html?dataset=Miserables" />
@@ -1502,7 +1522,7 @@ function addCallbacks(obs) {
  * </script>
  *
  */
-function graphistryJS(iFrame) {
+export function graphistryJS(iFrame) {
 
     if (!iFrame) {
         throw new Error('No iframe provided to Graphistry');
@@ -1580,28 +1600,32 @@ function graphistryJS(iFrame) {
     //https://rxjs.dev/deprecations/multicasting
     const resubscribable = 
         flow.pipe(
-            share({
-                connector: () => new ReplaySubject(1),
-                resetOnError: false,
-                resetOnComplete: false,
-                resetOnRefCountZero: false,
-            }),
-            tap((result) => { console.debug(`Graphistry API (replay): connected to client`, result) }),
-    );
+                shareReplay(1),
+                tap((result) => { console.debug(`Graphistry API (replay): connected to client`, result) }),
+        );
 
-    addCallbacks(resubscribable);
+    const flowEnriched = resubscribable.pipe(map((g) => addCallbacks(resubscribable, g)));
 
-    return resubscribable;
+    addCallbacks(flowEnriched);
+    aliasLegacyToplevels(flowEnriched);
+
+    return flowEnriched;
 }
 
 
 //https://github.com/evanw/esbuild/issues/1719
 //export default graphistryJS;
 
-export {
+export const GraphistryJS = graphistryJS;
 
-    //main
-    graphistryJS,
+/* legacy */
+(function () { 
+    try {
+        window.GraphistryJS = graphistryJS;
+    } catch (e) { }  // eslint-disable-line no-empty
+}());
+
+export {
 
     //rxjs: reexport for end-user convenience without explicit dependency / rxjs expertise
     ajax,
@@ -1610,12 +1634,17 @@ export {
     delay,
     filter,
     forkJoin,
+    fromEvent,
     isEmpty,
-    Observable,
-    of,
     map,
     mergeMap,
+    Observable,
+    of,
     pipe,
+    ReplaySubject,
+    scan,
+    share,
+    shareReplay,
     startWith,
     switchMap,
     take,

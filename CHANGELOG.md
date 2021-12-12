@@ -9,11 +9,19 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* **storybook:**: Added storybook-based demos
-* **gh pages:** New site at [graphistry.github.io/graphistry-js](https://graphistry.github.io/graphistry-js)
-* **React:** Upgraded to hooks
-* **docker:** Use buildkit caching and layering
+* **React:** Upgraded to hooks (v17)
+* **React:** Unpinned, peer dependency, and optional externalization in binaries
+* **React:** Added new experimental props and callers
+* **RxJS:** Upgraded (v7)
+* **RxJS:** Unpinned, peer dependency, and optional externalization in binaries
+* React now a required peer dependency when used from client-api-react
+* **Multiple format bundles**: `dist/index.{cjs,esm,iife}(.full?)(.min?).js`
+
+### Infra
+
 * **gha:** Automate build using github actions and docker
+* **esbuild:** Faster build
+* **docker:** Use buildkit caching and layering
 
 ### Bug Fixes
 
@@ -21,18 +29,28 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **props:** Changing props such as background no longer triggers a page reload
 * **filters:** Demos run on a delay to avoid racy load issue
 
+### Docs
+
+* **CHANGELOG.md**: Only use root-level, removing project-level
+* **storybook:**: Added storybook-based demos
+* **gh pages:** New site at [graphistry.github.io/graphistry-js](https://graphistry.github.io/graphistry-js)
+
+### Deprecated
+
+* ... and corresponding removal of prototype dot chaining, replaced with composition (pipe)
+
 ### Breaking Changes
 
-* Version bump for rxjs
-* ... and corresponding removal of prototype dot chaining, replaced with composition (pipe)
-* React now a required peer dependency when used from client-api-react
-* Removed `withClientAPI`; instead use `Graphistry` directly
-* Changed styling override fields and behavior:
+We expect no breaking changes for most users
+
+Use of old chained rxjs calling pattern are deprecated: old demos still work, but not all rxjs operators are chainable, nor in nested use
+
+* **Hooks:** Removed recompose in favor of hooks, pushing minimum React version to 16.8
+* **React:** Removed `withClientAPI`; instead use `Graphistry` directly
+* **React:** Changed styling override fields and behavior:
   * Removed `vizStyle`, `vizClassName`, `style`, `className`
   * Added `containerStyle`, `containerClassName`, `containerProps`
   * Added `iframeStyle`, `iframeClassName`, `iframeProps`
-* Added new experimental props and callers
-* **Hooks:** Removed recompose in favor of hooks, pushing minimum React version to 16.8
 
 
 ## Latest
