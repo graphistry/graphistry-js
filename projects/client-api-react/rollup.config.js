@@ -18,7 +18,7 @@ export default {
         //{ globals, file: pkg.main, format: 'cjs' },
         //{ globals, file: pkg.module, format: 'esm' },
         //{ globals, file: pkg.module, format: 'iife', name },
-        { globals, file: pkg.module, format: 'umd', name }
+        { globals, file: `dist/index.full.umd.js`, format: 'umd', name }
     ],
     plugins: [
         nodeResolve({

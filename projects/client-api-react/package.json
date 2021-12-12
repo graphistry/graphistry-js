@@ -21,7 +21,7 @@
     "start": "react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build": "npm run build:esbuild && npm run build:rollup",
+    "build": "npm run build:rollup && npm run build:esbuild",
     "lock:fix": "npm i --package-lock-only",
     "clean": "npm run clean:install && npm run clean:builds && npm run clean:cache && npm run clean:docs",
     "clean:install": "rm -rf node_modules",
