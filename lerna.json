@@ -1,4 +1,7 @@
 {
-  "version": "3.7.6",
-  "packages": ["projects/client-api", "projects/client-api-react"]
+  "version": "4.0.0-alpha.0",
+  "packages": [
+    "projects/client-api",
+    "projects/client-api-react"
+  ]
 }

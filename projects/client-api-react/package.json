@@ -1,13 +1,11 @@
 {
   "name": "@graphistry/client-api-react",
-  "version": "3.7.6",
+  "version": "4.0.0-alpha.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
   },
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api-react#readme",
-
-
   "private": false,
   "main": "dist/index.full.cjs.min.js",
   "module": "dist/index.full.esm.min.js",
@@ -18,30 +16,22 @@
     "docs",
     "README.md"
   ],
-
   "description": "Embed a Graphistry visualization via React",
-
   "scripts": {
     "start": "react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build": "npm run build:esbuild && npm run build:rollup",
-
     "lock:fix": "npm i --package-lock-only",
-
     "clean": "npm run clean:install && npm run clean:builds && npm run clean:cache && npm run clean:docs",
     "clean:install": "rm -rf node_modules",
     "clean:builds": "rm -rf dist && rm -rf www && rm -rf .next",
     "clean:cache": "rm -rf .cache",
     "clean:docs": "rimraf docs jsdocs docs-build",
-
     "build:rollup": "rollup -c",
     "build:rollup-watch": "rollup -c -w",
-
     "build:esbuild": "npm run build:dev && npm run build:linked && npm run build:full",
-
     "build:dev": "esbuild --bundle src/index.js  --target=es6 --loader:.js=jsx --outfile=www/main.js --sourcemap",
-
     "build:linked": "npm run build:linked:js && npm run build:linked:min:js",
     "build:linked:js": "npm run build:cjs:js && npm run build:esm:js && npm run build:iife:js",
     "build:cjs:js": "esbuild --bundle src/index.js       --sourcemap --target=es6 --loader:.js=jsx --format=cjs  --external:react --external:react-dom --outfile=dist/index.cjs.js",
@@ -51,7 +41,6 @@
     "build:cjs:min:js": "esbuild --bundle src/index.js       --minify --sourcemap --target=es6 --loader:.js=jsx --format=cjs  --external:react --external:react-dom --outfile=dist/index.cjs.min.js",
     "build:esm:min:js": "esbuild --bundle src/index.js       --minify --sourcemap --target=es6 --loader:.js=jsx --format=esm  --external:react --external:react-dom --outfile=dist/index.esm.min.js",
     "build:iife:min:js": "esbuild --bundle src/index.js      --minify --sourcemap --target=es6 --loader:.js=jsx --format=iife --external:react --external:react-dom --outfile=dist/index.iife.min.js --global-name=Graphistry",
-
     "build:full": "npm run build:full:js && npm run build:full:min:js",
     "build:full:js": "npm run build:cjs:js:full && npm run build:esm:js:full && npm run build:iife:js:full",
     "build:cjs:js:full": "esbuild --bundle src/index.js  --sourcemap --target=es6 --loader:.js=jsx --format=cjs  --outfile=dist/index.full.cjs.js",
@@ -61,7 +50,6 @@
     "build:cjs:min:js:full": "esbuild --bundle src/index.js  --minify --sourcemap --target=es6 --loader:.js=jsx --format=cjs  --outfile=dist/index.full.cjs.min.js",
     "build:esm:min:js:full": "esbuild --bundle src/index.js  --minify --sourcemap --target=es6 --loader:.js=jsx --format=esm  --outfile=dist/index.full.esm.min.js",
     "build:iife:min:js:full": "esbuild --bundle src/index.js --minify --sourcemap --target=es6 --loader:.js=jsx --format=iife --outfile=dist/index.full.iife.min.js --global-name=Graphistry",
-
     "build:docs": "rimraf docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
     "prebuild:docs": "rimraf docs",
     "lint": "eslint src",
@@ -77,7 +65,7 @@
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "ISC",
   "dependencies": {
-    "@graphistry/client-api": "^3.7.6",
+    "@graphistry/client-api": "^4.0.0-alpha.0",
     "prop-types": ">=15.6.0",
     "shallowequal": "1.1.0"
   },
@@ -86,7 +74,6 @@
     "react-dom": ">=16.8.6",
     "react-scripts": "4.0.3"
   },
-
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -106,40 +93,36 @@
     ]
   },
   "devDependencies": {
-
-    "@babel/core": "^7.16.0",
-
     "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.0.6",
-    "cross-env": "^7.0.3",
-    "npm-run-all": "^4.1.5",
-    "rollup": "^2.60.2",
-    "rollup-plugin-delete": "^2.0.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-
-    "@testing-library/jest-dom": "^5.16.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-
-    "@storybook/addons": "^6.3.12",
     "@storybook/addon-actions": "^6.3.12",
     "@storybook/addon-essentials": "^6.3.12",
     "@storybook/addon-links": "^6.3.12",
     "@storybook/addon-storysource": "^6.3.12",
-    "@storybook/theming": "^6.3.12",
+    "@storybook/addons": "^6.3.12",
     "@storybook/react": "^6.3.12",
+    "@storybook/theming": "^6.3.12",
+    "@testing-library/jest-dom": "^5.16.0",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
     "babel-loader": "^8.2.3",
+    "cross-env": "^7.0.3",
     "esbuild": "0.14.2",
     "eslint": "7.32.0",
     "eslint-plugin-react": "7.26.1",
     "jsdoc": "3.6.7",
     "jsdoc-babel": "~0.5.0",
+    "npm-run-all": "^4.1.5",
     "react": ">=17.0.2",
     "react-dom": ">=17.0.2",
-    "rimraf": "3.0.2"
+    "rimraf": "3.0.2",
+    "rollup": "^2.60.2",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4"
   }
 }
