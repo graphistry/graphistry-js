@@ -1535,10 +1535,11 @@ export function graphistryJS(iFrame) {
         .pipe(
             tap((v) => { console.debug('Starting iframe protocol listen flow: Load trigger'), v }),
             startWith(iFrame),
+            tap((v) => { console.debug('Starting iframe protocol listen flow: v', v) }),
             filter(target => target && target.contentWindow && target.contentWindow.postMessage),
             map(target => target.contentWindow),
             tap((target) => {
-                console.info(`Graphistry API: connecting to client`, target.contentWindow);
+                console.info(`Graphistry API: connecting to client`, target);
                 target.postMessage({type: 'ready', agent: 'graphistryjs'}, '*');
             }),
             switchMap(
