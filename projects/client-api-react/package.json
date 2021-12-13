@@ -7,8 +7,8 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api-react#readme",
   "private": false,
-  "main": "dist/index.full.cjs.min.js",
-  "module": "dist/index.full.esm.min.js",
+  "main": "dist/index.cjs.min.js",
+  "module": "dist/index.esm.min.js",
   "source": "src/index.js",
   "files": [
     "assets",
