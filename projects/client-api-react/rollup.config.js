@@ -4,6 +4,7 @@ import del from 'rollup-plugin-delete';
 import pkg from './package.json';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import { terser } from "rollup-plugin-terser";
 
 const globals = {
     'react': 'React',
@@ -16,9 +17,11 @@ export default {
     input: pkg.source,
     output: [
         //{ globals, file: pkg.main, format: 'cjs' },
-        //{ globals, file: pkg.module, format: 'esm' },
+        { globals, file: 'dist/index.esm.js',      format: 'esm' },
+        { globals, file: 'dist/index.esm.min.js',  format: 'esm',       plugins: [terser()] },
         //{ globals, file: pkg.module, format: 'iife', name },
-        { globals, file: `dist/index.full.umd.js`, format: 'umd', name }
+        { globals, file: `dist/index.umd.js`,      format: 'umd', name },
+        { globals, file: `dist/index.umd.min.js`,  format: 'umd', name, plugins: [terser()] }
     ],
     plugins: [
         nodeResolve({

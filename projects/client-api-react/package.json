@@ -33,13 +33,17 @@
     "build:esbuild": "npm run build:dev && npm run build:linked && npm run build:full",
     "build:dev": "esbuild --bundle src/index.js  --target=es6 --loader:.js=jsx --outfile=www/main.js --sourcemap",
     "build:linked": "npm run build:linked:js && npm run build:linked:min:js",
-    "build:linked:js": "npm run build:cjs:js && npm run build:esm:js && npm run build:iife:js",
+    "build:linked:js": "npm run build:cjs:js && npm run build:esm:js && npm run build:umd:js && npm run build:iife:js",
     "build:cjs:js": "esbuild --bundle src/index.js       --sourcemap --target=es6 --loader:.js=jsx --format=cjs  --external:react --external:react-dom --outfile=dist/index.cjs.js",
-    "build:esm:js": "esbuild --bundle src/index.js       --sourcemap --target=es6 --loader:.js=jsx --format=esm  --external:react --external:react-dom --outfile=dist/index.esm.js",
+    "build:esm:js:broken": "esbuild --bundle src/index.js       --sourcemap --target=es6 --loader:.js=jsx --format=esm  --external:react --external:react-dom --outfile=dist/index.esm.js",
+    "build:esm:js": "echo 'relying on rollup -c'",
+    "build:umd:js": "echo 'relying on rollup -c'",
     "build:iife:js": "esbuild --bundle src/index.js      --sourcemap --target=es6 --loader:.js=jsx --format=iife --external:react --external:react-dom --outfile=dist/index.iife.js --global-name=Graphistry",
-    "build:linked:min:js": "npm run build:cjs:min:js && npm run build:esm:min:js && npm run build:iife:min:js",
+    "build:linked:min:js": "npm run build:cjs:min:js && npm run build:esm:min:js && npm run build:umd:min:js && npm run build:iife:min:js",
     "build:cjs:min:js": "esbuild --bundle src/index.js       --minify --sourcemap --target=es6 --loader:.js=jsx --format=cjs  --external:react --external:react-dom --outfile=dist/index.cjs.min.js",
-    "build:esm:min:js": "esbuild --bundle src/index.js       --minify --sourcemap --target=es6 --loader:.js=jsx --format=esm  --external:react --external:react-dom --outfile=dist/index.esm.min.js",
+    "build:esm:min:js:broken": "esbuild --bundle src/index.js       --minify --sourcemap --target=es6 --loader:.js=jsx --format=esm  --external:react --external:react-dom --outfile=dist/index.esm.min.js",
+    "build:esm:min:js": "echo 'relying on rollup -c'",
+    "build:umd:min:js": "echo 'relying on rollup -c'",
     "build:iife:min:js": "esbuild --bundle src/index.js      --minify --sourcemap --target=es6 --loader:.js=jsx --format=iife --external:react --external:react-dom --outfile=dist/index.iife.min.js --global-name=Graphistry",
     "build:full": "npm run build:full:js && npm run build:full:min:js",
     "build:full:js": "npm run build:cjs:js:full && npm run build:esm:js:full && npm run build:iife:js:full",
@@ -123,6 +127,8 @@
     "rimraf": "3.0.2",
     "rollup": "^2.60.2",
     "rollup-plugin-delete": "^2.0.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4"
-  }
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "gitHead": "e76b43d0cead1aac147b81246f108f826c6116ac"
 }
