@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api-react",
-  "version": "4.0.0-alpha.1",
+  "version": "4.0.0-alpha.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
@@ -65,7 +65,7 @@
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "ISC",
   "dependencies": {
-    "@graphistry/client-api": "^4.0.0-alpha.1",
+    "@graphistry/client-api": "^4.0.0-alpha.2",
     "prop-types": ">=15.6.0",
     "shallowequal": "1.1.0"
   },
