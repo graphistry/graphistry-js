@@ -175,18 +175,18 @@ const ETLUploader = (props) => {
                 }
             })
             .first()
-            .subscribe(
-                (response) => {
+            .subscribe({
+                next (response) {
                     setLoading(false);
                     setDataset(response.dataset);
                 },
-                (error) => {
+                error (error) {
                     setLoading(false);
                     setDataset(null);
                     setLoadingMessage('Error uploading graph');
                     console.error('error uploading graph', error);
                 }
-            );
+            });
 
         return () => {
             console.debug('unsubscribing upload', {url, payload, sub});
@@ -262,11 +262,10 @@ function handleUpdates({g, isFirstRun, axesMap, props}) {
         if (Object.keys(commands).length) {
             console.debug('dispatched all updating settings', commands);
             const sub = forkJoin(commands)
-                .subscribe(
-                    () => { },
-                    (e) => { console.error('iframe prop change error', e, commands); },
-                    () => { console.debug('iframe prop change done', commands); }
-                );
+                .subscribe({
+                    error (e) { console.error('iframe prop change error', e, commands); },
+                    complete () { console.debug('iframe prop change done', commands); }
+                });
             return () => {
                 sub.unsubscribe();
             }
@@ -335,10 +334,11 @@ function generateIframeRef({
                         }
                     }),
                 )
-                .subscribe(
-                    (v) => console.debug('iframe init sub hit', v),
-                    (e) => console.error('iframe init sub error', e),
-                    () => console.debug('iframe init sub complete'));
+                .subscribe({
+                    next (v) { console.debug('iframe init sub hit', v); },
+                    error (e) { console.error('iframe init sub error', e); },
+                    complete () { console.debug('iframe init sub complete'); }
+                });
             setGSub(sub);
             return () => {
                 // Not called in practice; maybe only if <Graphistry> itself is unmounted?
