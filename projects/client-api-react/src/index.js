@@ -80,8 +80,9 @@ const propTypes = {
     controls: PropTypes.string,
     workbook: PropTypes.string,
 
-    //ticks
-    ticks: PropTypes.number
+    ticks: PropTypes.number,
+
+    tolerateLoadErrors: PropTypes.bool
 };
 
 const defaultProps = {
@@ -103,8 +104,7 @@ const defaultProps = {
     showSplashScreen: false,
     showLoadingIndicator: true,
     loadingMessage: 'Herding stray GPUs',
-    //showPointsOfInterest: true,
-    //showPointsOfInterestLabels: true,
+    tolerateLoadErrors: true
 };
 
 // Post upon fresh data
@@ -204,7 +204,7 @@ const ETLUploader = (props) => {
 };
 
 
-function propsToCommands({g, props, prevState, axesMap}) {
+function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
     const commands = {};
     bindings.forEach(({name, jsName, jsCommand}) => {
         const val = props[name];
@@ -220,7 +220,11 @@ function propsToCommands({g, props, prevState, axesMap}) {
                 of(g).pipe(
                     !jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val),
                     catchError(err => {
-                        console.error('error running GraphistryJS command', {g, err, name, jsName, jsCommand});
+                        const msg = 'error running GraphistryJS command';
+                        console.error(msg, {g, err, name, jsName, jsCommand});
+                        if (tolerateLoadErrors) {
+                            return g.updateStateWithResult({msg, err});
+                        }
                         throw err;
                     }));
         }
@@ -285,7 +289,8 @@ function generateIframeRef({
     setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
     url, dataset, props,
     axesMap,
-    iframeStyle, iframeClassName, iframeProps, allowFullScreen
+    iframeStyle, iframeClassName, iframeProps, allowFullScreen,
+    tolerateLoadErrors
 }) {
     return useCallback(iframe => {
         if (iframe && dataset) {
@@ -310,7 +315,7 @@ function generateIframeRef({
                                 }
                             }),
                             switchMap((g) => {
-                                const commands = propsToCommands({g, props, prevState: {}, axesMap});
+                                const commands = propsToCommands({g, props, prevState: {}, axesMap, tolerateLoadErrors});
                                 if (Object.keys(commands).length) {
                                     console.debug('created all iframe init settings commands', commands);
                                     return forkJoin(commands)
@@ -368,6 +373,7 @@ function Graphistry(props) {
         showLoadingIndicator, showSplashScreen,
         graphistryHost, type = 'vgraph',
         controls = '', workbook, session,
+        tolerateLoadErrors
     } = props;
 
     const [loading, setLoading] = useState(!!props.loading);
@@ -416,7 +422,8 @@ function Graphistry(props) {
         setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
         url, dataset, props,
         axesMap,
-        iframeStyle, iframeClassName, iframeProps, allowFullScreen
+        iframeStyle, iframeClassName, iframeProps, allowFullScreen,
+        tolerateLoadErrors
     });
 
     const children = [
