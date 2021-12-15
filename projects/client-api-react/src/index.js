@@ -216,9 +216,9 @@ function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
                     !jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val),
                     catchError(err => {
                         const msg = 'error running GraphistryJS command';
-                        console.error(msg, {g, err, name, jsName, jsCommand});
+                        console.error(msg, {g, err, name, jsName, jsCommand, tolerateLoadErrors});
                         if (tolerateLoadErrors) {
-                            return g.updateStateWithResult({msg, err});
+                            return of(g.updateStateWithResult({msg, err}));
                         }
                         throw err;
                     }));
@@ -323,7 +323,7 @@ function generateIframeRef({
                             }),
                             catchError(exn => {
                                 console.error('error in iframe initialization', exn);
-                                return g.updateStateWithResult(exn);
+                                return of(g.updateStateWithResult(exn));
                             }))),
                     tap((g) => {
                         console.debug('new iframe all init updates handled, if any', g);
