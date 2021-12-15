@@ -216,7 +216,13 @@ function propsToCommands({g, props, prevState, axesMap}) {
                 }
 
             }
-            commands[name] = of(g).pipe(!jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val));
+            commands[name] =
+                of(g).pipe(
+                    !jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val),
+                    catchError(err => {
+                        console.error('error running GraphistryJS command', {g, err, name, jsName, jsCommand});
+                        throw err;
+                    }));
         }
     });
     if (props.axes && !axesMap.has(props.axes)) {
