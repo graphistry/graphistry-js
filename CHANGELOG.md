@@ -5,17 +5,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## Development
+## 4.0.0-alpha.x
 
 ### Features
 
 * **React:** Upgraded to hooks (v17)
 * **React:** Unpinned, peer dependency, and optional externalization in binaries
 * **React:** Added new experimental props and callers
+* **tolerateLoadErrors:** React initial load continues even if some settings fail (default `true`)
 * **RxJS:** Upgraded (v7)
 * **RxJS:** Unpinned, peer dependency, and optional externalization in binaries
 * React now a required peer dependency when used from client-api-react
-* **Multiple format bundles**: `dist/index.{cjs,esm,iife}(.full?)(.min?).js`
+* **Multiple format bundles**: `dist/index.{cjs,esm,iife}(.full?)(.min?).js` . Use `full` for inlined `rxjs`, `react`, `react-dom`, otherwise must supply.
 
 ### Infra
 
