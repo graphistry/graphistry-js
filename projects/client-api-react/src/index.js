@@ -48,9 +48,6 @@ const propTypes = {
 
     showInfo: PropTypes.bool,
     showMenu: PropTypes.bool,
-    showToolbar: PropTypes.bool,
-    showInspector: PropTypes.bool,
-    showHistograms: PropTypes.bool,
     showSplashScreen: PropTypes.bool,
     loadingMessage: PropTypes.string,
 
@@ -99,8 +96,6 @@ const defaultProps = {
     showInfo: true,
     showMenu: true,
     showToolbar: true,
-    //showInspector: false,
-    //showHistograms: false,
     showSplashScreen: false,
     showLoadingIndicator: true,
     loadingMessage: 'Herding stray GPUs',
