@@ -186,7 +186,7 @@ const chainList = {};
                 console.debug('starting makeSetterWithModel postMessage cmds', values);
                 const sub = out.subscribe(
                     ((v) =>{ subscriber.next(v); }),
-                    ((e) =>{ subscriber.error('iframe setter fail', e); }),
+                    ((e) =>{ subscriber.error({msg: 'iframe setter fail', e, modelName, values}); }),
                     (() =>{ subscriber.complete(); }));
                 return () => {
                     console.debug('finished makeSetterWithModel; unsubscribe postMessage', {sub, values});

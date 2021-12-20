@@ -48,9 +48,6 @@ const propTypes = {
 
     showInfo: PropTypes.bool,
     showMenu: PropTypes.bool,
-    showToolbar: PropTypes.bool,
-    showInspector: PropTypes.bool,
-    showHistograms: PropTypes.bool,
     showSplashScreen: PropTypes.bool,
     loadingMessage: PropTypes.string,
 
@@ -80,8 +77,9 @@ const propTypes = {
     controls: PropTypes.string,
     workbook: PropTypes.string,
 
-    //ticks
-    ticks: PropTypes.number
+    ticks: PropTypes.number,
+
+    tolerateLoadErrors: PropTypes.bool
 };
 
 const defaultProps = {
@@ -98,13 +96,10 @@ const defaultProps = {
     showInfo: true,
     showMenu: true,
     showToolbar: true,
-    //showInspector: false,
-    //showHistograms: false,
     showSplashScreen: false,
     showLoadingIndicator: true,
     loadingMessage: 'Herding stray GPUs',
-    //showPointsOfInterest: true,
-    //showPointsOfInterestLabels: true,
+    tolerateLoadErrors: true
 };
 
 // Post upon fresh data
@@ -175,18 +170,18 @@ const ETLUploader = (props) => {
                 }
             })
             .first()
-            .subscribe(
-                (response) => {
+            .subscribe({
+                next (response) {
                     setLoading(false);
                     setDataset(response.dataset);
                 },
-                (error) => {
+                error (error) {
                     setLoading(false);
                     setDataset(null);
                     setLoadingMessage('Error uploading graph');
                     console.error('error uploading graph', error);
                 }
-            );
+            });
 
         return () => {
             console.debug('unsubscribing upload', {url, payload, sub});
@@ -204,7 +199,7 @@ const ETLUploader = (props) => {
 };
 
 
-function propsToCommands({g, props, prevState, axesMap}) {
+function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
     const commands = {};
     bindings.forEach(({name, jsName, jsCommand}) => {
         const val = props[name];
@@ -216,7 +211,17 @@ function propsToCommands({g, props, prevState, axesMap}) {
                 }
 
             }
-            commands[name] = of(g).pipe(!jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val));
+            commands[name] =
+                of(g).pipe(
+                    !jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val),
+                    catchError(err => {
+                        const msg = 'error running GraphistryJS command';
+                        console.error(msg, {g, err, name, jsName, jsCommand, tolerateLoadErrors});
+                        if (tolerateLoadErrors) {
+                            return of(g.updateStateWithResult({msg, err}));
+                        }
+                        throw err;
+                    }));
         }
     });
     if (props.axes && !axesMap.has(props.axes)) {
@@ -256,11 +261,10 @@ function handleUpdates({g, isFirstRun, axesMap, props}) {
         if (Object.keys(commands).length) {
             console.debug('dispatched all updating settings', commands);
             const sub = forkJoin(commands)
-                .subscribe(
-                    () => { },
-                    (e) => { console.error('iframe prop change error', e, commands); },
-                    () => { console.debug('iframe prop change done', commands); }
-                );
+                .subscribe({
+                    error (e) { console.error('iframe prop change error', e, commands); },
+                    complete () { console.debug('iframe prop change done', commands); }
+                });
             return () => {
                 sub.unsubscribe();
             }
@@ -280,7 +284,8 @@ function generateIframeRef({
     setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
     url, dataset, props,
     axesMap,
-    iframeStyle, iframeClassName, iframeProps, allowFullScreen
+    iframeStyle, iframeClassName, iframeProps, allowFullScreen,
+    tolerateLoadErrors
 }) {
     return useCallback(iframe => {
         if (iframe && dataset) {
@@ -305,7 +310,7 @@ function generateIframeRef({
                                 }
                             }),
                             switchMap((g) => {
-                                const commands = propsToCommands({g, props, prevState: {}, axesMap});
+                                const commands = propsToCommands({g, props, prevState: {}, axesMap, tolerateLoadErrors});
                                 if (Object.keys(commands).length) {
                                     console.debug('created all iframe init settings commands', commands);
                                     return forkJoin(commands)
@@ -318,7 +323,7 @@ function generateIframeRef({
                             }),
                             catchError(exn => {
                                 console.error('error in iframe initialization', exn);
-                                return g.updateStateWithResult(exn);
+                                return of(g.updateStateWithResult(exn));
                             }))),
                     tap((g) => {
                         console.debug('new iframe all init updates handled, if any', g);
@@ -329,10 +334,11 @@ function generateIframeRef({
                         }
                     }),
                 )
-                .subscribe(
-                    (v) => console.debug('iframe init sub hit', v),
-                    (e) => console.error('iframe init sub error', e),
-                    () => console.debug('iframe init sub complete'));
+                .subscribe({
+                    next (v) { console.debug('iframe init sub hit', v); },
+                    error (e) { console.error('iframe init sub error', e); },
+                    complete () { console.debug('iframe init sub complete'); }
+                });
             setGSub(sub);
             return () => {
                 // Not called in practice; maybe only if <Graphistry> itself is unmounted?
@@ -362,6 +368,7 @@ function Graphistry(props) {
         showLoadingIndicator, showSplashScreen,
         graphistryHost, type = 'vgraph',
         controls = '', workbook, session,
+        tolerateLoadErrors
     } = props;
 
     const [loading, setLoading] = useState(!!props.loading);
@@ -410,7 +417,8 @@ function Graphistry(props) {
         setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
         url, dataset, props,
         axesMap,
-        iframeStyle, iframeClassName, iframeProps, allowFullScreen
+        iframeStyle, iframeClassName, iframeProps, allowFullScreen,
+        tolerateLoadErrors
     });
 
     const children = [
