@@ -1,0 +1,10 @@
+#!/bin/bash -x
+
+##############
+#
+# Helper for running docker compose commands
+# ex: follow logs -    ./dc logs -f
+#
+##############
+
+DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose $@
