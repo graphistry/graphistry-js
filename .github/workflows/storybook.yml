@@ -33,6 +33,9 @@ jobs:
  
       - name: JSDocs 🔧
         run: ./tools/jsdocs.sh
+
+      - name: Examples 🔧
+        run: cp -r projects/client-api/examples docs-build/examples
  
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
