@@ -26,6 +26,14 @@ They auto-publish to [graphistry.github.io/graphistry-js](https://graphistry.git
 
 ## Bundled
 
-Both libraries bundle into multiple formats (esm, cjs, iife) as part of the npm publish
+Both libraries bundle into multiple formats (esm, cjs, iife), optional minification, and optional externing (rxjs+react) as part of the npm publish
 
 Every Graphistry enterprise release hosts the coordinated JS library versions
+
+## Hosting
+
+The docs run in multiple locations:
+
+* Standalone
+* [https://graphistry.github.io/graphistry-js/](github)
+* [https://hub.graphistry.com/docs](Graphistry Hub)
