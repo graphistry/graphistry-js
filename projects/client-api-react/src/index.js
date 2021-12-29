@@ -5,7 +5,7 @@ import uuidv4 from 'uuid/v4';
 
 import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api';
 import * as gAPI from '@graphistry/client-api';
-import { ajax, catchError, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
+import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings } from './bindings.js';
 
@@ -39,7 +39,11 @@ const propTypes = {
 				}),
 			{})),
 
+    /*
+    * @deprecated apiKey will be replaced with JWT-based methods
+    */
     apiKey: PropTypes.string,
+
     dataset: PropTypes.string,
     graphistryHost: PropTypes.string.isRequired,
     play: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
@@ -108,6 +112,8 @@ const defaultProps = {
 // apiKey, graphistryHost, vizStyle, vizClassName, allowFullScreen, backgroundColor,
 const ETLUploader = (props) => {
 
+    console.warn('ETLUploader will be switching to JWT based methods');
+
     const {
         dataset, edges, nodes, bindings,
         setLoading, setDataset, setLoadingMessage,
@@ -159,17 +165,19 @@ const ETLUploader = (props) => {
                 headers: { 'Content-Type': 'application/json'},
                 body: payload
             })
-            .do(({ response }) => {
-                if (response && response.success) {
-                    console.debug('upload response', response);
-                    setLoading(!props.showSplashScreen)
-                    return response;
-                } else {
-                    console.error('upload failed', response);
-                    throw new Error('Error uploading graph');
-                }
-            })
-            .first()
+            .pipe(
+                tap(({ response }) => {
+                    if (response && response.success) {
+                        console.debug('upload response', response);
+                        setLoading(!props.showSplashScreen)
+                        return response;
+                    } else {
+                        console.error('upload failed', response);
+                        throw new Error('Error uploading graph');
+                    }
+                }),
+                first()
+            )
             .subscribe({
                 next (response) {
                     setLoading(false);

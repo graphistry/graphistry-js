@@ -1,5 +1,3 @@
-This project use automatic changelog management, so development is a bit different:
-
 ## Docs
 
 We use Storybook for React, plugged into github pages
@@ -34,16 +32,27 @@ docker compose build
 
 ## Docker
 
+### Environment
+
+Enable buildkit for Docker and docker-compose, such as in your `.profile`:
+
+```bash
+export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
+```
+
+For convenience, we setup `./dc` to do `docker compose` commands this for you, such as `./dc build`
+
 ### Build
 
 ```bash
-docker-compose build
+docker compose build
 ```
 
 ### Run
 
 ```bash
-docker-compose run --rm graphistry-js
+docker compose run --rm graphistry-js
 ```
 
 or
@@ -75,6 +84,17 @@ npm run build
 ( cd projects/client-api-react && ./node_modules/.bin/start-storybook -p 6006 )
 # => http://localhost:6006/
 ```
+
+## Dependencies
+
+We use `package-lock.json` as part of aiding reproducibility
+
+Make sure you have a recent `node` and `npm` -- we have not containerized these steps yet
+
+To regenerate:
+- go to a project or the root level
+- run `npm run lock:fix`
+- check in the updated `package-lock.json`
 
 
 ## Publish for public consumption (Maintainer only)
