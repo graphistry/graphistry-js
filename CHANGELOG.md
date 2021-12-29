@@ -38,7 +38,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Deprecated
 
-* ... and corresponding removal of prototype dot chaining, replaced with composition (pipe)
+* Removal of RxJS prototype dot chaining, replaced with composition (pipe). For interim backwards compatibility, old example usages will largely still work via interim backporting.
+* Use of api=1 `apiKey` is deprecated. Will be replaced with JWT methods (see REST API).
 
 ### Breaking Changes
 
