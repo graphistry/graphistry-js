@@ -40,6 +40,9 @@ You can think of Graphistry as a live data version of Google Maps.
 ### Security
 
 * You can configure your Graphistry server to run as http, https, or both
-* Uploads (generally) require API keys. Log in to your server for your account's API key and information on how to generate new ones
+* Uploads require authentication
+  * Deprecated: The JavaScript convenience APIs still use the deprecrated "API 1" protocol (key-based), which lacks JWT-based authentication and authorization
+  * We recommend instead using `fetch` or other HTTP callers to directly invoke the REST API
+  * The JavaScript APIs will updated to the new JWT method alongside recent CORS and SSO updates; contact staff if you desire assistance
 * Sessions are based on unguessable web keys: sharing a secret ID means sharing read access
 * Datasets are immutable and thus their integrity is safe for sharing, while session state (e.g., filters) are writable: share a copy when in doubt

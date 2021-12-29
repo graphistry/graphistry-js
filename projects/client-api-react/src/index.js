@@ -39,7 +39,11 @@ const propTypes = {
 				}),
 			{})),
 
+    /*
+    * @deprecated apiKey will be replaced with JWT-based methods
+    */
     apiKey: PropTypes.string,
+
     dataset: PropTypes.string,
     graphistryHost: PropTypes.string.isRequired,
     play: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
@@ -108,6 +112,8 @@ const defaultProps = {
 // apiKey, graphistryHost, vizStyle, vizClassName, allowFullScreen, backgroundColor,
 const ETLUploader = (props) => {
 
+    console.warn('ETLUploader will be switching to JWT based methods');
+
     const {
         dataset, edges, nodes, bindings,
         setLoading, setDataset, setLoadingMessage,
@@ -161,14 +167,14 @@ const ETLUploader = (props) => {
             })
             .pipe(
                 tap(({ response }) => {
-                if (response && response.success) {
-                    console.debug('upload response', response);
-                    setLoading(!props.showSplashScreen)
-                    return response;
-                } else {
-                    console.error('upload failed', response);
-                    throw new Error('Error uploading graph');
-                }
+                    if (response && response.success) {
+                        console.debug('upload response', response);
+                        setLoading(!props.showSplashScreen)
+                        return response;
+                    } else {
+                        console.error('upload failed', response);
+                        throw new Error('Error uploading graph');
+                    }
                 }),
                 first()
             )
