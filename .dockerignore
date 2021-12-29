@@ -16,3 +16,7 @@ docs-build/
 projects/client-api/jsdocs/
 projects/client-api/www/
 projects/client-api-react/www/
+projects/client-api/dist
+projects/client-api-react/dist
+DEVELOP.md
+README.md
