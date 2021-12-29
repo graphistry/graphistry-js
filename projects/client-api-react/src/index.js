@@ -5,7 +5,7 @@ import uuidv4 from 'uuid/v4';
 
 import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api';
 import * as gAPI from '@graphistry/client-api';
-import { ajax, catchError, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
+import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings } from './bindings.js';
 
@@ -159,7 +159,8 @@ const ETLUploader = (props) => {
                 headers: { 'Content-Type': 'application/json'},
                 body: payload
             })
-            .do(({ response }) => {
+            .pipe(
+                tap(({ response }) => {
                 if (response && response.success) {
                     console.debug('upload response', response);
                     setLoading(!props.showSplashScreen)
@@ -168,8 +169,9 @@ const ETLUploader = (props) => {
                     console.error('upload failed', response);
                     throw new Error('Error uploading graph');
                 }
-            })
-            .first()
+                }),
+                first()
+            )
             .subscribe({
                 next (response) {
                     setLoading(false);
