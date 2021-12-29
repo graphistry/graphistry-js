@@ -67,11 +67,13 @@ docker run --rm -it graphistry/graphistry:latest
 root@8f18f077e0b6:/opt/graphistry-js#
 ```
 
-### Output - outdated
+### Extract binaries
 
-`./tools/extract-dist.sh` => `dist/client-api[-react]/{dist,docs,es,lib,examples}`
+You can build natively to get per-project binaries (see below), or via docker:
 
-Will copy from `graphistry/graphistry-js:latest` into folder `DIST_PATH=dist`
+`./tools/extract-dist.sh` => `projects/client-api[-react]/dist`
+
+This copies from `graphistry/graphistry-js:latest` into host project folders
 
 You may want to run `docker rm graphistry-js-tmp` if a stale container
 
@@ -100,6 +102,13 @@ To regenerate:
 ## Publish for public consumption (Maintainer only)
 
 1. Local build
+
+Ex:
+
+```bash
+./dc build
+./tools/extract-dist.sh
+```
 
 2. Ensure git clean (`git status`) + npm auth (`npm login`)
 
