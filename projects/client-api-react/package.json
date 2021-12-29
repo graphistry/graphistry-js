@@ -131,5 +131,5 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-terser": "^7.0.2"
   },
-  "gitHead": "e76b43d0cead1aac147b81246f108f826c6116ac"
+  "gitHead": "949ca04aa87b399e0185c64d7a6810780a841deb"
 }
