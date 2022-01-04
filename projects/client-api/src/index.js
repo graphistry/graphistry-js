@@ -634,7 +634,7 @@ const chainList = {};
 
     /**
      * @function togglePanel
-     * @description Toggle a top menu panel on/off. If panel is an array, interpret as [panel, turnOn]
+     * @description Toggle a top menu panel on/off. If panel is an array, interpret as [panel, turnOn]. Only one panel is turned on; the rest are turned off.
      * @param {string} [panel] - Name of panel: filters, exclusions, scene, labels, layout
      * @param {boolean} [turnOn] - Whether to make panel visible, or turn all off
      * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
