@@ -115,6 +115,36 @@ export const HideChromeButShowTools = (args) => <Graphistry {...defaultSettings}
   {...args}
 />;
 
+export const TogglePanelFilters = (args) => <Graphistry {...defaultSettings}
+    togglePanel={'filters'}
+    {...args}
+  />;
+
+export const TogglePanelExclusions = (args) => <Graphistry {...defaultSettings}
+  togglePanel={'exclusions'}
+  {...args}
+/>;
+
+export const TogglePanelScene = (args) => <Graphistry {...defaultSettings}
+  togglePanel={'scene'}
+  {...args}
+/>;
+
+export const TogglePanelLabels = (args) => <Graphistry {...defaultSettings}
+  togglePanel={'labels'}
+  {...args}
+/>;
+
+export const TogglePanelLayout = (args) => <Graphistry {...defaultSettings}
+  togglePanel={'layout'}
+  {...args}
+/>;
+
+export const TogglePanelNone = (args) => <Graphistry {...defaultSettings}
+  togglePanel={false}
+  {...args}
+/>;
+
 export const ScalePointSize = (args) => <Graphistry {...defaultSettings}
   encodePointSize={'betweenness'}
   pointSize={0.2}

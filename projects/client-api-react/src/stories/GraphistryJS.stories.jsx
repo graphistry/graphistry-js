@@ -7,8 +7,14 @@ import {
     updateSetting,
     addFilters,
     addExclusions,
+
     togglePanel,
 
+    toggleToolbar,
+    toggleHistograms,
+    toggleTimebars,
+    toggleInspector,
+  
     //rxjs
     tap,
     delay
@@ -153,3 +159,72 @@ export const setFilters = (args) => {
         />
     );
 };
+
+export const togglePanelFilters = (args) => {
+    const iframe = useRef(null);
+    const [messages, setMessages] = useState(['loading...']);
+    
+    useEffect(() => {
+        //////// Instantiate GraphistryJS for an iframe
+        const sub = (
+            graphistryJS(iframe.current)
+                .pipe(
+                    tap(() => setMessages(arr => arr.concat([`graphistryJS instantiated; pausing 3s...`]))),
+                    delay(3000),
+                    tap(() => setMessages(arr => arr.concat([`toggling panel filters`]))),
+                    togglePanel('filters', true)
+                )
+                .subscribe(
+                    () => null),
+                    (err) => setMessages(arr => arr.concat([`Error: ${err}`])),
+                    () => setMessages(arr => arr.concat(['Completed']))
+        );
+        ////////
+        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+    }, [iframe]);
+    
+    return (
+        <iframe 
+            {...defaultIframeProps}
+            ref={iframe}
+            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            {...args}
+        />
+    );
+}
+
+export const HideChrome = (args) => {
+    const iframe = useRef(null);
+    const [messages, setMessages] = useState(['loading...']);
+
+    useEffect(() => {
+        //////// Instantiate GraphistryJS for an iframe
+        const sub = (
+            graphistryJS(iframe.current)
+                .pipe(
+                    tap(() => setMessages(arr => arr.concat([`graphistryJS instantiated; pausing 3s...`]))),
+                    delay(3000),
+                    tap(() => setMessages(arr => arr.concat([`hiding chrome`]))),
+                    toggleToolbar(false),
+                    toggleHistograms(false),
+                    toggleTimebars(false),
+                    toggleInspector(false)
+                )
+                .subscribe(
+                    () => null),
+                    (err) => setMessages(arr => arr.concat([`Error: ${err}`])),
+                    () => setMessages(arr => arr.concat(['Completed']))
+        );
+        ////////
+        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+    }, [iframe]);
+
+    return (
+        <iframe
+            {...defaultIframeProps}
+            ref={iframe}
+            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            {...args}
+        />
+    );
+}
