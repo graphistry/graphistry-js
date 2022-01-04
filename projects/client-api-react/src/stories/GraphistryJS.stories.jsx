@@ -14,6 +14,8 @@ import {
     toggleHistograms,
     toggleTimebars,
     toggleInspector,
+
+    encodeAxis,
   
     //rxjs
     tap,
@@ -209,6 +211,107 @@ export const HideChrome = (args) => {
                     toggleHistograms(false),
                     toggleTimebars(false),
                     toggleInspector(false)
+                )
+                .subscribe(
+                    () => null),
+                    (err) => setMessages(arr => arr.concat([`Error: ${err}`])),
+                    () => setMessages(arr => arr.concat(['Completed']))
+        );
+        ////////
+        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+    }, [iframe]);
+
+    return (
+        <iframe
+            {...defaultIframeProps}
+            ref={iframe}
+            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            {...args}
+        />
+    );
+}
+
+export const radialLayoutAndAxis = (args) => {
+    const iframe = useRef(null);
+    const [messages, setMessages] = useState(['loading...']);
+
+    useEffect(() => {
+        //////// Instantiate GraphistryJS for an iframe
+        const sub = (
+            graphistryJS(iframe.current)
+                .pipe(
+                    tap(() => setMessages(arr => arr.concat([`graphistryJS instantiated; pausing 3s...`]))),
+                    tap(() => setMessages(arr => arr.concat([`radial layout and axis`]))),
+                    updateSetting('lockedR', true), // any position clustering preserves radius from the center
+                    updateSetting('background', '#f0f0f0'),
+                    encodeAxis([
+                        {r: 40},
+                        {internal: true, label: "my inner label", r: 80},
+                        {r: 120},
+                        {external: true, label: "my outer label", r: 160},
+                        {r: 200},
+                        {r: 220}
+                    ])
+                )
+                .subscribe(
+                    () => null),
+                    (err) => setMessages(arr => arr.concat([`Error: ${err}`])),
+                    () => setMessages(arr => arr.concat(['Completed']))
+        );
+        ////////
+        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+    }, [iframe]);
+
+    return (
+        <iframe
+            {...defaultIframeProps}
+            ref={iframe}
+            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&&play=0&splashAfter=false"}
+            {...args}
+        />
+    );
+}
+
+export const verticalLayoutAndAxis = (args) => {
+    const iframe = useRef(null);
+    const [messages, setMessages] = useState(['loading...']);
+
+    useEffect(() => {
+        //////// Instantiate GraphistryJS for an iframe
+        const sub = (
+            graphistryJS(iframe.current)
+                .pipe(
+                    tap(() => setMessages(arr => arr.concat([`graphistryJS instantiated; pausing 3s...`]))),
+                    //delay(1000),
+                    tap(() => setMessages(arr => arr.concat([`radial layout and axis`]))),
+                    updateSetting('lockedY', true), // any position clustering preserves radius from the center
+                    updateSetting('background', '#f0f0f0'),
+                    encodeAxis([
+                        {
+                            label: 'bottom category',
+                            bounds: {min: 'bot min bound', max: 'bot max bound'},
+                            y: 0,
+                            width: 100
+                        },
+                        {
+                            label: 'mid category bottom',
+                            bounds: {min: 'mid min', max: 'mid max'},
+                            y: 20,
+                            width: 200
+                        },
+                        {
+                            label: 'mid category top',
+                            //bounds: {min: 'mid top min', max: 'mid top max'},
+                            y: 40,
+                            //width: 20
+                        },
+                        {
+                            label: 'top category',
+                            bounds: {min: 'top min', max: 'top max'},
+                            y: 60,
+                            width: 100
+                        },
+                        ])
                 )
                 .subscribe(
                     () => null),
