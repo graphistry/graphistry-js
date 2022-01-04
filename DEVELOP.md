@@ -1,3 +1,20 @@
+# GraphistryJS Developer Docs
+
+## TL;DR
+
+Docker compose (`docker compose` or `docker-compose`, with or without `sudo`):
+
+```bash
+./dc build
+./dc up storybook # http://localhost:6006
+```
+
+and
+
+```bash
+docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/cli.js run lint
+```
+
 ## Docs
 
 We use Storybook for React, plugged into github pages
@@ -26,8 +43,8 @@ docker compose build
 =>
 
 ```
-./docs-build  # storybook
-./docs-build  # jsdocs
+./docs-build         # storybook
+./docs-build/jsdocs  # jsdocs
 ```
 
 ## Docker
@@ -83,6 +100,7 @@ You may want to run `docker rm graphistry-js-tmp` if a stale container
 npm install
 npm run bootstrap
 npm run build
+npm run lint
 ( cd projects/client-api-react && ./node_modules/.bin/start-storybook -p 6006 )
 # => http://localhost:6006/
 ```

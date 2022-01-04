@@ -115,6 +115,36 @@ export const HideChromeButShowTools = (args) => <Graphistry {...defaultSettings}
   {...args}
 />;
 
+export const TogglePanelFilters = (args) => <Graphistry {...defaultSettings}
+    togglePanel={'filters'}
+    {...args}
+  />;
+
+export const TogglePanelExclusions = (args) => <Graphistry {...defaultSettings}
+  togglePanel={'exclusions'}
+  {...args}
+/>;
+
+export const TogglePanelScene = (args) => <Graphistry {...defaultSettings}
+  togglePanel={'scene'}
+  {...args}
+/>;
+
+export const TogglePanelLabels = (args) => <Graphistry {...defaultSettings}
+  togglePanel={'labels'}
+  {...args}
+/>;
+
+export const TogglePanelLayout = (args) => <Graphistry {...defaultSettings}
+  togglePanel={'layout'}
+  {...args}
+/>;
+
+export const TogglePanelNone = (args) => <Graphistry {...defaultSettings}
+  togglePanel={false}
+  {...args}
+/>;
+
 export const ScalePointSize = (args) => <Graphistry {...defaultSettings}
   encodePointSize={'betweenness'}
   pointSize={0.2}
@@ -207,6 +237,49 @@ export const LayoutLockedRadius = (args) => <Graphistry {...defaultSettings}
   {...args}
 />;
 
+export const RadialAxisAndLayout = (args) => <Graphistry {...defaultSettings}
+  lockedR={true}
+  backgroundColor='#f0f0f0'
+  axes={[
+        {r: 40},
+        {internal: true, label: "my inner label", r: 80},
+        {r: 120},
+        {external: true, label: "my outer label", r: 160},
+        {r: 200},
+        {r: 220}
+    ]}
+/>;
+
+export const VerticalAxisAndLayout = (args) => <Graphistry {...defaultSettings}
+  lockedY={true}
+  backgroundColor='#f0f0f0'
+  axes={[
+    {
+        label: 'bottom category',
+        bounds: {min: 'bot min bound', max: 'bot max bound'},
+        y: 0,
+        width: 100
+    },
+    {
+        label: 'mid category bottom',
+        bounds: {min: 'mid min', max: 'mid max'},
+        y: 20,
+        width: 200
+    },
+    {
+        label: 'mid category top',
+        //bounds: {min: 'mid top min', max: 'mid top max'},
+        y: 40,
+        //width: 20
+    },
+    {
+        label: 'top category',
+        bounds: {min: 'top min', max: 'top max'},
+        y: 60,
+        width: 100
+    },
+  ]}
+/>;
 export const Filters = (args) => {
 
   //Load filters 1s after client connected (workaround timing bug)

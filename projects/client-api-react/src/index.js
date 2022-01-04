@@ -7,7 +7,7 @@ import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api'
 import * as gAPI from '@graphistry/client-api';
 import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
-import { bindings } from './bindings.js';
+import { bindings, panelNames } from './bindings.js';
 
 //https://blog.logrocket.com/how-to-get-previous-props-state-with-react-hooks/
 function usePrevious(value) {
@@ -29,6 +29,10 @@ const loadingNavLogoStyle = {
     backgroundImage: `url(${bg})`
 };
 
+function panelNameToPropName(panelName) {
+    return `togglePane${panelName[0].toUpperCase()}${panelName.slice(1)}`;
+}
+
 const propTypes = {
 
 	...(Object.values(bindings).reduce(
@@ -38,6 +42,10 @@ const propTypes = {
 					...(nameDefault ? {[nameDefault]: reactType} : {}),
 				}),
 			{})),
+
+    //FIXME: https://github.com/storybookjs/storybook/issues/14092  
+    //togglePanel: PropTypes.oneOf(panelNames.concat([false])),
+    togglePanel: PropTypes.oneOf(['filters', 'exclusions', 'scene', 'labels', 'layout', false]),
 
     /*
     * @deprecated apiKey will be replaced with JWT-based methods
@@ -207,7 +215,19 @@ const ETLUploader = (props) => {
 };
 
 
+function catchGError ({tolerateLoadErrors, g, msg, payload}) {
+    return catchError(err => {
+        console.error(msg, payload, err);
+        if (tolerateLoadErrors) {
+            return of(g.updateStateWithResult({msg, err}));
+        }
+        throw err;
+    });
+}
+
+
 function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
+    
     const commands = {};
     bindings.forEach(({name, jsName, jsCommand}) => {
         const val = props[name];
@@ -222,20 +242,47 @@ function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
             commands[name] =
                 of(g).pipe(
                     !jsCommand ? updateSetting(jsName, val) : gAPI[jsCommand](val),
-                    catchError(err => {
-                        const msg = 'error running GraphistryJS command';
-                        console.error(msg, {g, err, name, jsName, jsCommand, tolerateLoadErrors});
-                        if (tolerateLoadErrors) {
-                            return of(g.updateStateWithResult({msg, err}));
-                        }
-                        throw err;
-                    }));
+                    catchGError({
+                        tolerateLoadErrors,
+                        g,
+                        msg: `Error running GraphistryJS command`,
+                        payload: {g, name, jsName, jsCommand, val, tolerateLoadErrors}}));
         }
     });
     if (props.axes && !axesMap.has(props.axes)) {
         axesMap.set(props.axes, true);
         commands['axes'] = of(g).pipe(encodeAxis(props.axes));
     }
+
+    const enabledPanels = [];
+    const disabledPanels = [];
+    if (prevState.togglePanel !== props.togglePanel) {
+        if (props.togglePanel !== undefined && props.togglePanel !== false && props.togglePanel !== 'false') {
+            if (panelNames.indexOf(props.togglePanel) !== -1) {
+                enabledPanels.push(props.togglePanel);
+            } else {
+                console.warn('Unknown togglePanel', {togglePane: props.togglePanel});
+            }
+        } else {
+            disabledPanels.push(props.togglePanel);
+        }
+    }
+    if (enabledPanels.length || disabledPanels.length) {
+        const isEnabling = !!enabledPanels.length;
+        const panelName = isEnabling ? enabledPanels[0] : disabledPanels[0];
+        const propName = panelNameToPropName(panelName);
+        commands[propName] =
+            of(g).pipe(
+                gAPI.togglePanel(panelName, isEnabling),
+                catchGError({
+                    tolerateLoadErrors,
+                    g,
+                    msg: `Error toggling panel`,
+                    payload: {g, panelName, propName, props, tolerateLoadErrors}}));
+    }
+    console.debug('togglePanel', {togglePanel: props.togglePanel, enabledPanels, disabledPanels, commands});
+
+
     /*
     //TODO
     if (typeof props.workbook !== 'undefined') commands['saveWorkbook'] = saveWorkbook();
@@ -252,6 +299,15 @@ function handleUpdates({g, isFirstRun, axesMap, props}) {
         currState[name] = val;
         prevState[name] = usePrevious(val);
     });
+    panelNames.forEach(panelName => {
+        const propName = panelNameToPropName(panelName);
+        const val = props[propName];
+        currState[propName] = val;
+        prevState[propName] = usePrevious(val);
+    });
+    const currTogglePanel = props.togglePanel;
+    currState.togglePanel = currTogglePanel;
+    prevState.togglePanel = usePrevious(currTogglePanel);
 
     useEffect(() => {
         console.debug('update any settings', !isFirstRun && g && g.g, {isFirstRun, readyG: g && g.g, props, prevState, currState});

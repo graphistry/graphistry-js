@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types';
 
+//FIXME https://github.com/storybookjs/storybook/issues/14092
+//See corresponding issue in index.js
+const panelNames = ['filters', 'exclusions', 'scene', 'labels', 'layout'];
 
 // react prop name :: [ react type, default name, maybe alt JS updateSetting prop, maybe alt JS method ]
 const bindingsTable = {
@@ -35,7 +38,7 @@ const bindingsTable = {
     gravity:				[ PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)), 'defaultGravity',  undefined,  undefined],
     scalingRatio:			[ PropTypes.oneOf(Array.from({ length: 100 }, (x, i) => i + 1)), 'defaultScalingRatio', undefined,  undefined],
 
-    togglePanel:            [ PropTypes.array,      undefined,                   undefined,      'togglePanel'],
+    //togglePanel:            [ PropTypes.array,      undefined,                   undefined,      'togglePanel'],
     
     ticks:                  [PropTypes.number,      undefined,                   undefined,        'tickClustering'],
 
@@ -116,4 +119,4 @@ const bindings =
         };
     });
 
-export { bindings };
+export { bindings, panelNames };
