@@ -5,7 +5,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## 4.0.0-alpha.x
+# Development
+
+# Latest
+
+## 4.0.0
 
 ### Features
 
@@ -39,7 +43,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Deprecated
 
 * Removal of RxJS prototype dot chaining, replaced with composition (pipe). For interim backwards compatibility, old example usages will largely still work via interim backporting.
-* Use of api=1 `apiKey` is deprecated. Will be replaced with JWT methods (see REST API).
+* Use of api=1 `apiKey` and corresponding  upload methods are deprecated. Will be replaced with JWT methods (see REST API).
 
 ### Breaking Changes
 
@@ -54,8 +58,6 @@ Use of old chained rxjs calling pattern are deprecated: old demos still work, bu
   * Added `containerStyle`, `containerClassName`, `containerProps`
   * Added `iframeStyle`, `iframeClassName`, `iframeProps`
 
-
-## Latest
 
 
 <a name="3.7.6"></a>
