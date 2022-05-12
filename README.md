@@ -28,7 +28,13 @@ GraphistryJS comes in 2 flavors:
 http://localhost:60863/?path=/story/graphistry-vanilla-js--instantiate-graphistry-js
 
 * [client-api](projects/client-api/README.md) ([interactive storybook docs](https://graphistry.github.io/graphistry-js/?path=/story/graphistry-vanilla-js)): Pure JavaScript API taking advantage of reactive/observable style code for chaining async code
+  * `npm install '@graphistry/client-api'`
+  * `import { graphistryJS } from '@graphistry/client-api';` + variants for different bundling formats
+  *  See [client-api](projects/client-api/README.md) and [interactive storybook docs](https://graphistry.github.io/graphistry-js/?path=/story/graphistry-vanilla-js)
 * [client-api-react](projects/client-api-react/README.md) ([interactive storybook docs](https://graphistry.github.io/graphistry-js/)): React component for typical cases
+  * `npm install '@graphistry/client-api-react'`
+  * `import { Graphistry } from '@graphistry/client-api-react';` + variants for different bundling formats
+  * See [client-api-react](projects/client-api-react/README.md) and [interactive storybook docs](https://graphistry.github.io/graphistry-js/)
 
 ### Architecture
 
