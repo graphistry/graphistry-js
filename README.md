@@ -1,6 +1,6 @@
 [![Latest docs](https://img.shields.io/badge/docs-latest-brightgreen)](https://graphistry.github.io/graphistry-js/)
-![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api&logo=npm)
-![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api-react&logo=npm)
+[![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api&logo=npm)](https://www.npmjs.com/package/@graphistry/client-api)
+[![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api-react&logo=npm)](https://www.npmjs.com/package/@graphistry/client-api-react)
 ![GitHub](https://img.shields.io/github/license/graphistry/graphistry-js)
 
 ![CI main](https://github.com/graphistry/graphistry-js/workflows/CI/badge.svg) ![CI docs](https://github.com/graphistry/graphistry-js/workflows/Storybook/badge.svg)
