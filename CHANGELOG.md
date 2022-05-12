@@ -9,6 +9,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.0.1 - 2022-05-12
+
+### Bug Fixes
+
+* .dockerignore includes nested node_modules
+
+### Changed
+
+* Dependency updates (non-breaking)
+
 ## 4.0.0
 
 ### Features
