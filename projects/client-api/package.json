@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api",
-  "version": "4.0.1-alpha",
+  "version": "4.0.2",
   "description": "Client-side API for interacting with a Graphistry embedded visualization.",
   "jsnext:main": "dist/index.js",
   "config": {
