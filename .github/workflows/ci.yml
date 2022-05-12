@@ -7,6 +7,26 @@ name: CI
 on:
   #Regular dev
   push:
+    paths: [
+      "projects/client-api/.eslintrc",
+      "projects/client-api/index.js",
+      "projects/client-api/package.json",
+      "projects/client-api/package-lock.json",
+      "projects/client-api/src/**",
+      "projects/client-api-react/assets/**",
+      "projects/client-api-react/src/**",
+      "projects/client-api-react/.babelrc",
+      "projects/client-api-react/.eslintrc",
+      "projects/client-api-react/index.js",
+      "projects/client-api-react/package.json",
+      "projects/client-api-react/package-lock.json",
+      "projects/client-api-react/rollup.config.js",
+      "lerna.json",
+      "package.json",
+      "package-lock.json",
+      "docker-compose.yml",
+      "Dockerfile"
+    ]
   pull_request:
     types: [opened, synchronize] # Workflow triggering events
 
