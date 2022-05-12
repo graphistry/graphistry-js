@@ -11,6 +11,8 @@ dist/
 tools/
 docs/
 
+**/node_modules
+
 docs-build/
 .github/
 projects/client-api/jsdocs/

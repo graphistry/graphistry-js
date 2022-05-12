@@ -9,6 +9,21 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.0.1 - 2022-05-12
+
+### Infra
+* CI badges
+* Only publish docs on master merge
+* Only run CI on project changes
+
+### Bug Fixes
+
+* .dockerignore includes nested node_modules
+
+### Changed
+
+* Dependency updates (non-breaking)
+
 ## 4.0.0
 
 ### Features

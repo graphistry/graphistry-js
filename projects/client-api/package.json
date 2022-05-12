@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Client-side API for interacting with a Graphistry embedded visualization.",
   "jsnext:main": "dist/index.js",
   "config": {
@@ -70,12 +70,12 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api#readme",
   "devDependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/preset-env": "7.16.0",
-    "clean-jsdoc-theme": "3.2.10",
-    "esbuild": "0.14.2",
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "7.17.10",
+    "clean-jsdoc-theme": "3.3.2",
+    "esbuild": "0.14.39",
     "eslint": "7.32.0",
-    "jsdoc": "3.6.7",
+    "jsdoc": "3.6.10",
     "jsdoc-babel": "~0.5.0",
     "rimraf": "3.0.2"
   },

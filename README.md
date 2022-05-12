@@ -1,7 +1,9 @@
-[![Latest docs](https://img.shields.io/badge/docs-latest-brightgreen)](http://hub.graphistry.com/docs)
+[![Latest docs](https://img.shields.io/badge/docs-latest-brightgreen)](https://graphistry.github.io/graphistry-js/)
 ![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api&logo=npm)
 ![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api-react&logo=npm)
 ![GitHub](https://img.shields.io/github/license/graphistry/graphistry-js)
+
+![CI main](https://github.com/graphistry/graphistry-js/workflows/CI/badge.svg) ![CI docs](https://github.com/graphistry/graphistry-js/workflows/Storybook/badge.svg)
 
 [<img src="https://img.shields.io/badge/slack-Graphistry%20chat-yellow.svg?logo=slack">](https://join.slack.com/t/graphistry-community/shared_invite/zt-53ik36w2-fpP0Ibjbk7IJuVFIRSnr6g) 
 ![Twitter Follow](https://img.shields.io/twitter/follow/graphistry)
