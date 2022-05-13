@@ -2,6 +2,7 @@
   "version": "4.0.2",
   "packages": [
     "projects/client-api",
-    "projects/client-api-react"
+    "projects/client-api-react",
+    "projects/node-api"
   ]
 }

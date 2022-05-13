@@ -1,0 +1,53 @@
+{
+  "name": "@graphistry/node-api",
+  "version": "4.0.2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/graphistry/graphistry-js.git"
+  },
+  "homepage": "https://github.com/graphistry/graphistry-js",
+  "private": false,
+  "description": "Graphistry API client for use with node.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "npx tsc",
+    "build-docs": "npx typedoc --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' --out docs src/index.ts",
+    "watch-docs": "npx typedoc --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' --out docs src/index.ts --watch",
+    "start-docs": "npx live-server docs",
+    "lock:fix": "npm i --package-lock-only",
+    "test": "npm run lint && npm run test:docs",
+    "test:docs": "npx typedoc --treatWarningsAsErrors --emit none --listInvalidSymbolLinks --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' src/index.ts",
+    "lint": "eslint . --fix"
+  },
+  "keywords": [
+    "Graphistry",
+    "node",
+    "graph",
+    "GPU",
+    "Arrow",
+    "dataframe",
+    "RAPIDS",
+    "visualization"
+  ],
+  "author": "Graphistry, Inc.",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/graphistry/graphistry-js/issues"
+  },
+  "devDependencies": {
+    "@compodoc/live-server": "^1.2.3",
+    "@tsconfig/node16": "^1.0.2",
+    "@types/node": "^17.0.33",
+    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/parser": "^5.23.0",
+    "eslint": "^8.15.0",
+    "nlfurniss-typedoc-plugin-sourcefile-url": "^2.0.0",
+    "ts-node": "^10.7.0",
+    "typedoc": "^0.22.15",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "node-fetch": "3.2.4"
+  }
+}

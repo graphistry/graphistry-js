@@ -71,3 +71,5 @@ docs-build
 projects/client-api/jsdocs/
 projects/client-api/www/
 projects/client-api-react/www/
+projects/node-api/dist/
+projects/node-api/docs/
