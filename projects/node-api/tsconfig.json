@@ -3,12 +3,16 @@
     "compilerOptions": {
         "incremental": true,
         "target": "es5",
-        "module": "commonjs",
+        "lib": [ "es2015" ],
+        "module": "es6",
+        "moduleResolution": "node",
         "esModuleInterop": true,
         "skipLibCheck": true,
         "declaration": true,
         "forceConsistentCasingInFileNames": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "declarationMap": true,
+        "strict": true
     },
     "include": ["src"],
     "exclude": ["node_modules"],

@@ -10,6 +10,15 @@
   "description": "Graphistry API client for use with node.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    "./lib/*": "./dist/src/*.js"
+  },
+  "typesVersions": {
+    "*": {
+      "lib/*": ["dist/src/*"]
+    }
+  },
   "scripts": {
     "build": "npm run build:tsc && npm run docs:build",
     "build:tsc": "npx tsc",
