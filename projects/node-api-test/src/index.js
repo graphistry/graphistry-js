@@ -1,4 +1,6 @@
-import { File, FileType, Dataset, Client } from '@graphistry/node-api';
+import { EdgeFile, NodeFile, Dataset, Client } from '@graphistry/node-api';
+
+////////////////////////////////////////////////////////////////////////////////
 
 const edges = {
     's': ['a', 'b', 'c'],
@@ -22,34 +24,43 @@ if (!password) { throw new Error('GRAPHISTRY_PASSWORD environment variable not s
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const client = new Client(user, password);
+if (false) {
+  
+    const client = new Client(user, password);
 
-const edgesFile = new File(FileType.Edge, edges);
-await edgesFile.createFile(client);
-await edgesFile.uploadData(client);
+    const edgesFile = new EdgeFile(edges);
+    const nodesFile = new NodeFile(nodes);  // optional
+    await Promise.all([edgesFile.upload(client), nodesFile.upload(client)]);
 
-//optional
-const nodesFile = new File(FileType.Node, nodes);
-await nodesFile.createFile(client);
-await nodesFile.uploadData(client);
+    const dataset = new Dataset({
+        node_encodings: { bindings: { node: 'n' } },
+        edge_encodings: { bindings: { source: 's', destination: 'd' } },
+        metadata: {},
+        name: 'testdata',
+    }, edgesFile, nodesFile);
+    await dataset.upload(client);
 
-const dataset = Dataset({
-    node_encodings: {
-        bindings: {
-            node: 'n'
-        }
-    },
-    edge_encodings: {
-        bindings: {
-            source: 's',
-            destination: 'd'
-        }
-    },
-    metadata: {},
-    name: 'testdata',
-});
-dataset.addFile(edgesFile);
-dataset.addFile(nodesFile);
+    console.info(`View dataset at https://hub.graphistry.com/graph/graph.html?dataset=${dataset.datasetID}`);
 
-const datasetID = await dataset.getGraphUrl(client);
-console.log(`Dataset ID: ${datasetID}`);
+} else {
+
+    const client = new Client(user, password);
+    const edgesFile = new EdgeFile(edges);
+    const nodesFile = new NodeFile(nodes);  // optional
+
+    Promise.all([edgesFile.upload(client), nodesFile.upload(client)])
+    .then(() => (new Dataset({
+            node_encodings: { bindings: { node: 'n' } },
+            edge_encodings: { bindings: { source: 's', destination: 'd' } },
+            metadata: {},
+            name: 'testdata',
+        }, edgesFile, nodesFile)).upload(client))
+    .then(dataset => {
+        console.info(`View dataset at https://hub.graphistry.com/graph/graph.html?dataset=${dataset.datasetID}`);
+        console.info(`Dataset using node file ${nodesFile.fileID}, edge file ${edgesFile.fileID}`);
+    })
+    .catch(err => {
+        console.error('Oops', err);
+    });
+
+}
