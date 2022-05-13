@@ -1,0 +1,17 @@
+{
+  "name": "node-api-test",
+  "version": "4.0.3-alpha",
+  "description": "",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf node_modules"
+  },
+  "author": "Graphistry, Inc.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@graphistry/node-api": "^4.0.3-alpha"
+  }
+}
