@@ -119,7 +119,7 @@ To regenerate:
 
 ## Publish for public consumption (Maintainer only)
 
-1. Local build
+1. Build from a local checkout of branch with a corresponding PR:
 
 Ex:
 
@@ -137,7 +137,11 @@ lerna version X.Y.Z-alpha.2
 lerna publish #  if failed: lerna publish from-package
 ```
 
-4. Most likely, you also want to update version dependencies in:
+4. Merge the PR in github
+
+This publishes ghpages
+
+5. Most likely, you also want to update version dependencies in:
 
 * pivot-app
 * viz-app
