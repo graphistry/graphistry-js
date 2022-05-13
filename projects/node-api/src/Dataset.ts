@@ -19,6 +19,19 @@ export class Dataset {
 
     private _createDatasetResponse: any;
     public getCreateDatasetResponse(): any { return this._createDatasetResponse; }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    private _usedClientProtocolHostname?: string;
+    public get datasetURL(): string {
+        if (!this._datasetID) {
+            throw new Error('No dataset ID yet');
+        }
+        if (!this._usedClientProtocolHostname) {
+            throw new Error('No client protocol hostname yet');
+        }
+        return `${this._usedClientProtocolHostname}/graph/graph.html?dataset=${this._datasetID}`;
+    }
     
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -73,6 +86,7 @@ export class Dataset {
         this._createDatasetResponse = dataJsonResults;
         const datasetID = dataJsonResults.data.dataset_id;
         this._datasetID = datasetID;
+        this._usedClientProtocolHostname = client.clientProtocolHostname;
         if (!datasetID) {
             throw new Error('Unexpected dataset response, check dataset._createDatasetResponse');
         }

@@ -40,7 +40,8 @@ if (false) {
     }, edgesFile, nodesFile);
     await dataset.upload(client);
 
-    console.info(`View dataset at https://hub.graphistry.com/graph/graph.html?dataset=${dataset.datasetID}`);
+    console.info(`View dataset ${dataset.datasetID} at ${dataset.datasetURL}`);
+    console.info(`Dataset using node file ${nodesFile.fileID}, edge file ${edgesFile.fileID}`);
 
 } else {
 
@@ -56,7 +57,7 @@ if (false) {
             name: 'testdata',
         }, edgesFile, nodesFile)).upload(client))
     .then(dataset => {
-        console.info(`View dataset at https://hub.graphistry.com/graph/graph.html?dataset=${dataset.datasetID}`);
+        console.info(`View dataset ${dataset.datasetID} at ${dataset.datasetURL}`);
         console.info(`Dataset using node file ${nodesFile.fileID}, edge file ${edgesFile.fileID}`);
     })
     .catch(err => {

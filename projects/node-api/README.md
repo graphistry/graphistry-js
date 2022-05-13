@@ -13,19 +13,14 @@
 ```javascript
 import { EdgeFile, NodeFile, Dataset, Client } from '@graphistry/node-api';
 
+//defaults: 'https', 'hub.graphistry.com', 'https://hub.graphistry.com'
 const client = new Client('my_username', 'my_password');
-//default URLs: 'https', 'hub.graphistry.com', 'https://hub.graphistry.com'
 
-//columnar data is fastest; column per attribute
+//columnar data is fastest; column per attribute; reuse across datasets
 const edgesFile = new EdgeFile({'s': ['a1', 'b2'], 'd': ['b2', 'c3']});
-
-//nodes are optional
 const nodesFile = new NodeFile({'n': ['a1', 'b2', 'c3'], 'a1': ['x', 'y', 'z']});
-
-//reuse file IDs across multiple datasets: save time & space
 await Promise.all([edgesFile.upload(), nodesFile.upload()])
 
-//many options!
 const dataset = new Dataset({
     node_encodings: { bindings: { node: 'n' } },
     edge_encodings: { bindings: { source: 's', destination: 'd' } },
@@ -34,7 +29,7 @@ const dataset = new Dataset({
 }, edgesFile, nodesFile);
 
 await dataset.upload();
-console.info(`Created dataset at https://hub.graphistry.com/graph/graph.html?dataset=${dataset.datasetID}`);
+console.info(`View at ${dataset.datasetID} at ${dataset.datasetURL}`);
 ```
 
 ### Ex: Typescript with async/await
@@ -58,7 +53,7 @@ Promise.all([edgesFile.upload(client), nodesFile.upload(client)])
         name: 'testdata',
     }, edgesFile, nodesFile)).upload(client))
 .then(dataset => {
-    console.info(`View dataset at https://hub.graphistry.com/graph/graph.html?dataset=${dataset.datasetID}`);
+    console.info(`View at ${dataset.datasetID} at ${dataset.datasetURL}`);
 })
 .catch(err => {
     console.error('Oops', err);
