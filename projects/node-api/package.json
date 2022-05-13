@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/node-api",
-  "version": "4.0.3-alpha",
+  "version": "4.0.3-alpha.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
@@ -16,7 +16,9 @@
   },
   "typesVersions": {
     "*": {
-      "lib/*": ["dist/src/*"]
+      "lib/*": [
+        "dist/src/*"
+      ]
     }
   },
   "scripts": {
