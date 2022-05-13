@@ -11,14 +11,16 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "npx tsc",
-    "build-docs": "npx typedoc --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' --out docs src/index.ts",
-    "watch-docs": "npx typedoc --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' --out docs src/index.ts --watch",
-    "start-docs": "npx live-server docs",
+    "build": "npm run build:tsc && npm run docs:build",
+    "build:tsc": "npx tsc",
+    "docs:build": "npx typedoc --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' --out docs src/index.ts",
+    "docs:watch": "npx typedoc --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' --out docs src/index.ts --watch",
+    "docs:start": "npx live-server docs",
+    "docs:test": "npx typedoc --treatWarningsAsErrors --emit none --listInvalidSymbolLinks --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' src/index.ts",
     "lock:fix": "npm i --package-lock-only",
-    "test": "npm run lint && npm run test:docs",
-    "test:docs": "npx typedoc --treatWarningsAsErrors --emit none --listInvalidSymbolLinks --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' src/index.ts",
-    "lint": "eslint . --fix"
+    "test": "npm run lint && npm run docs:test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [
     "Graphistry",

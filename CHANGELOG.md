@@ -7,9 +7,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Development
 
+### Features
+
+* **node-api**: Initial implementation of `@graphistry/node-api`
+
+### Docs
+
+* **node-api**: Initial implementation of `@graphistry/node-api` typedocs
+
 # Latest
 
-## 4.0.1 - 2022-05-12
+## 4.0.2 - 2022-05-12
 
 ### Infra
 * CI badges

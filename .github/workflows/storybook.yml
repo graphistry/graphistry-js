@@ -34,6 +34,9 @@ jobs:
       - name: JSDocs 🔧
         run: ./tools/jsdocs.sh
 
+      - name: Node TSDocs 🔧
+        run: ./tools/node-tsdocs.sh 
+
   build-and-deploy:
     if: github.ref == 'refs/heads/master'
     needs: [ test-build-and-deploy ]
@@ -55,6 +58,9 @@ jobs:
  
       - name: JSDocs 🔧
         run: ./tools/jsdocs.sh
+
+      - name: Node TSDocs 🔧
+        run: ./tools/node-tsdocs.sh 
 
       - name: Examples 🔧
         run: cp -r projects/client-api/examples docs-build/examples

@@ -39,6 +39,15 @@ RUN echo "=== Building client-api-react ===" \
 
 # #############################################################################
 
+FROM base as base_node
+WORKDIR /opt/graphistry-js
+COPY projects/node-api /opt/graphistry-js/projects/node-api
+RUN echo "=== Building node-api ===" \
+    && ( cd projects/node-api && npm i ) \
+    && ./node_modules/lerna/cli.js run build --scope="@graphistry/node-api"
+
+# #############################################################################
+
 FROM base
 WORKDIR /opt/graphistry-js
 COPY --from=base_js \
@@ -53,3 +62,8 @@ COPY --from=base_react \
 RUN  echo "== Final react client" \
     && find /opt/graphistry-js/projects/client-api-react
 
+COPY --from=base_node \
+    /opt/graphistry-js/projects/node-api \
+    /opt/graphistry-js/projects/node-api
+RUN  echo "== Final node client" \
+    && find /opt/graphistry-js/projects/node-api
