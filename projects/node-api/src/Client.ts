@@ -40,7 +40,7 @@ export class Client {
             { username: this._username, password: this._password },
             this.getBaseHeaders(),
         )
-        
+
         const tok : string = response.token;
         this._token = tok;
         return tok;
