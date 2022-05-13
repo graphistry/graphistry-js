@@ -70,7 +70,7 @@ export class Client {
     private async getSecureHeaders(): Promise<Headers> {
         const headers = this.getBaseHeaders();
         const tok = await this.getAuthToken();
-        headers.append('Authorization', `Token ${tok}`);
+        headers.append('Authorization', `Bearer ${tok}`);
         return headers;
     }
 
