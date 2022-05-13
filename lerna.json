@@ -3,6 +3,7 @@
   "packages": [
     "projects/client-api",
     "projects/client-api-react",
-    "projects/node-api"
+    "projects/node-api",
+    "projects/node-api-test"
   ]
 }
