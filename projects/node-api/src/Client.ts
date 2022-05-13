@@ -42,11 +42,12 @@ export class Client {
         
         const tok : string = response.token;
         this._token = tok;
-        return this._token;
+        return tok;
     }
 
     private authTokenValid(): boolean {
-        return !!this._token;
+        const out = !!this._token;
+        return out;
     }
 
     private async postToApi(url: string, data: any, headers: Headers): Promise<any> {
