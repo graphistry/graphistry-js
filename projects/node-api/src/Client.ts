@@ -3,11 +3,11 @@ import fetch, { Headers } from 'node-fetch';
 
 export class Client {
 
-    private _username: string;
+    public readonly username: string;
     private _password: string;
-    private _protocol: string;
-    private _host: string;
-    private _clientProtocolHostname: string;
+    public readonly protocol: string;
+    public readonly host: string;
+    public readonly clientProtocolHostname: string;
 
     private _token?: string;
 
@@ -16,11 +16,11 @@ export class Client {
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname = 'https://hub.graphistry.com'
     ) {
-        this._username = username;
+        this.username = username;
         this._password = password;
-        this._protocol = protocol;
-        this._host = host;
-        this._clientProtocolHostname = clientProtocolHostname;
+        this.protocol = protocol;
+        this.host = host;
+        this.clientProtocolHostname = clientProtocolHostname;
         this.getAuthToken();
     }
 
@@ -37,7 +37,7 @@ export class Client {
 
         const response = await this.postToApi(
             'api/v2/auth/token/generate',
-            { username: this._username, password: this._password },
+            { username: this.username, password: this._password },
             this.getBaseHeaders(),
         )
 
@@ -75,6 +75,6 @@ export class Client {
     }
 
     private getBaseUrl(): string {
-        return `${this._protocol}://${this._host}/`;
+        return `${this.protocol}://${this.host}/`;
     }
 }
