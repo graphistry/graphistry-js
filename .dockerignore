@@ -20,5 +20,7 @@ projects/client-api/www/
 projects/client-api-react/www/
 projects/client-api/dist
 projects/client-api-react/dist
+projects/node-api/dist
+projects/node-api/docs
 DEVELOP.md
 README.md
