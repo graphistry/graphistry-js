@@ -32,7 +32,7 @@ await dataset.upload();
 console.info(`View at ${dataset.datasetID} at ${dataset.datasetURL}`);
 ```
 
-### Ex: Typescript with async/await
+### Ex: TypeScript with async/await
 
 Exactly the same!
 
@@ -64,7 +64,7 @@ Promise.all([edgesFile.upload(client), nodesFile.upload(client)])
 
 For further information about authentication, files, and datasets, see the [Graphistry REST API docs](https://hub.graphistry.com/docs/api/).
 
-### Typescript
+### TypeScript
 
 Types are already automatically bundled with this module
 
