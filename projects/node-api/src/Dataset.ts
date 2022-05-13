@@ -1,25 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Client } from './Client';
-import { File, FileType } from './File';
+import { Client } from './Client.js';
+import { File, FileType } from './File.js';
+import { version } from './version.js';
 
 export class Dataset {
 
-    private _nodeFiles: File[];
-    private _edgeFiles: File[];
+    ////////////////////////////////////////////////////////////////////////////////
 
-    private _bindings: Record<string, unknown>;
+
+    // Set at start or via managed APIs
+    public readonly nodeFiles: File[];
+    public readonly edgeFiles: File[];
+    public readonly bindings: Record<string, unknown>;
+
+    // Set after upload
     private _datasetID?: string;
+    public get datasetID(): string | undefined { return this._datasetID; }
 
-    constructor(bindings: Record<string, unknown> = {}) {
-        this._bindings = bindings;
-        this._nodeFiles = [];
-        this._edgeFiles = [];
+    private _createDatasetResponse: any;
+    public getCreateDatasetResponse(): any { return this._createDatasetResponse; }
+    
+    ////////////////////////////////////////////////////////////////////////////////
+
+    constructor(
+        bindings: Record<string, unknown> = {},
+        nodeFiles: File[] | File = [],
+        edgeFiles: File[] | File = []
+    ) {
+        this.bindings = bindings;
+        this.nodeFiles = nodeFiles instanceof File ? [nodeFiles] : nodeFiles;
+        this.edgeFiles = edgeFiles instanceof File ? [edgeFiles] : edgeFiles;
     }
 
-    public async getGraphUrl(client: Client): Promise<string> {
+    ////////////////////////////////////////////////////////////////////////////////
+
+    public async upload(client: Client): Promise<Dataset> {
+
+        if (!client) {
+            throw new Error('No client provided');
+        }
         
+        //create+upload files as needed
         await Promise.all(
-            this._nodeFiles.concat(this._edgeFiles).map(async (file) => {
+            this.nodeFiles.concat(this.edgeFiles).map(async (file) => {
                 const response = await file.createFile(client);
                 if (!response) {
                     throw new Error('File creation failed 1');
@@ -31,33 +54,69 @@ export class Dataset {
                 return file;
             }));
         
+        //upload dataset and get its ID
         const fileBindings = {
-            node_files: this._nodeFiles.map((file) => file.fileID),
-            edge_files: this._edgeFiles.map((file) => file.fileID),
+            node_files: this.nodeFiles.map((file) => file.fileID),
+            edge_files: this.edgeFiles.map((file) => file.fileID),
         };
-        const bindings = { ...fileBindings, ...this._bindings };
+        const bindings = { ...fileBindings, ...this.bindings };
+        await this.createDataset(client, bindings);
 
-        return await this.createDataSet(client, bindings);
+        return this;
     }
 
-    public async createDataSet(client: Client, data: Record<string, unknown>): Promise<string> {
-        const dataJsonResults = await client.post('api/v2/upload/datasets/', data);
+    ////////////////////////////////////////////////////////////////////////////////
+
+    private async createDataset(client: Client, bindings: Record<string, unknown>): Promise<string> {
+        this.fillMetadata(bindings);
+        const dataJsonResults = await client.post('api/v2/upload/datasets/', bindings);
+        this._createDatasetResponse = dataJsonResults;
         const datasetID = dataJsonResults.data.dataset_id;
         this._datasetID = datasetID;
+        if (!datasetID) {
+            throw new Error('Unexpected dataset response, check dataset._createDatasetResponse');
+        }
         return datasetID;
     }
 
-    public addBindings(bindings: Record<string, unknown>): void {
-        this._bindings = bindings;
+    public updateBindings(bindings: Record<string, unknown>): void {
+        for (const [key, value] of Object.entries(bindings)) {
+            this.bindings[key] = value;
+        }
     }
 
-    public addFile(file: File) {
+    public addFile(file: File): void {
         if (file.type === FileType.Node) {
-            this._nodeFiles.push(file);
+            this.nodeFiles.push(file);
         } else if (file.type === FileType.Edge) {
-            this._edgeFiles.push(file);
+            this.edgeFiles.push(file);
         } else {
             throw new Error('Invalid File Type');
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////////////
+
+    private fillMetadata(data: any): void {
+        if (!data) {
+            throw new Error('No data to fill metadata; call setData() first or provide to File constructor');
+        }
+
+        if (!data['metadata']) {
+            data['metadata'] = {};
+        }
+
+        const metadata = data['metadata'];
+
+        if (!metadata['agent']) {
+            metadata['agent'] = '@graphistry/node-api';
+        }
+        if (!metadata['agentversion']) {
+            metadata['agentversion'] = version;
+        }
+        if (!metadata['apiversion']) {
+            metadata['apiversion'] = '3';
+        }
+    }
+    
 }
