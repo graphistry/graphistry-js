@@ -21,6 +21,7 @@ export class Client {
         this._protocol = protocol;
         this._host = host;
         this._clientProtocolHostname = clientProtocolHostname;
+        this.getAuthToken();
     }
 
     public async post(uri: string, payload: any): Promise<any> {
