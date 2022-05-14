@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Debug from 'debug';
 import { Client } from './Client.js';
 import { version } from './version.js';
-const debug = Debug('Client');
 
 
 /**
