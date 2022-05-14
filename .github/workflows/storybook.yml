@@ -15,6 +15,7 @@ on:
       "projects/node-api/package.json",
       "projects/node-api/README.md"
     ] # Trigger the action only when files change in the folders defined here
+    tags:
   workflow_dispatch:
 
 jobs:
