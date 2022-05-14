@@ -7,7 +7,7 @@ const debug = Debug('Client');
 
 export enum FileType {
     Node,
-    Edge,
+    Edge
 }
 
 

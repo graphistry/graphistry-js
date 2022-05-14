@@ -9,8 +9,8 @@ export class Dataset {
 
 
     // Set at start or via managed APIs
-    public readonly nodeFiles: File[];
-    public readonly edgeFiles: File[];
+    public readonly edgeFiles: EdgeFile[];
+    public readonly nodeFiles: NodeFile[];
     public readonly bindings: Record<string, unknown>;
 
     // Set after upload
@@ -37,12 +37,23 @@ export class Dataset {
 
     constructor(
         bindings: Record<string, unknown> = {},
-        nodeFiles: File[] | File = [],
-        edgeFiles: File[] | File = []
+        edgeFiles: EdgeFile[] | EdgeFile = [],
+        nodeFiles: NodeFile[] | NodeFile = []
     ) {
         this.bindings = bindings;
-        this.nodeFiles = nodeFiles instanceof File ? [nodeFiles] : nodeFiles;
-        this.edgeFiles = edgeFiles instanceof File ? [edgeFiles] : edgeFiles;
+        this.edgeFiles = edgeFiles instanceof EdgeFile ? [edgeFiles] : edgeFiles;
+        this.nodeFiles = nodeFiles instanceof NodeFile ? [nodeFiles] : nodeFiles;
+
+        for (const edgeFile of this.edgeFiles) {
+            if (!edgeFile.fileFormat) {
+                throw new Error('Edge file must have a fileType');
+            }
+        }
+        for (const nodeFile of this.nodeFiles) {
+            if (!nodeFile.fileFormat) {
+                throw new Error('Node file must have a fileType');
+            }
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////
