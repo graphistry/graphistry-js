@@ -57,7 +57,7 @@ export class Client {
             headers,
             body: JSON.stringify(data),
         })
-        return response.json()
+        return await response.json();
     }
 
     private getBaseHeaders(): Headers {
