@@ -11,9 +11,6 @@ on:
       "projects/client-api-react/package-lock.json",
       "projects/client-api-react/eslintrc"
     ] # Trigger the action only when files change in the folders defined here
-  push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
 
 jobs:
