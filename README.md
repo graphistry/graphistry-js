@@ -1,15 +1,21 @@
-[![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api&logo=npm)](https://www.npmjs.com/package/@graphistry/client-api)
-[![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api-react&logo=npm)](https://www.npmjs.com/package/@graphistry/client-api-react) [![npm](https://img.shields.io/npm/v/@graphistry/node-api?label=%40graphistry%2Fnode-api&logo=npm)](https://www.npmjs.com/package/@graphistry/node-api)
+<img height=48 src="https://hub.graphistry.com/static/assets/images/logo/banner_transparent_colored.png">
 
-[![Latest docs](https://img.shields.io/badge/docs-latest-brightgreen)](https://graphistry.github.io/graphistry-js/) ![GitHub](https://img.shields.io/github/license/graphistry/graphistry-js)
+[![Latest docs](https://img.shields.io/badge/docs-latest-brightgreen)](https://graphistry.github.io/graphistry-js/)
+[![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api&logo=npm)](https://www.npmjs.com/package/@graphistry/client-api)
+[![npm](https://img.shields.io/npm/v/@graphistry/client-api?label=%40graphistry%2Fclient-api-react&logo=npm)](https://www.npmjs.com/package/@graphistry/client-api-react)
+![GitHub](https://img.shields.io/github/license/graphistry/graphistry-js)
 
 ![CI main](https://github.com/graphistry/graphistry-js/workflows/CI/badge.svg) ![CI docs](https://github.com/graphistry/graphistry-js/workflows/Storybook/badge.svg)
 
 [<img src="https://img.shields.io/badge/slack-Graphistry%20chat-yellow.svg?logo=slack">](https://join.slack.com/t/graphistry-community/shared_invite/zt-53ik36w2-fpP0Ibjbk7IJuVFIRSnr6g) 
 ![Twitter Follow](https://img.shields.io/twitter/follow/graphistry)
 
+---
 
 # GraphistryJS - Explore relationships with GPU visual graph analytics
+
+<img height=30 src="http://3con14.biz/code/_data/js/intro/js-logo.png"> <img height=30 src="https://raw.githubusercontent.com/remojansen/logo.ts/master/ts.jpg"> <img height=30 src="https://raw.githubusercontent.com/jalbertsr/logo-badge-images/master/img/react_logo.png"> <img height=30 src="https://raw.githubusercontent.com/caiogondim/javascript-server-side-logos/master/node.js/standard/454x128.png">
+
 
 GraphistryJS is a rich and scalable graph visualization library to extract, transform, and load big graphs into Graphistry's GPU visual graph intelligence platform and dynamically control the style and interactions. It is typically used by developers on problems like visually mapping the behavior of devices and users, especially when there are many events or entities involved.  GraphistryJS controls embedded Graphistry server sessions, such as for [free Graphistry Hub accounts](https://www.graphistry.com/get-started) and private servers.
 
@@ -20,24 +26,58 @@ Graphistry supports unusually large graphs for interactive visualization. The cl
 
 You can [launch your own Graphistry server with just a few clicks](https://www.graphistry.com/get-started).
 
-### JavaScript client APIs
-The JavaScript client APIs makes it easy to embed visual graph analytics into JavaScript frontends and control the style and interactions. Developers can quickly prototype and deploy stunning solutions.
+### JavaScript clients: Vanilla JS, React, & Node
 
-GraphistryJS comes in 3 flavors:
+<img height=48 src="http://3con14.biz/code/_data/js/intro/js-logo.png"/>
 
-http://localhost:60863/?path=/story/graphistry-vanilla-js--instantiate-graphistry-js
+**@graphistry/client-api**: Pure JavaScript API for manipulating Graphistry visualizations in the browser with async-friendly APIs
 
-* [client-api](projects/client-api/README.md) ([interactive storybook docs](https://graphistry.github.io/graphistry-js/?path=/story/graphistry-vanilla-js)): Pure JavaScript API taking advantage of reactive/observable style code for chaining async code
-  * `npm install '@graphistry/client-api'`
-  * `import { graphistryJS } from '@graphistry/client-api';` + variants for different bundling formats
-  *  See [client-api](projects/client-api/README.md) and [interactive storybook docs](https://graphistry.github.io/graphistry-js/?path=/story/graphistry-vanilla-js)
-* [client-api-react](projects/client-api-react/README.md) ([interactive storybook docs](https://graphistry.github.io/graphistry-js/)): React component for typical cases
-  * `npm install '@graphistry/client-api-react'`
-  * `import { Graphistry } from '@graphistry/client-api-react';` + variants for different bundling formats
-  * See [client-api-react](projects/client-api-react/README.md) and [interactive storybook docs](https://graphistry.github.io/graphistry-js/)
-* [node-api](projects/node-api/README.md): Node.js bindings, including optional Typescript support
-  * `npm install '@graphistry/node-api'`
-  * `import { Client, Dataset, File, FileType } from '@graphistry/node-api'`
+```bash
+npm install '@graphistry/client-api'
+```
+
+```javascript
+import { graphistryJS } from '@graphistry/client-api'; // + variants for different bundling formats
+const g = graphistryJS(elt);
+```
+
+See [@graphistry/client-api project](projects/client-api/README.md) and [interactive storybook docs](https://graphistry.github.io/graphistry-js/?path=/story/graphistry-vanilla-js)
+
+
+---
+<img height=48 src="https://raw.githubusercontent.com/jalbertsr/logo-badge-images/master/img/react_logo.png"/>
+
+**@graphistry/client-api-react**: React component for manipulating Graphistry visualizations in the browser
+
+```bash
+npm install '@graphistry/client-api-react'
+```
+
+```javascript
+import { Graphistry } from '@graphistry/client-api-react';` // + variants for different bundling formats
+<Graphistry dataset="myDatasetID" />
+```
+
+See [@graphistry/client-api-react project](projects/client-api-react/README.md) and [interactive storybook docs](https://graphistry.github.io/graphistry-js/)
+
+
+---
+<img height=48 src="https://raw.githubusercontent.com/caiogondim/javascript-server-side-logos/master/node.js/standard/454x128.png" />
+
+**@graphistry/node-api**: Node.js bindings, including optional Typescript support, for creating visualizations and generating URLs
+
+```bash
+npm install '@graphistry/node-api'
+```
+
+```javascript
+import { Client, Dataset, EdgeFile, NodeFile } from '@graphistry/node-api'
+const client = new Client(user, pass);
+const ds = new Dataset(bindings, new EdgeFile(edges));
+await ds.upload(client);
+```
+
+See [@graphistry/node-api project](projects/node-api/README.md) and [API docs & examples](https://graphistry.github.io/graphistry-js/node-tsdocs/)
 
 ### Architecture
 
