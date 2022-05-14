@@ -17,6 +17,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.0.5 - 2022-05-14
+
+### Fix
+
+* **docs**: Work around storybook linking bugs
+
+## 4.0.3 - 2022-05-14
+
+### Docs
+
+* **docs**: Link `@graphistry/node-api` from main docs
+
 ## 4.0.2 - 2022-05-12
 
 ### Infra
