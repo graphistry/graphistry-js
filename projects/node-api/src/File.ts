@@ -5,6 +5,18 @@ import { version } from './version.js';
 const debug = Debug('Client');
 
 
+/**
+ * @internal
+ * 
+ * <br>
+ * 
+ * ## FileType
+ * 
+ * Enumeration used by {@link File} subclasses {@link EdgeFile} and {@link NodeFile} to specify whether the file is a node or edge file.
+ * 
+ * Primarily useful for TypeScript and runtime checks to avoid mixups when passing {@link File} objects to {@link Dataset} 
+ * 
+ */
 export enum FileType {
     Node,
     Edge
@@ -17,7 +29,17 @@ export enum FileType {
 /**
  * # File examples
  * 
- * For configured supported file formats, see https://hub.graphistry.com/docs/api/2/rest/files/
+ * {@link File} objects are used for uploading data and then reusing as part of {@link Dataset} graph visualizations
+ * 
+ * Powerfully, the same file may be reused in multiple {@link Dataset}s, so many variants can be made cheaply and quickly.
+ * 
+ * For configured supported file formats, see https://hub.graphistry.com/docs/api/2/rest/files/ .
+ * 
+ * <br>
+ * 
+ * ---
+ * 
+ * <br>
  * 
  * @example **Upload an {@link EdgeFile} from a JSON object**
  * ```javascript
@@ -46,6 +68,7 @@ export enum FileType {
  * const nodesFile = new NodeFile({'n': ['a', 'b', 'c']});
  * await nodesFile.upload(client);
  * console.log(`NodeFile uploaded as ID ${nodesFile.fileID}`);
+ * ```
  * 
  * <br>
  * 
@@ -232,7 +255,7 @@ export class File {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Helper class for creating a File object for uploading: See File constructor
+ * Helper class for tracking intent when creating a {@link File} object for uploading
  */
 export class EdgeFile extends File {
     constructor(data: any = undefined, fileFormat = 'json', name = 'my file', urlOpts = '') {
@@ -241,7 +264,7 @@ export class EdgeFile extends File {
 }
 
 /**
- * Helper class for creating a File object for uploading: See File constructor
+ * Helper class for tracking intent when creating a {@link File} object for uploading
  */
 export class NodeFile extends File {
     constructor(data: any = undefined, fileFormat = 'json', name = 'my file', urlOpts = '') {

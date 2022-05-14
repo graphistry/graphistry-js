@@ -12,6 +12,12 @@ import { version } from './version.js';
  * 
  * For the many options, see the [JSON documentation](https://hub.graphistry.com/docs/api/).
  * 
+ * <br>
+ * 
+ * ---
+ * 
+ * <br>
+ * 
  * @example **Create a dataset from edges and upload using async/await**
  * ```javascript
  * import { Dataset } from '@graphistry/node-api';

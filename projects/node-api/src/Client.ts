@@ -3,8 +3,17 @@ import fetch, { Headers } from 'node-fetch';
 
 /**
  * # Client examples
+ * 
  * Authenticate against a Graphistry server and manage communications with it.
  * 
+ * Different authentication modes may be desirable depending on the type of Graphistry server.
+ * 
+ * <br>
+ * 
+ * ---
+ * 
+ * <br>
+ *  
  * @example **Authenticate against Graphistry Hub**
  * ```javascript
  * import { Client } from '@graphistry/node-api';
