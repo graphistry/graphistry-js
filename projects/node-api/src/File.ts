@@ -41,14 +41,15 @@ export class File {
 
     // Bound at creation
 
-    public readonly urlOpts: string;
-    public readonly fileType: string;
+    public readonly createOpts: Record<string, any>;
+    public readonly uploadUrlOpts: string;
+    public readonly fileFormat: string;
     public readonly name: string;
     public readonly type: FileType;
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    constructor(type: FileType, data: any = undefined, fileType = 'json', name = 'my file', urlOpts = '') {
+    constructor(type: FileType, data: any = undefined, fileFormat = 'json', name = 'my file', createOpts = {}, uploadUrlOpts = '') {
         if (typeof(data) == 'string') {
             this._fileID = data;
             this._fileCreated = true;
@@ -56,16 +57,16 @@ export class File {
         } else {
             this._data = data;
         }
-        this.urlOpts = urlOpts;
-        this.fileType = fileType;
+        this.createOpts = createOpts;
+        this.uploadUrlOpts = uploadUrlOpts;
+        this.fileFormat = fileFormat;
         this.name = name;
         this.type = type;
-        
     }
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public async upload(client : Client, force = false) {
+    public async upload(client : Client, force = false): Promise<File> {
 
         if (!client) { throw new Error('No client provided'); }
 
@@ -88,7 +89,7 @@ export class File {
             return this._fileCreated;
         }
 
-        const fileJsonResults = await client.post('api/v2/files/', {file_type: this.fileType});
+        const fileJsonResults = await client.post('api/v2/files/', {file_type: this.fileFormat, ...this.createOpts});
         this._fileCreateResponse = fileJsonResults;
         this._fileID = fileJsonResults.file_id;
         this._fileCreated = !!fileJsonResults.file_id;
@@ -101,7 +102,7 @@ export class File {
         }
         this.fillMetadata(this._data);
         const results = await client.post(
-            `api/v2/upload/files/${this._fileID}${ this.urlOpts ? `?${this.urlOpts}` : ''}`,
+            `api/v2/upload/files/${this._fileID}${ this.uploadUrlOpts ? `?${this.uploadUrlOpts}` : ''}`,
             this._data
         );
         this._fileUploadResponse = results;
@@ -137,13 +138,13 @@ export class File {
 
 
 export class EdgeFile extends File {
-    constructor(data: any = undefined, name = 'my file', urlOpts = '') {
-        super(FileType.Edge, data, 'json', name, urlOpts);
+    constructor(data: any = undefined, fileFormat = 'json', name = 'my file', urlOpts = '') {
+        super(FileType.Edge, data, fileFormat, name, urlOpts);
     }
 }
 
 export class NodeFile extends File {
-    constructor(data: any = undefined, name = 'my file', urlOpts = '') {
-        super(FileType.Node, data, 'json', name, urlOpts);
+    constructor(data: any = undefined, fileFormat = 'json', name = 'my file', urlOpts = '') {
+        super(FileType.Node, data, fileFormat, name, urlOpts);
     }
 }
