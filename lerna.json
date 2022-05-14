@@ -1,8 +1,9 @@
 {
-  "version": "4.0.3-alpha",
+  "version": "4.0.3-alpha.3",
   "packages": [
     "projects/client-api",
     "projects/client-api-react",
-    "projects/node-api"
+    "projects/node-api",
+    "projects/node-api-test"
   ]
 }
