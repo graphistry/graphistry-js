@@ -11,6 +11,12 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
+  "files": [
+    "dist",
+    "docs",
+    "src",
+    "README.md"
+  ],
   "scripts": {
     "build": "npm run build:tsc && npm run docs:build",
     "build:tsc": "npx tsc",
