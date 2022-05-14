@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Client } from './Client.js';
-import { File, FileType } from './File.js';
+import { File, FileType, EdgeFile, NodeFile } from './File.js';
 import { version } from './version.js';
 
 export class Dataset {
