@@ -14,13 +14,13 @@ export class Client {
     constructor (
         username: string, password: string,
         protocol = 'https', host = 'hub.graphistry.com',
-        clientProtocolHostname = 'https://hub.graphistry.com'
+        clientProtocolHostname?: string
     ) {
         this.username = username;
         this._password = password;
         this.protocol = protocol;
         this.host = host;
-        this.clientProtocolHostname = clientProtocolHostname;
+        this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
         this.getAuthToken();
     }
 
