@@ -2,6 +2,7 @@ name: Storybook
 on: 
   push:
     paths: [
+      ".github/workflows/storybook.yml",
       "projects/client-api/**",
       "projects/client-api-react/.storybook/**",
       "projects/client-api-react/assets/**",
@@ -9,7 +10,10 @@ on:
       "projects/client-api-react/src/stories/**",
       "projects/client-api-react/package.json",
       "projects/client-api-react/package-lock.json",
-      "projects/client-api-react/eslintrc"
+      "projects/client-api-react/eslintrc",
+      "projects/node-api/src/**",
+      "projects/node-api/package.json",
+      "projects/node-api/README.md"
     ] # Trigger the action only when files change in the folders defined here
   workflow_dispatch:
 
