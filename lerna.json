@@ -1,5 +1,5 @@
 {
-  "version": "4.0.3-alpha.4",
+  "version": "4.0.4",
   "packages": [
     "projects/client-api",
     "projects/client-api-react",
