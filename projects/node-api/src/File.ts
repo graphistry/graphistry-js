@@ -13,6 +13,50 @@ export enum FileType {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
+/**
+ * # File examples
+ * 
+ * For configured supported file formats, see https://hub.graphistry.com/docs/api/2/rest/files/
+ * 
+ * @example **Upload an {@link EdgeFile} from a JSON object**
+ * ```javascript
+ * import { EdgeFile } from '@graphistry/node-api';
+ * const edgesFile = new EdgeFile({'s': ['a', 'b', 'c'], 'd': ['d', 'e', 'f'], 'v': ['v1', 'v2', 'v3']});
+ * await edgesFile.upload(client);
+ * console.log(`EdgeFile uploaded as ID ${edgesFile.fileID}`);
+ * ```
+ * 
+ * <br>
+ * 
+ * @example **Upload an {@link EdgeFile} using promises**
+ * ```javascript
+ * import { EdgeFile } from '@graphistry/node-api';
+ * const edgesFile = new EdgeFile({'s': ['a', 'b', 'c'], 'd': ['d', 'e', 'f'], 'v': ['v1', 'v2', 'v3']});
+ * edgesFile.upload(client).then(
+ *  () => console.log(`EdgeFile uploaded as ID ${edgesFile.fileID}`)
+ * ).catch(err => console.error('oops', err));
+ * ```
+ * 
+ * <br>
+ * 
+ * @example **Upload a {@link NodeFile} from a JSON object**
+ * ```javascript
+ * import { NodeFile } from '@graphistry/node-api';
+ * const nodesFile = new NodeFile({'n': ['a', 'b', 'c']});
+ * await nodesFile.upload(client);
+ * console.log(`NodeFile uploaded as ID ${nodesFile.fileID}`);
+ * 
+ * <br>
+ * 
+ * @example **Create a {@link File} by ID (e.g., previously uploaded) for use with {@link Dataset}s**
+ * ```javascript
+ * import { EdgeFile, Dataset } from '@graphistry/node-api';
+ * const edgesFile = new EdgeFile('my_file_id');
+ * await (new Dataset(bindings, edgesFile)).upload(client);
+ * console.log(`Dataset uploaded as ID ${dataset.datasetID}`);
+ * ```
+ */
 export class File {
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +93,21 @@ export class File {
 
     ////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * 
+     * Create a new {@link File} object for uploading or use with {@link Dataset}
+     * 
+     * For more information on the available options, see:
+     *   * Creation step metadata options: https://hub.graphistry.com/docs/api/2/rest/files/ 
+     *   * Upload step options: https://hub.graphistry.com/docs/api/2/rest/files/#uploadfiledata
+     * 
+     * @param type FileType.Node or FileType.Edge
+     * @param data Payload to pass to node-fetch 
+     * @param fileFormat File format to use, e.g. 'json', 'csv', 'arrow', 'parquet', 'orc', 'xls' 
+     * @param name Name of the file to use, e.g. 'my-file' 
+     * @param createOpts JSON post body options to use in createFile()
+     * @param uploadUrlOpts URL options to use in uploadData()
+     */
     constructor(type: FileType, data: any = undefined, fileFormat = 'json', name = 'my file', createOpts = {}, uploadUrlOpts = '') {
         if (typeof(data) == 'string') {
             this._fileID = data;
@@ -66,6 +125,15 @@ export class File {
 
     ////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Upload curent {@link File} object to the server
+     * 
+     * By default, this will skip reuploading files that have already been uploaded.
+     * 
+     * @param client {@link Client} object to use for uploading
+     * @param force If true, will force upload even if file has already been uploaded
+     * @returns Promise that resolves to the uploaded File object when it completes uploading
+     */
     public async upload(client : Client, force = false): Promise<File> {
 
         if (!client) { throw new Error('No client provided'); }
@@ -84,6 +152,15 @@ export class File {
 
     ////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Helper function to create the file on the server but not yet upload its data
+     * 
+     * By default, this will skip recreating files that have already been created.
+     * 
+     * @param client {@link Client} object to use for uploading
+     * @param force If true, will force creation of a new ID even if file has already been uploaded 
+     * @returns 
+     */
     public async createFile(client : Client, force = false): Promise<any | boolean> {
         if (!force && this._fileCreated) {
             return this._fileCreated;
@@ -96,6 +173,15 @@ export class File {
         return fileJsonResults;
     }
 
+    /**
+     * Helper function to upload the data to the server
+     * 
+     * By default, this will skip reuploading data that has already been uploaded.
+     * 
+     * @param client {@link Client} object to use for uploading
+     * @param force If true, will force upload even if file has already been uploaded
+     * @returns 
+     */
     public async uploadData(client : Client, force = false): Promise<any | boolean> {
         if (!force && this._fileUploaded) {
             return this._fileUploaded;
@@ -110,6 +196,15 @@ export class File {
         return results;
     }
 
+    /**
+     * Populate data for later uploading if it wasn't set during construction
+     * 
+     * Cannot run this function if the file has already been uploaded
+     * 
+     * Overwrites any existing data
+     * 
+     * @param data Data to use for uploading  
+     */
     public setData(data: any) {
         if (this._fileUploaded) {
             throw new Error('Cannot set data after file has been successfully uploaded');
@@ -136,13 +231,18 @@ export class File {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
+/**
+ * Helper class for creating a File object for uploading: See File constructor
+ */
 export class EdgeFile extends File {
     constructor(data: any = undefined, fileFormat = 'json', name = 'my file', urlOpts = '') {
         super(FileType.Edge, data, fileFormat, name, urlOpts);
     }
 }
 
+/**
+ * Helper class for creating a File object for uploading: See File constructor
+ */
 export class NodeFile extends File {
     constructor(data: any = undefined, fileFormat = 'json', name = 'my file', urlOpts = '') {
         super(FileType.Node, data, fileFormat, name, urlOpts);

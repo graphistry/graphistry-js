@@ -3,6 +3,70 @@ import { Client } from './Client.js';
 import { File, FileType, EdgeFile, NodeFile } from './File.js';
 import { version } from './version.js';
 
+/**
+ * # Dataset examples
+ * 
+ * Datasets are how to combine files into a single visualizable graph.
+ * Powerfully, you can also specify visualization settings and 
+ * data-driven visual encodings as part of your dataset's bindings.
+ * 
+ * For the many options, see the [JSON documentation](https://hub.graphistry.com/docs/api/).
+ * 
+ * @example **Create a dataset from edges and upload using async/await**
+ * ```javascript
+ * import { Dataset } from '@graphistry/node-api';
+ * const dataset = new Dataset(
+ *   {
+ *       node_encodings: { bindings: { } },
+ *       edge_encodings: { bindings: { source: 's', destination: 'd' } },
+ *       metadata: {},
+ *       name: 'testdata',
+ *   },
+ *   edgesFile
+ * );
+ * await dataset.upload(client);
+ * console.log(`Dataset ${dataset.datasetID} uploaded to ${dataset.datasetURL}`);
+ * ```
+ * 
+ * <br>
+ * 
+ * @example **Create a dataset from nodes + edges and upload using promises**
+ * ```javascript
+ * import { Dataset } from '@graphistry/node-api';
+ * const dataset = new Dataset(
+ *   {
+ *       node_encodings: { bindings: { 'node': 'n' } },
+ *       edge_encodings: { bindings: { 'source': 's', 'destination': 'd' } },
+ *       metadata: {},
+ *       name: 'testdata',
+ *   },
+ *   edgesFile,
+ *   nodesFile
+ * );
+ * dataset.upload(client).then(
+ *   () => console.log(`Dataset ${dataset.datasetID} uploaded to ${dataset.datasetURL}`)
+ * ).catch(err => console.error('oops', err));
+ * ```
+ * 
+ * <br>
+ * 
+ * @example **Add files after the Dataset is instantiated but before it has been uploaded**
+ * ```javascript
+ * import { Dataset } from '@graphistry/node-api';
+ * const dataset = new Dataset(
+ *   {
+ *       node_encodings: { bindings: { 'node': 'n' } },
+ *       edge_encodings: { bindings: { 'source': 's', 'destination': 'd' } },
+ *       metadata: {},
+ *       name: 'testdata',
+ *   }
+ * );
+ * dataset.addFile(nodesFile);
+ * dataset.addFile(edgesFile);
+ * await dataset.upload(client);
+ * console.log(`Dataset ${dataset.datasetID} uploaded to ${dataset.datasetURL}`);
+ * ```
+ */
 export class Dataset {
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -35,6 +99,22 @@ export class Dataset {
     
     ////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * 
+     * Dataset definitions including required node_encodings, edge_encodings, metadata and name.
+     * Optional definitions include edge_hypergraph_transform, and description, and various subfields.
+     * This method autopopulates definitions edge_files, and if provided, node_files.
+     * 
+     * Node files are optional: Nodes will be synthesized based on edges if not provided.
+     * 
+     * If files have not been uploaded yet, this method will upload them for you.
+     * 
+     * For more information about each, see https://hub.graphistry.com/docs/api/2/rest/upload/
+     * 
+     * @param bindings JSON dictionary of bindings
+     * @param nodeFiles File object(s)
+     * @param edgeFiles File object(s)
+     */
     constructor(
         bindings: Record<string, unknown> = {},
         edgeFiles: EdgeFile[] | EdgeFile = [],
@@ -58,12 +138,24 @@ export class Dataset {
 
     ////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * 
+     * Upload the dataset to the Graphistry server.
+     * 
+     * If files have not been uploaded yet, this method will upload them for you.
+     * 
+     * Upon completion, attributes datasetID and datasetURL will be set, as well as
+     * createDatasetResponse and uploadResponse.
+     * 
+     * @param client Client object
+     * @returns Promise that resolves when the dataset is uploaded
+     */
     public async upload(client: Client): Promise<Dataset> {
 
         if (!client) {
             throw new Error('No client provided');
         }
-        
+
         //create+upload files as needed
         await Promise.all(
             this.nodeFiles.concat(this.edgeFiles).map(async (file) => {
@@ -104,12 +196,25 @@ export class Dataset {
         return datasetID;
     }
 
+    /**
+     * Add one or more bindings to the existing ones. In case of conflicts, override the existing ones.
+     * 
+     * For more information about each, see https://hub.graphistry.com/docs/api/2/rest/upload/
+     * 
+     * @param bindings JSON dictionary of bindings to be added to the existing ones
+     */
     public updateBindings(bindings: Record<string, unknown>): void {
         for (const [key, value] of Object.entries(bindings)) {
             this.bindings[key] = value;
         }
     }
 
+    /**
+     * Add an additional node or edge file to the existing ones.
+     * 
+     * @param file File object. Does not need to be uploaded yet.
+     * 
+    **/
     public addFile(file: File): void {
         if (file.type === FileType.Node) {
             this.nodeFiles.push(file);

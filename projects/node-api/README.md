@@ -8,6 +8,10 @@
 
 ### Usage
 
+#### The many options
+
+Individual file formats and JSON values are documented in the [Graphistry REST API](https://hub.graphistry.com/docs/api/)
+
 #### Ex: JavaScript with async/await
 
 ```javascript
@@ -19,7 +23,6 @@ const client = new Client('my_username', 'my_password');
 //columnar data is fastest; column per attribute; reuse across datasets
 const edgesFile = new EdgeFile({'s': ['a1', 'b2'], 'd': ['b2', 'c3']});
 const nodesFile = new NodeFile({'n': ['a1', 'b2', 'c3'], 'a1': ['x', 'y', 'z']});
-await Promise.all([edgesFile.upload(), nodesFile.upload()])
 
 const dataset = new Dataset({
     node_encodings: { bindings: { node: 'n' } },
@@ -41,17 +44,20 @@ Exactly the same!
 ```javascript
 import { EdgeFile, NodeFile, Dataset, Client } from '@graphistry/node-api';
 
+//defaults: 'https', 'hub.graphistry.com', 'https://hub.graphistry.com'
 const client = new Client(user, password);
+
+//columnar data is fastest; column per attribute; reuse across datasets
 const edgesFile = new EdgeFile({'s': ['a1', 'b2'], 'd': ['b2', 'c3']});
 const nodesFile = new NodeFile({'n': ['a1', 'b2', 'c3'], 'a1': ['x', 'y', 'z']});
 
-Promise.all([edgesFile.upload(client), nodesFile.upload(client)])
-.then(() => (new Dataset({
+(new Dataset({
         node_encodings: { bindings: { node: 'n' } },
         edge_encodings: { bindings: { source: 's', destination: 'd' } },
         metadata: {},
         name: 'testdata',
-    }, edgesFile, nodesFile)).upload(client))
+    }, edgesFile, nodesFile))
+.upload(client)
 .then(dataset => {
     console.info(`View at ${dataset.datasetID} at ${dataset.datasetURL}`);
 })
