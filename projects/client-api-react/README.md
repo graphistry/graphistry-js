@@ -24,8 +24,10 @@ ReactDOM.render(
 );
 
 ```
+### Additional React examples
 
-For React examples, see the ([interactive storybook docs](https://graphistry.github.io/graphistry-js/))
+* API: [Interactive storybook](https://graphistry.github.io/graphistry-js/)
+* Project structure: [Create React App sample project](../cra-test/README.md)
 
 ### Versions
 
