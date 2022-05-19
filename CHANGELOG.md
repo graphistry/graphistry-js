@@ -7,6 +7,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Development
 
+# Latest
+
+## 4.0.6 - 2022-05-19
+
+### Docs
+
+* **React:** Restructure `projects/cra-test` example to prioritize users (vs contributors)
+
+## 4.0.5 - 2022-05-14
+
 ### Features
 
 * **node-api**: Initial implementation of `@graphistry/node-api`
@@ -14,10 +24,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Docs
 
 * **node-api**: Initial implementation of `@graphistry/node-api` typedocs
-
-# Latest
-
-## 4.0.5 - 2022-05-14
 
 ### Fix
 

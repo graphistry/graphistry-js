@@ -58,7 +58,7 @@ import { Graphistry } from '@graphistry/client-api-react';` // + variants for di
 <Graphistry dataset="myDatasetID" />
 ```
 
-See [@graphistry/client-api-react project](projects/client-api-react/README.md) and [interactive storybook docs](https://graphistry.github.io/graphistry-js/)
+See [@graphistry/client-api-react project](projects/client-api-react/README.md), [interactive storybook docs](https://graphistry.github.io/graphistry-js/), and [Create React App project sample](projects/cra-test/README.md)
 
 
 ---
