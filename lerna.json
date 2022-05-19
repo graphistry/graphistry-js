@@ -3,6 +3,8 @@
   "packages": [
     "projects/client-api",
     "projects/client-api-react",
+    "projects/cra-test",
+    "projects/cra-template",
     "projects/node-api",
     "projects/node-api-test"
   ]
