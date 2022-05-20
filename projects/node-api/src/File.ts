@@ -256,8 +256,8 @@ export class File {
  * Helper class for tracking intent when creating a {@link File} object for uploading
  */
 export class EdgeFile extends File {
-    constructor(data: any = undefined, fileFormat = 'json', name = 'my file', urlOpts = '') {
-        super(FileType.Edge, data, fileFormat, name, urlOpts);
+    constructor(data: any = undefined, fileFormat = 'json', name = 'my file', createOpts = {}, urlOpts = '') {
+        super(FileType.Edge, data, fileFormat, name, createOpts, urlOpts);
     }
 }
 
@@ -265,7 +265,7 @@ export class EdgeFile extends File {
  * Helper class for tracking intent when creating a {@link File} object for uploading
  */
 export class NodeFile extends File {
-    constructor(data: any = undefined, fileFormat = 'json', name = 'my file', urlOpts = '') {
-        super(FileType.Node, data, fileFormat, name, urlOpts);
+    constructor(data: any = undefined, fileFormat = 'json', name = 'my file', createOpts = {}, urlOpts = '') {
+        super(FileType.Node, data, fileFormat, name, createOpts, urlOpts);
     }
 }
