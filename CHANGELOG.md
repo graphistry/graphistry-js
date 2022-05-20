@@ -9,6 +9,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.1.0 - 2022-05-20
+
+### Breaking 🔥
+
+* **Node:** `4.0.5`'s new `NodeFile`. `EdgeFile` constructors now passing `createOpts` to `File`, taking the position of previous incorrect `urlOpts` param
+* **React:** Move CRA's `react-scripts` from `peerDependencies` to `devDependencies` so `npm audit --production` passes
+
+### Changed
+
+* Dependency updates (non-breaking)
+
+### Docs
+
+* **Node:** Example of file parse options like row-oriented json vs column-oriented
+* **Node:** Examples of simple bindings, complex bindings, metadata, and url options
+
 ## 4.0.6 - 2022-05-19
 
 ### Docs
@@ -86,7 +102,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * Removal of RxJS prototype dot chaining, replaced with composition (pipe). For interim backwards compatibility, old example usages will largely still work via interim backporting.
 * Use of api=1 `apiKey` and corresponding  upload methods are deprecated. Will be replaced with JWT methods (see REST API).
 
-### Breaking Changes
+### Breaking 🔥
 
 We expect no breaking changes for most users
 

@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api-react",
-  "version": "4.0.6",
+  "version": "4.1.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
@@ -69,14 +69,13 @@
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "ISC",
   "dependencies": {
-    "@graphistry/client-api": "^4.0.6",
+    "@graphistry/client-api": "^4.1.0",
     "prop-types": ">=15.6.0",
     "shallowequal": "1.1.0"
   },
   "peerDependencies": {
     "react": ">=16.8.6",
-    "react-dom": ">=16.8.6",
-    "react-scripts": "4.0.3"
+    "react-dom": ">=16.8.6"
   },
   "eslintConfig": {
     "extends": [
@@ -125,6 +124,7 @@
     "npm-run-all": "^4.1.5",
     "react": ">=17.0.2",
     "react-dom": ">=17.0.2",
+    "react-scripts": "4.0.3",
     "rimraf": "3.0.2",
     "rollup": "^2.72.1",
     "rollup-plugin-delete": "^2.0.0",

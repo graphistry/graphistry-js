@@ -66,6 +66,114 @@ const nodesFile = new NodeFile({'n': ['a1', 'b2', 'c3'], 'a1': ['x', 'y', 'z']})
 })
 ```
 
+### Using API Options
+
+* Set parsing options for different `File` formats and shapes
+
+* Configure `Dataset` nodes &amp; edges to use data-driven colors, sizes, icons, and badges using *simple* and *complex* encodings, including both *continuous* and *categorical* mappings
+
+* Theme with custom branding around background &amp; foreground colors, images, logos, titles, and more
+
+
+
+```javascript
+const client = new Client(user, password, protocol, host);
+
+const edgesFile = new EdgeFile(
+    edgesRows, 'json', 'my_edges',
+    // Also: file_compression, sql_transforms, ...
+    // https://hub.graphistry.com/docs/api/2/rest/files/
+    {
+        // JSON parsing options:
+        // - https://hub.graphistry.com/docs/api/2/rest/upload/data/#uploadjson2
+        // - https://pandas.pydata.org/docs/reference/api/pandas.read_json.html
+        parser_options: {
+            orient: 'records'  // Row-oriented: Array of objects
+        }                      // Default: to columnar json - Object of arrays
+    }
+);
+
+// Node files are optional, mainly for properties
+const nodesFile = new NodeFile(nodesRows);
+
+const dataset = new Dataset(
+    {
+
+        // Also: color, size, title, icon, badge, axis
+        // - https://hub.graphistry.com/docs/api/2/rest/upload/colors
+        // - https://hub.graphistry.com/docs/api/2/rest/upload/complex/
+        node_encodings: {
+            bindings: {
+                node: 'n', // id (required)
+                node_title: 'vv'
+            },
+            complex: {
+                default: {
+                    pointColorEncoding: {
+                        graphType: "point",
+                        encodingType: "color",
+                        attribute: "vv",
+                        variation: "continuous",
+                        colors: ["blue", "yellow", "red"]
+                    },
+                    pointIconEncoding: {
+                        graphType: "point",
+                        encodingType: "icon",
+                        attribute: "t",
+                        variation: "categorical",
+                        mapping: {
+                            categorical: {
+                                fixed: {
+                                    "person": "user",
+                                    "car": "car"
+                                },
+                                other: "question"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+        //Also: color, weight, icon, badge, title
+        // - https://hub.graphistry.com/docs/api/2/rest/upload/colors
+        // - https://hub.graphistry.com/docs/api/2/rest/upload/complex/
+        edge_encodings: {
+            bindings: {
+                source: 's', destination: 'd'
+            },
+            complex: { }
+        },
+
+        // Brand & theme: Background, foreground, logo, page metadata
+        // https://hub.graphistry.com/docs/api/2/rest/upload/metadata/
+        metadata: {
+            bg: {
+                color: 'silver'
+            },
+            logo: {
+                "url": "http://a.com/logo.png",
+            }
+        },
+        name: 'testdata',
+    },
+    edgesFile,
+    nodesFile,
+
+    // Visual and layout settings
+    // https://hub.graphistry.com/docs/api/1/rest/url/#urloptions
+    {
+        strongGravity: true,
+        edgeCurvature: 0.5
+    }
+);
+
+await dataset.upload(client);
+
+console.info(`View dataset ${dataset.datasetID} at ${dataset.datasetURL}`);
+console.info(`Dataset using node file ${nodesFile.fileID}, edge file ${edgesFile.fileID}`);
+```
+
 ### Underlying REST API
 
 For further information about authentication, files, and datasets, see the [Graphistry REST API docs](https://hub.graphistry.com/docs/api/).
