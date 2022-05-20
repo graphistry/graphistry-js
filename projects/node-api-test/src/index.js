@@ -1,5 +1,4 @@
 import { EdgeFile, NodeFile, Dataset, Client } from '@graphistry/node-api';
-import { tableFromArrays, tableToIPC } from 'apache-arrow';
 
 ////////////////////////////////////////////////////////////////////////////////
 
