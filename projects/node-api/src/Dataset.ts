@@ -82,6 +82,7 @@ export class Dataset {
     public readonly edgeFiles: EdgeFile[];
     public readonly nodeFiles: NodeFile[];
     public readonly bindings: Record<string, unknown>;
+    public readonly urlOpts: Record<string, unknown>;
 
     // Set after upload
     private _datasetID?: string;
@@ -100,7 +101,10 @@ export class Dataset {
         if (!this._usedClientProtocolHostname) {
             throw new Error('No client protocol hostname yet');
         }
-        return `${this._usedClientProtocolHostname}/graph/graph.html?dataset=${this._datasetID}`;
+        const xtra = Object.keys(this.urlOpts).length 
+            ? `&${Object.keys(this.urlOpts).map(k => `${k}=${this.urlOpts[k]}`).join('&')}`
+            : '';
+        return `${this._usedClientProtocolHostname}/graph/graph.html?dataset=${this._datasetID}${xtra}`;
     }
     
     ////////////////////////////////////////////////////////////////////////////////
@@ -120,15 +124,18 @@ export class Dataset {
      * @param bindings JSON dictionary of bindings
      * @param nodeFiles File object(s)
      * @param edgeFiles File object(s)
+     * @param urlOpts JSON dictionary of URL options
      */
     constructor(
         bindings: Record<string, unknown> = {},
         edgeFiles: EdgeFile[] | EdgeFile = [],
-        nodeFiles: NodeFile[] | NodeFile = []
+        nodeFiles: NodeFile[] | NodeFile = [],
+        urlOpts: Record<string, unknown> = {}
     ) {
         this.bindings = bindings;
         this.edgeFiles = edgeFiles instanceof EdgeFile ? [edgeFiles] : edgeFiles;
         this.nodeFiles = nodeFiles instanceof NodeFile ? [nodeFiles] : nodeFiles;
+        this.urlOpts = urlOpts;
 
         for (const edgeFile of this.edgeFiles) {
             if (!edgeFile.fileFormat) {
