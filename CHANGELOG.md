@@ -9,6 +9,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.1.0 - 2022-05-20
+
 ### Breaking 🔥
 
 * **Node:** `4.0.5`'s new `NodeFile`. `EdgeFile` constructors now passing `createOpts` to `File`, taking the position of previous incorrect `urlOpts` param
