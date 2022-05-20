@@ -31,7 +31,7 @@ export enum FileType {
  * 
  * Powerfully, the same file may be reused in multiple {@link Dataset}s, so many variants can be made cheaply and quickly.
  * 
- * For configured supported file formats, see https://hub.graphistry.com/docs/api/2/rest/files/ .
+ * For configuring supported file formats, see https://hub.graphistry.com/docs/api/2/rest/files/ .
  * 
  * <br>
  * 
@@ -39,10 +39,43 @@ export enum FileType {
  * 
  * <br>
  * 
- * @example **Upload an {@link EdgeFile} from a JSON object**
+ * @example **Upload an {@link EdgeFile} from a JSON object in a columnar form**
  * ```javascript
  * import { EdgeFile } from '@graphistry/node-api';
- * const edgesFile = new EdgeFile({'s': ['a', 'b', 'c'], 'd': ['d', 'e', 'f'], 'v': ['v1', 'v2', 'v3']});
+ * const edgesFile = new EdgeFile(
+ *      {
+ *          's': ['a', 'b', 'c'],
+ *          'd': ['d', 'e', 'f'],
+ *          'v': ['v1', 'v2', 'v3']
+ *      }
+ * );
+ * await edgesFile.upload(client);
+ * console.log(`EdgeFile uploaded as ID ${edgesFile.fileID}`);
+ * ```
+ * 
+ * <br>
+ * 
+ * @example **Upload an {@link EdgeFile} from a JSON object in a row-oriented form**
+ * ```javascript
+ * import { EdgeFile } from '@graphistry/node-api';
+ * const edgesFile = new EdgeFile(
+ *      [
+ *          {'s': 'a', 'd': 'd', 'v': 'v1'},
+ *          {'s': 'b', 'd': 'e', 'v': 'v2'},
+ *          {'s': 'c', 'd': 'f', 'v': 'v3'}
+ *      ],
+ *      'json',
+ *      'my nodes file',
+ * 
+ *      // JSON parsing options:
+ *      // - https://hub.graphistry.com/docs/api/2/rest/upload/data/#uploadjson2
+ *      // - https://pandas.pydata.org/docs/reference/api/pandas.read_json.html
+ *      //
+ *      // Also: file_compression, sql_transforms, ...
+ *      // https://hub.graphistry.com/docs/api/2/rest/files/
+ *      {parser_options: {orient: 'records'}}
+ * 
+ * );   
  * await edgesFile.upload(client);
  * console.log(`EdgeFile uploaded as ID ${edgesFile.fileID}`);
  * ```
@@ -69,7 +102,7 @@ export enum FileType {
  * ```
  * 
  * <br>
- * 
+ *  
  * @example **Create a {@link File} by ID (e.g., previously uploaded) for use with {@link Dataset}s**
  * ```javascript
  * import { EdgeFile, Dataset } from '@graphistry/node-api';

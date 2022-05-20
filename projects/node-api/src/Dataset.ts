@@ -72,6 +72,93 @@ import { version } from './version.js';
  * await dataset.upload(client);
  * console.log(`Dataset ${dataset.datasetID} uploaded to ${dataset.datasetURL}`);
  * ```
+ * 
+ * <br>
+ * 
+ * @example **Set simple data-driven bindings for titles, colors, icons, and labels**
+ * ```javascript
+ * import { Dataset } from '@graphistry/node-api';
+ * const dataset = new Dataset(
+ *   {
+ * 
+ *       // See also simple title, color, ... and complex color, size, icon, badge, ...
+ *       // https://hub.graphistry.com/docs/api/2/rest/upload/colors
+ *       // https://hub.graphistry.com/docs/api/2/rest/upload/complex/
+ *       node_encodings: {
+ * 
+ *          bindings: {
+ *              'node': 'n', //id 
+ *              'node_title': 'some_title_column' //optional
+ *          },
+ * 
+ *          complex: {
+ *             default: {
+ *               pointSizeEncoding: {
+ *                  graphType: 'point',
+ *                  encodingType: 'size',
+ *                  attribute: 'payment',
+ *                  variation: 'categorical',
+ *                  mapping: {
+ *                      fixed: {
+ *                          big: 500,
+ *                          normal: 200,
+ *                          tiny: 10 
+ *                      },
+ *                      other: 100
+ *                  }
+ *               }
+ *             }
+ *          }
+ *       },
+ * 
+ *       // See also simple title, color, ... and complex color, size, icon, badge, ...
+ *       // https://hub.graphistry.com/docs/api/2/rest/upload/colors
+ *       // https://hub.graphistry.com/docs/api/2/rest/upload/complex/
+ *       edge_encodings: {
+ *
+ *          bindings: {
+ *              'source': 's', 'destination': 'd'
+ *          },
+ *
+ *          complex: {
+ *              default: {
+ *                 edgeColorEncoding: {
+ *                       graphType: 'point',
+ *                       encodingType: 'color',
+ *                       attribute: 'time',
+ *                       variation: 'continuous',
+ *                       colors: ['blue', 'yellow', 'red']
+ *                 }
+ *              }
+ *          }
+ *       },
+ * 
+ *       // Set brand & theme: Background, foreground, logo, page metadata
+ *       // https://hub.graphistry.com/docs/api/2/rest/upload/metadata/
+ *       metadata: {
+ *           bg: {
+ *               color: 'silver'
+ *           },
+ *           "logo": {
+ *               url: "http://a.com/logo.png",
+ *           }
+ *       },
+ *       name: 'testdata',
+ *   },
+ * 
+ *   nodesFile,
+ *   edgesFile
+ * 
+ *   // Visual and layout settings
+ *   // https://hub.graphistry.com/docs/api/1/rest/url/#urloptions
+ *   {
+ *       strongGravity: true,
+ *       edgeCurvature: 0.5
+ *   }
+ *
+ * );
+ * await dataset.upload();
+ * ```
  */
 export class Dataset {
 
@@ -113,13 +200,22 @@ export class Dataset {
      * 
      * Dataset definitions including required node_encodings, edge_encodings, metadata and name.
      * Optional definitions include edge_hypergraph_transform, and description, and various subfields.
+     * URL settings may also be specified for additional styling.
      * This method autopopulates definitions edge_files, and if provided, node_files.
      * 
      * Node files are optional: Nodes will be synthesized based on edges if not provided.
      * 
      * If files have not been uploaded yet, this method will upload them for you.
      * 
-     * For more information about each, see https://hub.graphistry.com/docs/api/2/rest/upload/
+     * For more information about bindings, see https://hub.graphistry.com/docs/api/2/rest/upload/
+     * 
+     * For more information about URL style settings, see https://hub.graphistry.com/docs/api/1/rest/url/#urloptions 
+     * 
+     * For more information about theming, see https://hub.graphistry.com/docs/api/2/rest/upload/metadata/
+     *
+     * For more information on simple encodings, see https://hub.graphistry.com/docs/api/2/rest/upload/colors
+     * 
+     * For more information on complex encodings, see https://hub.graphistry.com/docs/api/2/rest/upload/complex/
      * 
      * @param bindings JSON dictionary of bindings
      * @param nodeFiles File object(s)
