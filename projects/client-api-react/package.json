@@ -74,6 +74,9 @@
     "shallowequal": "1.1.0",
     "uuid": "8.3.2"
   },
+  "browser": {
+    "crypto": false
+  },
   "peerDependencies": {
     "react": ">=16.8.6",
     "react-dom": ">=16.8.6"
