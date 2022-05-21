@@ -79,6 +79,18 @@ const nodesFile = new NodeFile({'n': ['a1', 'b2', 'c3'], 'a1': ['x', 'y', 'z']})
 ```javascript
 const client = new Client(user, password, protocol, host);
 
+// Row-oriented data slower to upload but often convenient
+const edgesRows = [
+    { 's': 'a', 'd': 'b', 'v': 'e1' },
+    { 's': 'b', 'd': 'c', 'v': 'e2' },
+    { 's': 'c', 'd': 'a', 'v': 'e3' }
+];
+const nodesRows = [
+    { 'n': 'a', 'vv': 10, 't': 'person' },
+    { 'n': 'b', 'vv': 20, 't': 'person' },
+    { 'n': 'c', 'vv': 30 , 't': 'car' }
+];
+
 const edgesFile = new EdgeFile(
     edgesRows, 'json', 'my_edges',
     // Also: file_compression, sql_transforms, ...

@@ -7,6 +7,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Development
 
+### Docs
+
+* **Node:** Added data portion of row-oriented example
+
 # Latest
 
 ## 4.1.0 - 2022-05-20
