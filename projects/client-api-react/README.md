@@ -32,6 +32,6 @@ ReactDOM.render(
 ### Versions
 
 * `@graphistry/client-api-react` wraps `@graphistry/client-api`, so use aligned versions
-* By default, `React` is linked as an external dependency (16.8+ and 17.0+)
+* By default, `React` is linked as an external dependency (16.8+, 17.x, 18.x)
 * You can use multiple module formats: `@graphistry/client-api-react` (default) or pick a specific format via `@graphistry/client-api-react/dist/index.{esm,cjs,iife}.js`
 * You can also use the library standalone, where React is already inlined: `@graphistry/client-api-react/dist/index.full.{esm,cjs,iife}.js`
