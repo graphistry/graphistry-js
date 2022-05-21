@@ -13,6 +13,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.1.1 - 2022-05-21
+
+### Features
+
+* **client-api**: Support for webpack 5 by explicitly excluding crypto
+* **client-api-react**: Support for webpack 5 by explicitly excluding crypto
+
+### Docs
+
+* **client-api-react**: CRA React 18 example
+
 ## 4.1.0 - 2022-05-20
 
 ### Breaking 🔥
