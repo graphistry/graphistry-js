@@ -13,6 +13,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.1.2 - 2022-05-21
+
+### Docs
+
+* **client-api-react**: More React 18 docs
+
 ## 4.1.1 - 2022-05-21
 
 ### Features
