@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api';
 import * as gAPI from '@graphistry/client-api';

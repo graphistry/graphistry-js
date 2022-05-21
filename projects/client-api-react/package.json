@@ -71,7 +71,8 @@
   "dependencies": {
     "@graphistry/client-api": "^4.1.0",
     "prop-types": ">=15.6.0",
-    "shallowequal": "1.1.0"
+    "shallowequal": "1.1.0",
+    "uuid": "8.3.2"
   },
   "peerDependencies": {
     "react": ">=16.8.6",
