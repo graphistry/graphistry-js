@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/cra-template",
-  "version": "4.1.1-alpha2",
+  "version": "4.1.1-alpha3",
   "private": true,
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
