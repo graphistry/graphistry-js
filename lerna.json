@@ -1,9 +1,10 @@
 {
-  "version": "4.1.0",
+  "version": "4.1.2",
   "packages": [
     "projects/client-api",
     "projects/client-api-react",
     "projects/cra-test",
+    "projects/cra-test-18",
     "projects/cra-template",
     "projects/node-api",
     "projects/node-api-test"

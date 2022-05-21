@@ -2,6 +2,10 @@
 
 This demo modifies a standard [Create React App](https://create-react-app.dev/) project to use Graphistry:
 
+## React 17 vs 18
+
+This project uses React 17; see its [sibling React 18 project](../cra-test-18/README.md) for React 18
+
 ## Try
 
 ```bash

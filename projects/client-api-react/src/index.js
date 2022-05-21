@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api';
 import * as gAPI from '@graphistry/client-api';
@@ -356,7 +356,7 @@ function generateIframeRef({
             let loaded = false;
             setLoading(true);
             setLoadingMessage('Fetching session');
-            console.info('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
+            console.debug('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
             const sub = (graphistryJS(iframe))
                 .pipe(
                     switchMap(
