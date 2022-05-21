@@ -356,7 +356,7 @@ function generateIframeRef({
             let loaded = false;
             setLoading(true);
             setLoadingMessage('Fetching session');
-            console.info('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
+            console.debug('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
             const sub = (graphistryJS(iframe))
                 .pipe(
                     switchMap(
