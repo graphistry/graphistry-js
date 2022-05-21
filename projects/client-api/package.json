@@ -79,6 +79,9 @@
     "jsdoc-babel": "~0.5.0",
     "rimraf": "3.0.2"
   },
+  "browser": {
+    "crypto": false
+  },
   "dependencies": {
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-model-rxjs": "2.9.11",
