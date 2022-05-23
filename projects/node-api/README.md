@@ -1,4 +1,4 @@
-# Graphistry's node.js client API
+# `@graphistry/node-api`: Graphistry's Node.js client API
 
 ## Automatically upload and visualize datasets using node, powered by Graphistry's GPU graph visualization infrastructure
 
@@ -10,7 +10,10 @@
 
 #### The many options
 
-Individual file formats and JSON values are documented in the [Graphistry REST API](https://hub.graphistry.com/docs/api/)
+The API is split between the client wrapper and the JSON configuration payloads:
+
+* **[@graphistry/nodeAPI API docs](https://graphistry.github.io/graphistry-js/node-tsdocs/)**: Overall Node.js client llibrary
+* **[Graphistry REST API](https://hub.graphistry.com/docs/api/)**: JSON payload options around configuring file formats and visualization settings
 
 #### Ex: JavaScript with async/await
 
