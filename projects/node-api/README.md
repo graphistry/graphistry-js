@@ -12,8 +12,8 @@
 
 The API is split between the client wrapper and the JSON configuration payloads:
 
-* **[@graphistry/nodeAPI API docs](https://graphistry.github.io/graphistry-js/node-tsdocs/)**: Overall Node.js client llibrary
-* **[Graphistry REST API](https://hub.graphistry.com/docs/api/)**: JSON payload options around configuring file formats and visualization settings
+* **[`@graphistry/node-api` API docs](https://graphistry.github.io/graphistry-js/node-tsdocs/)**: Overall Node.js client llibrary
+* **[Graphistry REST API docs](https://hub.graphistry.com/docs/api/)**: JSON payload options around configuring file formats and visualization settings
 
 #### Ex: JavaScript with async/await
 
