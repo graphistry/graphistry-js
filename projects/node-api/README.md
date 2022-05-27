@@ -17,7 +17,7 @@ Still transitioning to `esm`?
 * You may need `"type": "module"` in your `package.json`
 * Transpiling should preserve esm import syntax. Ex: `"babel": { "presets": [ ["@babel/preset-env", {"modules": false}] ] }`
 
-Please contact the team for additional format support
+The [node-api-test sample project](https://github.com/graphistry/graphistry-js/tree/master/projects/node-api) shares an example of a native node project. Please contact the team for additional format support.
 
 
 ### Usage
