@@ -12,6 +12,18 @@
 </a>
 <p><code>npm install @graphistry/node-api</code></p>
 
+<a href="#standard-native-esm-imports" id="standard-native-esm-imports" style="color: inherit; text-decoration: none;">
+  <h3>Standard native <code>esm</code> imports</h3>
+</a>
+<pre><code class="language-javascript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">EdgeFile</span><span class="hl-1">, </span><span class="hl-2">NodeFile</span><span class="hl-1">, </span><span class="hl-2">Dataset</span><span class="hl-1">, </span><span class="hl-2">Client</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;@graphistry/node-api&#39;</span><span class="hl-1">;</span>
+</code></pre>
+<p>Still transitioning to <code>esm</code>?</p>
+<ul>
+<li>You may need <code>&quot;type&quot;: &quot;module&quot;</code> in your <code>package.json</code></li>
+<li>Transpiling should preserve esm import syntax. Ex: <code>&quot;babel&quot;: { &quot;presets&quot;: [ [&quot;@babel/preset-env&quot;, {&quot;modules&quot;: false}] ] }</code></li>
+</ul>
+<p>Please contact the team for additional format support</p>
+
 <a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
   <h3>Usage</h3>
 </a>
@@ -21,8 +33,8 @@
 </a>
 <p>The API is split between the client wrapper and the JSON configuration payloads:</p>
 <ul>
-<li><strong><a href="https://graphistry.github.io/graphistry-js/node-tsdocs/">@graphistry/nodeAPI API docs</a></strong>: Overall Node.js client llibrary</li>
-<li><strong><a href="https://hub.graphistry.com/docs/api/">Graphistry REST API</a></strong>: JSON payload options around configuring file formats and visualization settings</li>
+<li><strong><a href="https://graphistry.github.io/graphistry-js/node-tsdocs/"><code>@graphistry/node-api</code> API docs</a></strong>: Overall Node.js client llibrary</li>
+<li><strong><a href="https://hub.graphistry.com/docs/api/">Graphistry REST API docs</a></strong>: JSON payload options around configuring file formats and visualization settings</li>
 </ul>
 
 <a href="#ex-javascript-with-asyncawait" id="ex-javascript-with-asyncawait" style="color: inherit; text-decoration: none;">
