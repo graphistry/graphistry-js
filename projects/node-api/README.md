@@ -6,6 +6,20 @@
 
 `npm install @graphistry/node-api`
 
+### Standard native `esm` imports
+
+```javascript
+import { EdgeFile, NodeFile, Dataset, Client } from '@graphistry/node-api';
+```
+
+Still transitioning to `esm`?
+
+* You may need `"type": "module"` in your `package.json`
+* Transpiling should preserve esm import syntax. Ex: `"babel": { "presets": [ ["@babel/preset-env", {"modules": false}] ] }`
+
+Please contact the team for additional format support
+
+
 ### Usage
 
 #### The many options
