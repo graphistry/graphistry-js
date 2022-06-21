@@ -86,6 +86,7 @@
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-model-rxjs": "2.9.11",
     "@graphistry/falcor-socket-datasource": "2.9.11",
+    "@graphistry/js-upload-api": "4.1.2",
     "shallowequal": "1.1.0"
   },
   "peerDependencies": {

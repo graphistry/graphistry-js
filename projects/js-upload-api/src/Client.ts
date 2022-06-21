@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import fetch, { Headers } from 'node-fetch';
-
+import  fetch  from 'node-fetch';
 /**
  * # Client examples
  * 
@@ -56,12 +54,13 @@ import fetch, { Headers } from 'node-fetch';
 export class Client {
 
     public readonly username: string;
-    public readonly password: string;
+    private _password: string;
     public readonly protocol: string;
     public readonly host: string;
     public readonly clientProtocolHostname: string;
 
-    public readonly _token?: string;
+    private _token?: string;
+    private _version?: string;
 
     /**
      * @param username The username to authenticate with.
@@ -74,17 +73,15 @@ export class Client {
         username: string, password: string,
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname?: string,
-        previousClient?: Client
+        fetch?: any,
+        version?: string
     ) {
         this.username = username;
-        this.password = password;
+        this._password = password;
         this.protocol = protocol;
         this.host = host;
         this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
-        if (previousClient && username === previousClient.username && password === previousClient.password && protocol === previousClient.protocol) {
-            this._token == previousClient._token;
-        }
-        this.getAuthToken(); // TODO memoize across calls
+        this.getAuthToken();
     }
 
     /**
@@ -109,6 +106,12 @@ export class Client {
      * @returns The authentication token
      * 
      */
+
+     public isServerConfigured(): boolean {
+        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
+        return this.username !== '' && this._password !== '' && this.host !== '';
+    }
+
     private async getAuthToken(force = false): Promise<string> {
         if (!force && this.authTokenValid()) {
             return this._token || '';  // workaround ts not recognizing that _token is set
@@ -116,7 +119,7 @@ export class Client {
 
         const response = await this.postToApi(
             'api/v2/auth/token/generate',
-            { username: this.username, password: this.password },
+            { username: this.username, password: this._password },
             this.getBaseHeaders(),
         )
 
@@ -130,7 +133,7 @@ export class Client {
         return out;
     }
 
-    private async postToApi(url: string, data: any, headers: Headers): Promise<any> {
+    private async postToApi(url: string, data: any, headers: any): Promise<any> {
         const response = await fetch(this.getBaseUrl() + url, { // change this
             method: 'POST',
             headers,
@@ -139,14 +142,14 @@ export class Client {
         return await response.json();
     }
 
-    private getBaseHeaders(): Headers {
-        return new Headers({
+    private getBaseHeaders(): any {
+        return ({
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         });
     }
     
-    private async getSecureHeaders(): Promise<Headers> {
+    private async getSecureHeaders(): Promise<any> {
         const headers = this.getBaseHeaders();
         const tok = await this.getAuthToken();
         headers.append('Authorization', `Bearer ${tok}`);
