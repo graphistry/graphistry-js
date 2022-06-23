@@ -216,10 +216,13 @@ export class File {
      */
     public async createFile(client : Client, force = false): Promise<any | boolean> {
         if (!force && this._fileCreated) {
+            console.debug('File already created, skipping');
             return this._fileCreated;
         }
+        console.debug('Creating file');
 
         const fileJsonResults = await client.post('api/v2/files/', {file_type: this.fileFormat, ...this.createOpts});
+        console.debug('File creation response:', fileJsonResults);
         this._fileCreateResponse = fileJsonResults;
         this._fileID = fileJsonResults.file_id;
         this._fileCreated = !!fileJsonResults.file_id;
