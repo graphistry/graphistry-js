@@ -6,12 +6,24 @@ import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
 import { Client as ClientBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
 
 
-export const Client = ClientBase;
+//export const Client = ClientBase;
 export const Dataset = DatasetBase;
 export const File = FileBase;
 export const EdgeFile = EdgeFileBase;
 export const NodeFile = NodeFileBase;
 
+
+export class Client extends ClientBase {
+    constructor(
+        username, password,
+        protocol = 'https', host = 'hub.graphistry.com',
+        clientProtocolHostname,
+        version
+    ) {
+        console.debug('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
+        super(username, password, protocol, host, clientProtocolHostname, window.fetch.bind(window), version);
+    }
+}
 
 import {
     ajax,
