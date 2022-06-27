@@ -80,9 +80,10 @@
     "rimraf": "3.0.2"
   },
   "browser": {
-    "crypto": false
+    "crypto": "crypto-browserify"
   },
   "dependencies": {
+    "crypto-browserify": "3.12.0",
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-model-rxjs": "2.9.11",
     "@graphistry/falcor-socket-datasource": "2.9.11",
