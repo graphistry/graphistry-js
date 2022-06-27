@@ -1,4 +1,4 @@
-import { 
+import {
     AsyncSubject,
     catchError,
     forkJoin,
@@ -6,6 +6,7 @@ import {
     of,
     Observable,
     pipe,
+    retryWhen,
     ReplaySubject,
     Subject,
     timer
@@ -52,6 +53,7 @@ export {
     of,
     pipe,
     ReplaySubject,
+    retryWhen,
     scan,
     share,
     shareReplay,
