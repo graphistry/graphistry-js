@@ -42,6 +42,7 @@ import {
     of,
     pipe,
     ReplaySubject,
+    retryWhen,
     scan,
     share,
     shareReplay,
@@ -1566,7 +1567,7 @@ export function graphistryJS(iFrame) {
         throw new Error('No iframe provided to Graphistry');
     }
 
-    console.debug('init graphistryJS', { iFrame, fromEvent, updateSetting, ajax });
+    console.debug('init graphistryJS: modified', { iFrame, fromEvent, updateSetting, ajax });
 
     const flow = (
         fromEvent(iFrame, 'load')
@@ -1584,6 +1585,7 @@ export function graphistryJS(iFrame) {
                     ((target) =>
                         fromEvent(window, 'message') //FIXME why not target? how to ensure proper frame?
                             .pipe(
+                                tap((v) => { console.debug('Starting iframe protocol listen flow: Message', v) }),
                                 filter(({ data, cache, ...rest }) => {
                                     if (data && data.type === 'init') {
                                         console.debug('received valid postMessage handshake', { data, cache, rest });
@@ -1593,10 +1595,11 @@ export function graphistryJS(iFrame) {
                                         return false;
                                     }
                                 }),
+                                tap((v) => { console.debug('Starting iframe protocol listen flow: Message filtered', v) }),
                                 map(({ data: { cache }, cache: cache2 }) => ({ target, cache, cache2 }))))),
                 switchMap(({ target, cache, cache2 }) => {
 
-                    console.debug('Graphistry API: init filter passed, handling', { target, cache, cache2 });
+                    console.debug('Graphistry API: init filter passed 2, handling', { target, cache, cache2 });
 
                     //Observable wrapper insulating from Model's rxjs version
                     // ... assume just new/get/subscribe/unsubscribe
@@ -1606,19 +1609,24 @@ export function graphistryJS(iFrame) {
                         //scheduler: Scheduler.async, //TODO use default?
                         allowFromWhenceYouCame: true
                     });
+                    console.debug('Graphistry API: model created', model);
+
                     model._source = new PostMessageDataSource(window, target, model, '*');
+                    console.debug('Graphistry API: model source created', model._source);
                     return (new Observable((subscriber) => {
+                        console.debug('Graphistry API: New observable', { target, cache, cache2 });
                         const sub = model.get(`workbooks.open.views.current.id`)
                             .subscribe(
-                                (result) => { subscriber.next(result); },
-                                (error) => { subscriber.error('iframe model initialization error', error); },
+                                (result) => { console.debug('client new observable next', result); subscriber.next(result); },
+                                (error) => { subscriber.error('iframe model initialization error', { error }); },
                                 () => {
                                     console.debug('PostMessageDataSource: teardown');
                                     subscriber.complete();
                                 });
-                        return () => { sub.unsubscribe(); };
+                        return () => { console.debug('client observable unsub'); sub.unsubscribe(); };
                     }))
                         .pipe(
+                            tap((v) => { console.debug('Starting iframe protocol obs tap', v) }),
                             map(({ json, ...rest }) => {
                                 console.debug('got postMessage model hit', json, rest)
                                 const workbook = model.deref(json.workbooks.open);
@@ -1626,10 +1634,19 @@ export function graphistryJS(iFrame) {
                                 console.debug(`PostMessageDataSource: connected to client`, { workbook, view });
                                 return { workbook, view };
                             }),
+                            tap((v) => { console.debug('Starting iframe protocol obs tap2', v) }),
                             map(({ workbook, view }) => new GraphistryState(iFrame, { model, view, workbook })),
                             tap((result) => {
                                 console.info(`Graphistry API: connected to client`, result)
                             }));
+                }),
+                retryWhen(errors => {
+                    console.error('Graphistry API: retrying2 get', errors);
+                    return errors.pipe(
+                        tap((e) => { console.error('Graphistry API: retrying2 get e', e); }),
+                        delay(1000),
+                        tap((v) => { console.debug('Graphistry API: retrying2 get v', v); })
+                    );
                 }),
                 tap((result) => {
                     console.debug(`Graphistry API (pre-replay): connected to client`, result)
