@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
-import { v4 as uuidv4 } from 'uuid';
+
 
 import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api';
 import * as gAPI from '@graphistry/client-api';
@@ -164,7 +164,9 @@ const ETLUploader = (props) => {
         setLoadingMessage('Uploading graph');
 
         const type = 'edgelist';
-        const name = uuidv4();
+        console.debug('we should not be here');
+        const name = uuidv4("uuidpatch" + Math.random());
+        console.debug('clientapi react uuid4', { name });
         const payload = { type, name, graph: edges, labels: nodes, bindings };
         const url = `${graphistryHost || ''}/etl${''
             }?key=${apiKey
@@ -357,17 +359,23 @@ function generateIframeRef({
     iframeStyle, iframeClassName, iframeProps, allowFullScreen,
     tolerateLoadErrors
 }) {
+
+    console.debug('@generateIframeRef', { url, dataset, props, axesMap, iframeStyle, iframeClassName, iframeProps, allowFullScreen, tolerateLoadErrors });
+
     return useCallback(iframe => {
         if (iframe && dataset) {
+            console.debug('@generateIframeRef callback', { iframe, dataset });
             let loaded = false;
             setLoading(true);
             setLoadingMessage('Fetching session');
             console.debug('new iframe', typeof (iframe), { iframe, dataset, propsDataset: props.dataset });
             const sub = (graphistryJS(iframe))
                 .pipe(
+                    tap(g => { console.debug('new graphistryJS', g); }),
                     switchMap(
                         (g) => of(g).pipe(
                             tap((g) => {
+                                console.debug('new graphistryJS2', g);
                                 if (!loaded) {
                                     console.debug('iframe loader taking over', g)
                                     loaded = true;
@@ -380,6 +388,7 @@ function generateIframeRef({
                                 }
                             }),
                             switchMap((g) => {
+                                console.debug('new graphistryJS3', g);
                                 const commands = propsToCommands({ g, props, prevState: {}, axesMap, tolerateLoadErrors });
                                 if (Object.keys(commands).length) {
                                     console.debug('created all iframe init settings commands', commands);
