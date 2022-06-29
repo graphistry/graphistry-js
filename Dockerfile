@@ -27,7 +27,6 @@ RUN --mount=type=cache,target=/usr/src/app/.npm\
 
 # Shared src
 COPY projects/js-upload-api/src \
-    projects/js-upload-api/package-lock.json \
     projects/js-upload-api/package.json \
     projects/js-upload-api/tsconfig.json \
     /opt/graphistry-js/projects/js-upload-api/
@@ -62,6 +61,12 @@ RUN echo "=== Building node-api ===" \
 
 FROM base
 WORKDIR /opt/graphistry-js
+
+COPY \
+    projects/js-upload-api/.eslintignore \
+    projects/js-upload-api/.eslintrc.cjs \
+    /opt/graphistry-js/projects/js-upload-api/
+
 COPY --from=base_js \
     /opt/graphistry-js/projects/client-api \
     /opt/graphistry-js/projects/client-api
