@@ -56,12 +56,12 @@ import fetch, { Headers } from 'node-fetch';
 export class Client {
 
     public readonly username: string;
-    public readonly password: string;
     public readonly protocol: string;
     public readonly host: string;
     public readonly clientProtocolHostname: string;
 
-    public readonly _token?: string;
+    private _token?: string;
+    private _password: string;
 
     /**
      * @param username The username to authenticate with.
@@ -77,11 +77,11 @@ export class Client {
         previousClient?: Client
     ) {
         this.username = username;
-        this.password = password;
+        this._password = password;
         this.protocol = protocol;
         this.host = host;
         this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
-        if (previousClient && username === previousClient.username && password === previousClient.password && protocol === previousClient.protocol) {
+        if (previousClient && username === previousClient.username && password === previousClient._password && protocol === previousClient.protocol) {
             this._token == previousClient._token;
         }
         this.getAuthToken(); // TODO memoize across calls
@@ -116,7 +116,7 @@ export class Client {
 
         const response = await this.postToApi(
             'api/v2/auth/token/generate',
-            { username: this.username, password: this.password },
+            { username: this.username, password: this._password },
             this.getBaseHeaders(),
         )
 
