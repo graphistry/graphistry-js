@@ -57,14 +57,69 @@ export class Client {
     public readonly protocol: string;
     public readonly host: string;
     public readonly clientProtocolHostname: string;
+    public readonly agent: string;
+    public readonly version?: string;
+
+
+    private _getAuthTokenPromise?: Promise<string>;
+    ;// undefined if not configured
 
     private _token?: string;
-    private _version?: string;
-    private _getAuthTokenPromise?: Promise<string>; // undefined if not configured
 
     private fetch: any;
 
-    checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string): boolean {
+    /**
+     * @param username The username to authenticate with.
+     * @param password The password to authenticate with.
+     * @param protocol The protocol to use for the server during uploads: 'http' or 'https'.
+     * @param host The hostname of the server during uploads: defaults to 'hub.graphistry.com'
+     * @param clientProtocolHostname Base path to use inside the browser and when sharing public URLs: defaults to '{protocol}://{host}'
+     */
+    constructor (
+        username: string, password: string,
+        protocol = 'https', host = 'hub.graphistry.com',
+        clientProtocolHostname?: string,
+        fetch?: any,
+        version?: string,
+        agent: string = '@graphistry/js-upload-api',
+    ) {
+        this.username = username;
+        this._password = password;
+        this.protocol = protocol;
+        this.host = host;
+        this.fetch = fetch;
+        this.version = version;
+        this.agent = agent;
+        this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
+        if (this.isServerConfigured()) {
+            this._getAuthTokenPromise = this.getAuthToken();
+        }
+    }
+
+    /**
+     * @internal
+     * Internal helper
+     * @param uri The URI to upload to.
+     * @param payload The payload to upload. 
+     * @returns The response from the server. 
+     */
+    public async post(uri: string, payload: any): Promise<any> {
+        console.debug('post', {uri, payload});
+        const headers = await this.getSecureHeaders();
+        console.debug('post', {headers});
+        const response = await this.postToApi(uri, payload, headers);
+        console.debug('post response', {uri, payload, response});
+        return response;
+    }
+
+
+
+    public isServerConfigured(): boolean {
+        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
+        return (this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '';
+    }
+
+    public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string): boolean {
         if (this.username !== username) {
             console.debug('username changed', {currentUsername: this.username, newUsername: username}, this);
             return true;
@@ -88,45 +143,9 @@ export class Client {
         return false;
     }
 
-    /**
-     * @param username The username to authenticate with.
-     * @param password The password to authenticate with.
-     * @param protocol The protocol to use for the server during uploads: 'http' or 'https'.
-     * @param host The hostname of the server during uploads: defaults to 'hub.graphistry.com'
-     * @param clientProtocolHostname Base path to use inside the browser and when sharing public URLs: defaults to '{protocol}://{host}'
-     */
-    constructor (
-        username: string, password: string,
-        protocol = 'https', host = 'hub.graphistry.com',
-        clientProtocolHostname?: string,
-        fetch?: any,
-        version?: string
-    ) {
-        this.username = username;
-        this._password = password;
-        this.protocol = protocol;
-        this.host = host;
-        this.fetch = fetch;
-        this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
-        if (this.isServerConfigured()) {
-            this._getAuthTokenPromise = this.getAuthToken();
-        }
-    }
-
-    /**
-     * @internal
-     * Internal helper
-     * @param uri The URI to upload to.
-     * @param payload The payload to upload. 
-     * @returns The response from the server. 
-     */
-    public async post(uri: string, payload: any): Promise<any> {
-        console.debug('post', {uri, payload});
-        const headers = await this.getSecureHeaders();
-        console.debug('post', {headers});
-        const response = await this.postToApi(uri, payload, headers);
-        console.debug('post response', {uri, payload, response});
-        return response;
+    public static isConfigurationValid(username: string, password: string, host: string): boolean {
+        console.debug('isConfigurationValid', {username: username, password: password, host: host});
+        return (username || '') !== '' && (password || '') !== '' && (host || '') !== '';
     }
 
     /**
@@ -138,17 +157,6 @@ export class Client {
      * @returns The authentication token
      * 
      */
-
-     public isServerConfigured(): boolean {
-        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
-        return (this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '';
-    }
-
-    public static isConfigurationValid(username: string, password: string, host: string): boolean {
-        console.debug('isConfigurationValid', {username: username, password: password, host: host});
-        return (username || '') !== '' && (password || '') !== '' && (host || '') !== '';
-    }
-
     private async getAuthToken(force = false): Promise<string> {
         if (!force && this.authTokenValid()) {
             return this._token || '';  // workaround ts not recognizing that _token is set
