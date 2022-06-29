@@ -8,6 +8,10 @@ on:
   #Regular dev
   push:
     paths: [
+      "projects/js-upload-api/package-lock.json",
+      "projects/js-upload-api/package.json",
+      "projects/js-upload-api/tsconfig.json",
+      "projects/js-upload-api/src",
       "projects/client-api/.eslintrc",
       "projects/client-api/index.js",
       "projects/client-api/package.json",
