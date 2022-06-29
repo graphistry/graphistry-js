@@ -61,8 +61,7 @@ export class Client {
     public readonly version?: string;
 
 
-    private _getAuthTokenPromise?: Promise<string>;
-    ;// undefined if not configured
+    private _getAuthTokenPromise?: Promise<string>;  // undefined if not configured
 
     private _token?: string;
 
@@ -81,7 +80,7 @@ export class Client {
         clientProtocolHostname?: string,
         fetch?: any,
         version?: string,
-        agent: string = '@graphistry/js-upload-api',
+        agent = '@graphistry/js-upload-api',
     ) {
         this.username = username;
         this._password = password;
