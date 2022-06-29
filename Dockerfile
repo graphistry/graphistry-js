@@ -26,7 +26,11 @@ RUN --mount=type=cache,target=/usr/src/app/.npm\
     && ( cd projects/js-upload-api && npm rebuild esbuild )
 
 # Shared src
-COPY projects/js-upload-api /opt/graphistry-js/projects/js-upload-api
+COPY projects/js-upload-api/src \
+    projects/js-upload-api/package-lock.json \
+    projects/js-upload-api/package.json \
+    projects/js-upload-api/tsconfig.json \
+    /opt/graphistry-js/projects/js-upload-api/
 
 # #############################################################################
 
