@@ -65,7 +65,7 @@ export class Client {
 
     private _token?: string;
 
-    private fetch: any;
+    private fetch: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
     /**
      * @param username The username to authenticate with.
@@ -78,7 +78,7 @@ export class Client {
         username: string, password: string,
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname?: string,
-        fetch?: any,
+        fetch?: any,  // eslint-disable-line @typescript-eslint/no-explicit-any
         version?: string,
         agent = '@graphistry/js-upload-api',
     ) {
@@ -102,7 +102,7 @@ export class Client {
      * @param payload The payload to upload. 
      * @returns The response from the server. 
      */
-    public async post(uri: string, payload: any): Promise<any> {
+    public async post(uri: string, payload: any): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
         console.debug('post', {uri, payload});
         const headers = await this.getSecureHeaders();
         console.debug('post', {headers});
@@ -190,7 +190,7 @@ export class Client {
         return out;
     }
 
-    private async postToApi(url: string, data: any, headers: any): Promise<any> {
+    private async postToApi(url: string, data: any, headers: any): Promise<any> {    // eslint-disable-line @typescript-eslint/no-explicit-any
         const resolvedFetch = this.fetch;
         console.debug('postToApi', {url, data, headers});
         const response = await resolvedFetch(this.getBaseUrl() + url, { // change this
@@ -202,14 +202,14 @@ export class Client {
         return await response.json();
     }
 
-    private getBaseHeaders(): any {
+    private getBaseHeaders(): any {    // eslint-disable-line @typescript-eslint/no-explicit-any
         return ({
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         });
     }
     
-    private async getSecureHeaders(): Promise<any> {
+    private async getSecureHeaders(): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
         const headers = this.getBaseHeaders();
         const tok = await this.getAuthToken();
         console.debug('getSecureHeaders', {headers, tok});
