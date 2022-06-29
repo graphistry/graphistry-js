@@ -242,7 +242,7 @@ export class File {
         if (!force && this._fileUploaded) {
             return this._fileUploaded;
         }
-        this.fillMetadata(this._data);
+        this.fillMetadata(this._data, client);
         const results = await client.post(
             `api/v2/upload/files/${this._fileID}${ this.uploadUrlOpts ? `?${this.uploadUrlOpts}` : ''}`,
             this._data
@@ -270,16 +270,16 @@ export class File {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    private fillMetadata(data: any): void {
+    private fillMetadata(data: any, client: Client): void {
         if (!data) {
             throw new Error('No data to fill metadata; call setData() first or provide to File constructor');
         }
 
         if (!data['agent_name']) {
-            data['agent_name'] = '@graphistry/node-api';
+            data['agent_name'] = client.agent;
         }
         if (!data['agent_version']) {
-            data['agent_version'] = "fix me"; // FIXME
+            data['agent_version'] = client.version;
         }
     }
 
