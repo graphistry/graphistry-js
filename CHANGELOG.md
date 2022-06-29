@@ -8,22 +8,24 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Docs
 
 - **Node:** Added data portion of row-oriented example
-  //
 
 # Latest
 
 ## 4.1.3 - 2022-06-29
 
-### Breaking 🔥
-
-- **js-upload-api**: Fetch modifier made private
-
 ### Features
 
-- **js-upload-api**: Template created to repurpose Client-API
-- **js-upload-api**: Metadata assigned to Client's agent and version
-- **client-api**: Polyfill node cores now with crypto-browserify
-  //
+- **client-api**: api=3 uploads via top-level exports `Dataset`, `File`, `EdgeFile`, `NodeFile`, and `Client` - **js-upload-api**: Created environment-neutral upload API; node-api will soon switch to this, client-api already does
+- **client-api**: Add single delayed retry during initialization
+- **client-api**: Exposed rxjs helper `retryWhen`
+
+### Changed
+
+- **client-api**: Code reformat
+
+### Fix
+
+- **client-api**: Polyfill crypto-browserify; missed in recent update to webpack 5
 
 ## 4.1.2 - 2022-05-21
 
