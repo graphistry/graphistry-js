@@ -3,6 +3,7 @@ on:
   push:
     paths: [
       ".github/workflows/storybook.yml",
+      "projects/js-upload-api/**",
       "projects/client-api/**",
       "projects/client-api-react/.storybook/**",
       "projects/client-api-react/assets/**",
