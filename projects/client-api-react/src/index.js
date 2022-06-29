@@ -3,11 +3,15 @@ import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
 import { v4 as uuidv4 } from 'uuid';
 
+
 import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api';
 import * as gAPI from '@graphistry/client-api';
 import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings, panelNames } from './bindings.js';
+import { Client as ClientBase } from '@graphistry/client-api';
+
+export const Client = ClientBase;
 
 //https://blog.logrocket.com/how-to-get-previous-props-state-with-react-hooks/
 function usePrevious(value) {
@@ -35,13 +39,14 @@ function panelNameToPropName(panelName) {
 
 const propTypes = {
 
-	...(Object.values(bindings).reduce(
-			(acc, {name, nameDefault, reactType}) => 
-				({	...acc, 
-					[name]: reactType,
-					...(nameDefault ? {[nameDefault]: reactType} : {}),
-				}),
-			{})),
+    ...(Object.values(bindings).reduce(
+        (acc, { name, nameDefault, reactType }) =>
+        ({
+            ...acc,
+            [name]: reactType,
+            ...(nameDefault ? { [nameDefault]: reactType } : {}),
+        }),
+        {})),
 
     //FIXME: https://github.com/storybookjs/storybook/issues/14092  
     //togglePanel: PropTypes.oneOf(panelNames.concat([false])),
@@ -79,9 +84,9 @@ const propTypes = {
     nodes: PropTypes.arrayOf(PropTypes.object),
     edges: PropTypes.arrayOf(PropTypes.object),
     bindings: PropTypes.shape({
-        idField:  PropTypes.string.isRequired,
+        idField: PropTypes.string.isRequired,
         sourceField: PropTypes.string.isRequired,
-        destinationField:  PropTypes.string.isRequired,
+        destinationField: PropTypes.string.isRequired,
     }),
 
     type: PropTypes.string,
@@ -126,7 +131,7 @@ const ETLUploader = (props) => {
         dataset, edges, nodes, bindings,
         setLoading, setDataset, setLoadingMessage,
         apiKey, graphistryHost
-    } =  props;
+    } = props;
 
     const prevEdges = usePrevious(edges);
     const prevNodes = usePrevious(nodes);
@@ -158,21 +163,23 @@ const ETLUploader = (props) => {
         setLoading(true);
         setDataset(null);
         setLoadingMessage('Uploading graph');
- 
+
         const type = 'edgelist';
+        console.debug('we should not be here');
         const name = uuidv4();
+        console.debug('clientapi react uuid4', { name });
         const payload = { type, name, graph: edges, labels: nodes, bindings };
         const url = `${graphistryHost || ''}/etl${''
-    }?key=${apiKey
-    }&apiversion=1${''
-    }&agent=${encodeURIComponent(`'client-api-react'`)}`
+            }?key=${apiKey
+            }&apiversion=1${''
+            }&agent=${encodeURIComponent(`'client-api-react'`)}`
         console.debug('uploading', url, payload);
         const sub = ajax({
-                url,
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json'},
-                body: payload
-            })
+            url,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload
+        })
             .pipe(
                 tap(({ response }) => {
                     if (response && response.success) {
@@ -187,11 +194,11 @@ const ETLUploader = (props) => {
                 first()
             )
             .subscribe({
-                next (response) {
+                next(response) {
                     setLoading(false);
                     setDataset(response.dataset);
                 },
-                error (error) {
+                error(error) {
                     setLoading(false);
                     setDataset(null);
                     setLoadingMessage('Error uploading graph');
@@ -200,7 +207,7 @@ const ETLUploader = (props) => {
             });
 
         return () => {
-            console.debug('unsubscribing upload', {url, payload, sub});
+            console.debug('unsubscribing upload', { url, payload, sub });
             sub.unsubscribe();
         }
 
@@ -215,21 +222,21 @@ const ETLUploader = (props) => {
 };
 
 
-function catchGError ({tolerateLoadErrors, g, msg, payload}) {
+function catchGError({ tolerateLoadErrors, g, msg, payload }) {
     return catchError(err => {
         console.error(msg, payload, err);
         if (tolerateLoadErrors) {
-            return of(g.updateStateWithResult({msg, err}));
+            return of(g.updateStateWithResult({ msg, err }));
         }
         throw err;
     });
 }
 
 
-function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
-    
+function propsToCommands({ g, props, prevState, axesMap, tolerateLoadErrors }) {
+
     const commands = {};
-    bindings.forEach(({name, jsName, jsCommand}) => {
+    bindings.forEach(({ name, jsName, jsCommand }) => {
         const val = props[name];
         if (prevState[name] !== val) {
             if (jsCommand) {
@@ -246,7 +253,8 @@ function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
                         tolerateLoadErrors,
                         g,
                         msg: `Error running GraphistryJS command`,
-                        payload: {g, name, jsName, jsCommand, val, tolerateLoadErrors}}));
+                        payload: { g, name, jsName, jsCommand, val, tolerateLoadErrors }
+                    }));
         }
     });
     if (props.axes && !axesMap.has(props.axes)) {
@@ -261,7 +269,7 @@ function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
             if (panelNames.indexOf(props.togglePanel) !== -1) {
                 enabledPanels.push(props.togglePanel);
             } else {
-                console.warn('Unknown togglePanel', {togglePane: props.togglePanel});
+                console.warn('Unknown togglePanel', { togglePane: props.togglePanel });
             }
         } else {
             disabledPanels.push(props.togglePanel);
@@ -278,9 +286,10 @@ function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
                     tolerateLoadErrors,
                     g,
                     msg: `Error toggling panel`,
-                    payload: {g, panelName, propName, props, tolerateLoadErrors}}));
+                    payload: { g, panelName, propName, props, tolerateLoadErrors }
+                }));
     }
-    console.debug('togglePanel', {togglePanel: props.togglePanel, enabledPanels, disabledPanels, commands});
+    console.debug('togglePanel', { togglePanel: props.togglePanel, enabledPanels, disabledPanels, commands });
 
 
     /*
@@ -291,10 +300,10 @@ function propsToCommands({g, props, prevState, axesMap, tolerateLoadErrors}) {
     return commands;
 }
 
-function handleUpdates({g, isFirstRun, axesMap, props}) {
+function handleUpdates({ g, isFirstRun, axesMap, props }) {
     const prevState = {};
     const currState = {};
-    bindings.forEach(({name}) => {
+    bindings.forEach(({ name }) => {
         const val = props[name];
         currState[name] = val;
         prevState[name] = usePrevious(val);
@@ -310,7 +319,7 @@ function handleUpdates({g, isFirstRun, axesMap, props}) {
     prevState.togglePanel = usePrevious(currTogglePanel);
 
     useEffect(() => {
-        console.debug('update any settings', !isFirstRun && g && g.g, {isFirstRun, readyG: g && g.g, props, prevState, currState});
+        console.debug('update any settings', !isFirstRun && g && g.g, { isFirstRun, readyG: g && g.g, props, prevState, currState });
 
         if (isFirstRun) {
             console.log('firstRun; skip updates')
@@ -320,14 +329,14 @@ function handleUpdates({g, isFirstRun, axesMap, props}) {
             return;
         }
 
-        const commands = propsToCommands({g, props, prevState, axesMap});
+        const commands = propsToCommands({ g, props, prevState, axesMap });
 
         if (Object.keys(commands).length) {
             console.debug('dispatched all updating settings', commands);
             const sub = forkJoin(commands)
                 .subscribe({
-                    error (e) { console.error('iframe prop change error', e, commands); },
-                    complete () { console.debug('iframe prop change done', commands); }
+                    error(e) { console.error('iframe prop change error', e, commands); },
+                    complete() { console.debug('iframe prop change done', commands); }
                 });
             return () => {
                 sub.unsubscribe();
@@ -351,17 +360,23 @@ function generateIframeRef({
     iframeStyle, iframeClassName, iframeProps, allowFullScreen,
     tolerateLoadErrors
 }) {
+
+    console.debug('@generateIframeRef', { url, dataset, props, axesMap, iframeStyle, iframeClassName, iframeProps, allowFullScreen, tolerateLoadErrors });
+
     return useCallback(iframe => {
         if (iframe && dataset) {
+            console.debug('@generateIframeRef callback', { iframe, dataset });
             let loaded = false;
             setLoading(true);
             setLoadingMessage('Fetching session');
-            console.debug('new iframe', typeof(iframe), {iframe, dataset, propsDataset: props.dataset});
+            console.debug('new iframe', typeof (iframe), { iframe, dataset, propsDataset: props.dataset });
             const sub = (graphistryJS(iframe))
                 .pipe(
+                    tap(g => { console.debug('new graphistryJS', g); }),
                     switchMap(
                         (g) => of(g).pipe(
                             tap((g) => {
+                                console.debug('new graphistryJS2', g);
                                 if (!loaded) {
                                     console.debug('iframe loader taking over', g)
                                     loaded = true;
@@ -374,12 +389,13 @@ function generateIframeRef({
                                 }
                             }),
                             switchMap((g) => {
-                                const commands = propsToCommands({g, props, prevState: {}, axesMap, tolerateLoadErrors});
+                                console.debug('new graphistryJS3', g);
+                                const commands = propsToCommands({ g, props, prevState: {}, axesMap, tolerateLoadErrors });
                                 if (Object.keys(commands).length) {
                                     console.debug('created all iframe init settings commands', commands);
                                     return forkJoin(commands)
                                         .pipe(
-                                            tap((hits) => { console.debug('new iframe commands all returned', {hits} ); }),
+                                            tap((hits) => { console.debug('new iframe commands all returned', { hits }); }),
                                             map(hits => g.updateStateWithResult(hits)))
                                 }
                                 console.debug('new iframe with no commands');
@@ -399,23 +415,23 @@ function generateIframeRef({
                     }),
                 )
                 .subscribe({
-                    next (v) { console.debug('iframe init sub hit', v); },
-                    error (e) { console.error('iframe init sub error', e); },
-                    complete () { console.debug('iframe init sub complete'); }
+                    next(v) { console.debug('iframe init sub hit', v); },
+                    error(e) { console.error('iframe init sub error', e); },
+                    complete() { console.debug('iframe init sub complete'); }
                 });
             setGSub(sub);
             return () => {
                 // Not called in practice; maybe only if <Graphistry> itself is unmounted?
                 console.debug('iframe unmounted!', iframe);
                 sub.unsubscribe();
-            }    
+            }
         } else {
-            console.debug('no iframe', typeof(iframe), {iframe, dataset});
-            return () => {};
+            console.debug('no iframe', typeof (iframe), { iframe, dataset });
+            return () => { };
         }
     }, [
-       url,
-       iframeStyle, iframeClassName, iframeProps, allowFullScreen
+        url,
+        iframeStyle, iframeClassName, iframeProps, allowFullScreen
     ]);
 }
 
@@ -446,7 +462,7 @@ function Graphistry(props) {
     const [axesMap] = useState(new WeakMap());
 
     const [isFirstRun, setFirstRun] = useState(true);
-    handleUpdates({g, isFirstRun, axesMap, props});
+    handleUpdates({ g, isFirstRun, axesMap, props });
 
     //props changes override latest etl
     const prevDataset = usePrevious(props.dataset);
@@ -465,16 +481,16 @@ function Graphistry(props) {
 
     const playNormalized = typeof play === 'boolean' ? play : (play | 0) * 1000;
     const optionalParams = (type ? `&type=${type}` : ``) +
-                           (controls ? `&controls=${controls}` : ``) +
-                           (session ? `&session=${session}` : ``) +
-                           (workbook ? `&workbook=${workbook}` : ``);
+        (controls ? `&controls=${controls}` : ``) +
+        (session ? `&session=${session}` : ``) +
+        (workbook ? `&workbook=${workbook}` : ``);
 
     const url = `${graphistryHost || ''}/graph/graph.html${''
-}?play=${playNormalized
-}&info=${showInfo
-}&splashAfter=${showSplashScreen
-}&dataset=${encodeURIComponent(dataset)
-}${optionalParams}`;
+        }?play=${playNormalized
+        }&info=${showInfo
+        }&splashAfter=${showSplashScreen
+        }&dataset=${encodeURIComponent(dataset)
+        }${optionalParams}`;
 
     //Initial frame load and settings
     const iframeRef = generateIframeRef({
@@ -486,10 +502,10 @@ function Graphistry(props) {
     });
 
     const children = [
-        <ETLUploader 
+        <ETLUploader
             key={`g_etl_${props.key}`}
             {...props}
-            {...{setLoading, setDataset, setLoadingMessage}}
+            {...{ setLoading, setDataset, setLoadingMessage }}
         />
     ];
 
@@ -497,33 +513,35 @@ function Graphistry(props) {
         const showHeader = showMenu && showToolbar;
         children.push(
             <div key={`graphistry-loading-placeholder-${props.key}`}
-                 className='graphistry-loading-placeholder'>
+                className='graphistry-loading-placeholder'>
                 {showHeader &&
-                <div className='graphistry-loading-placeholder-nav'>
-                    <div style={loadingNavLogoStyle}></div>
-                </div> || undefined}
+                    <div className='graphistry-loading-placeholder-nav'>
+                        <div style={loadingNavLogoStyle}></div>
+                    </div> || undefined}
                 <div className='graphistry-loading-placeholder-content' style={showHeader ? undefined : { height: `100%` }}>
                     <div className='graphistry-loading-placeholder-message'>
                         {showLoadingIndicator &&
-                        <span className='graphistry-loading-placeholder-spinner'/> || undefined}
+                            <span className='graphistry-loading-placeholder-spinner' /> || undefined}
                         <p>{loadingMessage || ''}</p>
                     </div>
                 </div>
             </div>
         );
     }
-
+    children.push(<div>
+        hello
+    </div>)
     if (dataset) {
         children.push(
             <iframe
-                    key={`g_iframe_${url}_${props.key}`}
-                    ref={iframeRef}
-                    scrolling='no'
-                    style={iframeStyle}
-                    className={iframeClassName}
-                    allowFullScreen={!!allowFullScreen}
-                    src={url}
-                    {...iframeProps}
+                key={`g_iframe_${url}_${props.key}`}
+                ref={iframeRef}
+                scrolling='no'
+                style={iframeStyle}
+                className={iframeClassName}
+                allowFullScreen={!!allowFullScreen}
+                src={url}
+                {...iframeProps}
             />
         );
     }

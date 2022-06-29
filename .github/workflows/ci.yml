@@ -8,6 +8,7 @@ on:
   #Regular dev
   push:
     paths: [
+      "projects/js-upload-api/**",
       "projects/client-api/.eslintrc",
       "projects/client-api/index.js",
       "projects/client-api/package.json",
