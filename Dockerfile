@@ -26,10 +26,17 @@ RUN --mount=type=cache,target=/usr/src/app/.npm\
     && ( cd projects/js-upload-api && npm rebuild esbuild )
 
 # Shared src
-COPY projects/js-upload-api/src \
+COPY \
     projects/js-upload-api/package.json \
     projects/js-upload-api/tsconfig.json \
     /opt/graphistry-js/projects/js-upload-api/
+COPY \
+    projects/js-upload-api/src \
+    /opt/graphistry-js/projects/js-upload-api/src
+RUN \
+    echo "=== Building shared dep @graphistry/js-upload-api ===" \
+    && cd /opt/graphistry-js/projects/js-upload-api \
+    && npm run build
 
 # #############################################################################
 
