@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
+import { v4 as uuidv4 } from 'uuid';
 
 
 import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api';
@@ -165,7 +166,7 @@ const ETLUploader = (props) => {
 
         const type = 'edgelist';
         console.debug('we should not be here');
-        const name = uuidv4("uuidpatch" + Math.random());
+        const name = uuidv4();
         console.debug('clientapi react uuid4', { name });
         const payload = { type, name, graph: edges, labels: nodes, bindings };
         const url = `${graphistryHost || ''}/etl${''
