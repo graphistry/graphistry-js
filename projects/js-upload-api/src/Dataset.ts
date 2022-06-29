@@ -301,7 +301,7 @@ export class Dataset {
     ////////////////////////////////////////////////////////////////////////////////
 
     private async createDataset(client: Client, bindings: Record<string, unknown>): Promise<string> {
-        this.fillMetadata(bindings);
+        this.fillMetadata(bindings, client);
         const dataJsonResults = await client.post('api/v2/upload/datasets/', bindings);
         this._createDatasetResponse = dataJsonResults;
         const datasetID = dataJsonResults.data.dataset_id;
@@ -345,7 +345,7 @@ export class Dataset {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    private fillMetadata(data: any): void {
+    private fillMetadata(data: any, client: Client): void{
         if (!data) {
             throw new Error('No data to fill metadata; call setData() first or provide to File constructor');
         }
@@ -357,10 +357,10 @@ export class Dataset {
         const metadata = data['metadata'];
 
         if (!metadata['agent']) {
-            metadata['agent'] = '@graphistry/node-api';
+            metadata['agent'] = client.agent;
         }
         if (!metadata['agentversion']) {
-            metadata['agentversion'] = "fix me"; // FIXME
+            metadata['agentversion'] = client.version;
         }
         if (!metadata['apiversion']) {
             metadata['apiversion'] = '3';
