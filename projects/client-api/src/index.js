@@ -21,7 +21,7 @@ export class Client extends ClientBase {
         version
     ) {
         console.debug('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
-        super(username, password, protocol, host, clientProtocolHostname, window.fetch.bind(window), version);
+        super(username, password, protocol, host, clientProtocolHostname, window.fetch.bind(window), version, '@graphistry/client-api');
     }
 }
 
