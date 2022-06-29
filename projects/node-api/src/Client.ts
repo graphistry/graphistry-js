@@ -56,12 +56,12 @@ import fetch, { Headers } from 'node-fetch';
 export class Client {
 
     public readonly username: string;
+    private _password: string;
     public readonly protocol: string;
     public readonly host: string;
     public readonly clientProtocolHostname: string;
 
     private _token?: string;
-    private _password: string;
 
     /**
      * @param username The username to authenticate with.
@@ -74,16 +74,12 @@ export class Client {
         username: string, password: string,
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname?: string,
-        previousClient?: Client
     ) {
         this.username = username;
         this._password = password;
         this.protocol = protocol;
         this.host = host;
         this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
-        if (previousClient && username === previousClient.username && password === previousClient._password && protocol === previousClient.protocol) {
-            this._token == previousClient._token;
-        }
         this.getAuthToken(); // TODO memoize across calls
     }
 
