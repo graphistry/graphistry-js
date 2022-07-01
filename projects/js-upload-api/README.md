@@ -10,7 +10,7 @@ If you are interested in using Graphistry JS libraries, you may be more interest
 
 ## Why `@graphistry/js-upload-api`
 
-This shared module provides pure JS (platform-neutral) core APIs for interesting with the Graphistry REST API for uploading and embedding visualizations. It is primarily for sharing code between the platform-specific client libraries.
+This shared module provides pure JS (platform-neutral) core APIs for using the Graphistry REST API for uploading and embedding visualizations. It is primarily for sharing code between the platform-specific client libraries.
 
 ### Install
 
