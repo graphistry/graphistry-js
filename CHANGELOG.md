@@ -11,6 +11,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.1.4 - 2022-06-30
+
+### Features
+
+- **js-uplad-api**: Publish on npm
+
+### Fix
+
+- **client-api**: Fix module not found install error in some environments
+- **client-api-react**: Fix module not found install error in some environments
+
 ## 4.1.3 - 2022-06-29
 
 ### Features
