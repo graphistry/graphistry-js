@@ -65,7 +65,15 @@
     "docs",
     "assets"
   ],
-  "keywords": [],
+  "keywords": [
+    "graphistry",
+    "graph",
+    "GPU",
+    "network",
+    "visualization",
+    "webgl",
+    "react"
+  ],
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "ISC",
   "dependencies": {

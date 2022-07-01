@@ -61,7 +61,11 @@
   },
   "keywords": [
     "graphistry",
-    "graph-viz"
+    "graph",
+    "GPU",
+    "network",
+    "visualization",
+    "webgl"
   ],
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "Apache-2.0",
