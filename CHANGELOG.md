@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
-## 4.1.6 - 2022-07-02
+## 4.1.7 - 2022-07-02
 
 ### Fix
 
