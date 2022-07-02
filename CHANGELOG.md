@@ -11,6 +11,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.1.5 - 2022-07-02
+
+### Fix
+
+- **client-api**: Correct `main`, `module` export paths to correct `dist/` targets
+
 ## 4.1.3 - 2022-06-29
 
 ### Features
