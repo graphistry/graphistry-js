@@ -1,3 +1,5 @@
+import { resolve } from "path";
+
 /**
  * # Client examples
  * 
@@ -54,6 +56,7 @@ export class Client {
 
     public readonly username: string;
     private _password: string;
+    public authUrl?: Promise<string>;
     public readonly protocol: string;
     public readonly host: string;
     public readonly clientProtocolHostname: string;
@@ -81,6 +84,7 @@ export class Client {
         fetch?: any,  // eslint-disable-line @typescript-eslint/no-explicit-any
         version?: string,
         agent = '@graphistry/js-upload-api',
+        isSSO = true,
     ) {
         this.username = username;
         this._password = password;
@@ -90,9 +94,7 @@ export class Client {
         this.version = version;
         this.agent = agent;
         this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
-        if (this.isServerConfigured()) {
-            this._getAuthTokenPromise = this.getAuthToken();
-        }
+
     }
 
     /**
@@ -147,6 +149,54 @@ export class Client {
         return (username || '') !== '' && (password || '') !== '' && (host || '') !== '';
     }
 
+ 
+    private async ssoLogin(): Promise<any> {   // keep calling to api based on rate limit
+        const state = await this.getAuthUrl();
+        console.log(state.state);
+          let data = '';
+          let num = 1;
+          setTimeout(async () => {
+            while(num = 1) { //setTimeOut
+            const response = await (this.fetch)(`https://eks-skinny.grph.xyz/api/v2/o/sso-org/sso/oidc/jwt/${state.state}`, {
+                method: 'POST', 
+                headers: { //CORS ISSUE
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+                },
+                body: JSON.stringify(data)
+            });
+            data = await response.json();
+            console.log(data);
+            if (data) {
+                 console.log('data with jwt', data);
+                 num = 2;
+                return data;
+            }
+            // if (timeElapsed > 90 seconds) {
+            //     throw new Error('Timeout');
+            // }
+            // await sleep 3s;
+            // */
+            // return data;
+        } 
+            }, 3000);
+        if (timeElasped > 9000) {
+            throw new Error('Timeout');
+        }
+        } 
+    
+
+
+
+            /*
+            (conditionally called by constructor instead of getAuthToken)
+        TOD: if SSO: polling loop on popup flow being done (server says yes its completed)
+        rate limit: 1 request per 3 second (configurable)
+        if takes more than 20s (configurable), throw exception
+        I think it returns the JWT, so can save and return the response instead of going further here
+        
+*/
     /**
      * Get the authentication token for the current user.
      * By default, reuses current token if available.
@@ -161,6 +211,8 @@ export class Client {
             return this._token || '';  // workaround ts not recognizing that _token is set
         }
 
+
+
         //Throw exception if invalid username or password
         if (!this.isServerConfigured()) {
             console.debug('current config', {username: this.username, _password: this._password, host: this.host});
@@ -171,9 +223,8 @@ export class Client {
             console.debug('reusing outstanding auth promise');
             return await this._getAuthTokenPromise;
         }
-
+        console.debug('just checking if updating')
         console.debug('getAuthToken', {username: this.username, _password: this._password, host: this.host});
-
         const response = await this.postToApi(
             'api/v2/auth/token/generate',
             { username: this.username, password: this._password },
@@ -191,9 +242,8 @@ export class Client {
     }
 
     private async postToApi(url: string, data: any, headers: any): Promise<any> {    // eslint-disable-line @typescript-eslint/no-explicit-any
-        const resolvedFetch = this.fetch;
-        console.debug('postToApi', {url, data, headers});
-        const response = await resolvedFetch(this.getBaseUrl() + url, { // change this
+        console.debug('postToApi', {url, data});
+        const response = await (this.fetch)(this.getBaseUrl() + url, { // change this
             method: 'POST',
             headers,
             body: JSON.stringify(data),
@@ -201,6 +251,52 @@ export class Client {
         console.debug('postToApi', {url, data, headers, response});
         return await response.json();
     }
+    
+    private async getAuthUrlHelper(url: any, data:any, headers: any): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+        console.debug(url, data, headers);
+        console.debug('getAuthUrl', {url, data, headers});
+
+         const authCallback = (this.fetch)( url, {
+             method: 'POST',
+             headers,
+             body: JSON.stringify(data),
+      })
+      .then((response:any) => response.json()) // eslint-disable-line @typescript-eslint/no-explicit-any
+      .then((data:any) => {
+        console.log({"data":data,"State":data.data.state,"_authUrl":data.data.auth_url, "status": data.status});
+         if (data.status !== 'OK'){
+            console.error('Error in getting auth url', {url, data, headers});
+            throw new Error('Error fetching popup window: non-OK server response');
+        }
+        return data;
+      }) // eslint-disable-line @typescript-eslint/no-explicit-any
+      .catch((error: any) => {
+        console.error('getAuthUrl response error', error); //TODO notify user of error
+        throw new Error('Error fetching popup window');
+      });
+      console.debug(authCallback); 
+      
+     }
+    
+   
+    private async getAuthUrl(): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+        console.debug('testing authResponse is running');
+        const orgAndIdp = '/api/v2/o/sso-org/sso/oidc/login/gokta/'; //works
+        // const noOrgOrIdp = '/api/v2/g/sso/oidc/login/'; // not working
+        // const onlyOrg = 'api/v2/o/sso-org/sso/oidc/login/'; // not working
+        const url = this.getBaseAuthUrl() + orgAndIdp;   
+        const response = await this.getAuthUrlHelper(
+         url, //url
+         { }, 
+         this.getBaseHeaders(), //headers
+     )
+         //this.authUrl = response.then(data => data.data.auth_url);
+         console.debug('getAuthUrl authResponse resolved', { response });
+         console.debug(response.data.auth_url); // delete 
+         return response.data;
+     }
+
+    
 
     private getBaseHeaders(): any {    // eslint-disable-line @typescript-eslint/no-explicit-any
         return ({
@@ -216,6 +312,10 @@ export class Client {
         headers.Authorization = `Bearer ${tok}`;
         console.debug('getSecureHeaders', {headers});
         return headers;
+    }
+
+     private getBaseAuthUrl(): string {
+         return 'https://eks-skinny.grph.xyz';
     }
 
     private getBaseUrl(): string {

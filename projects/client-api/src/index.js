@@ -40,10 +40,11 @@ export class Client extends ClientBase {
         username, password,
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname,
-        version
+        version,
+        isSSO = true
     ) {
         console.debug('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
-        super(username, password, protocol, host, clientProtocolHostname, window.fetch.bind(window), version, '@graphistry/client-api');
+        super(username, password, protocol, host, clientProtocolHostname, window.fetch.bind(window), version, '@graphistry/client-api', isSSO);
     }
 }
 
