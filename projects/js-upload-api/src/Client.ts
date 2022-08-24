@@ -56,36 +56,43 @@ export class Client {
 
     public readonly username: string;
     private _password: string;
-    public authUrl?: Promise<string>;
     public readonly protocol: string;
     public readonly host: string;
     public readonly clientProtocolHostname: string;
     public readonly agent: string;
     public readonly version?: string;
+    public isSSO: boolean;
+    public authenticated: boolean;
+    public stopFromLoading: boolean;
 
 
     private _getAuthTokenPromise?: Promise<string>;  // undefined if not configured
 
     private _token?: string;
 
-    private fetch: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
+    public fetch: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
     /**
-     * @param username The username to authenticate with.
-     * @param password The password to authenticate with.
+     * @param username The username to authenticate with. Not required if SSO.
+     * @param password The password to authenticate with. Not required if SSO.
      * @param protocol The protocol to use for the server during uploads: 'http' or 'https'.
      * @param host The hostname of the server during uploads: defaults to 'hub.graphistry.com'
      * @param clientProtocolHostname Base path to use inside the browser and when sharing public URLs: defaults to '{protocol}://{host}'
      */
     constructor (
-        username: string, password: string,
+        username = '', password = '',
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname?: string,
         fetch?: any,  // eslint-disable-line @typescript-eslint/no-explicit-any
         version?: string,
         agent = '@graphistry/js-upload-api',
-        isSSO = true,
+        isSSO = false, 
+        authenticated = false,
+        stopFromLoading = false
     ) {
+        this.isSSO = isSSO;
+        this.authenticated = authenticated;
+        this.stopFromLoading = stopFromLoading;
         this.username = username;
         this._password = password;
         this.protocol = protocol;
@@ -94,8 +101,13 @@ export class Client {
         this.version = version;
         this.agent = agent;
         this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
-
+        if (isSSO && authenticated) {
+            this._getAuthTokenPromise = this.ssoLogin();
+        }
+        else if (this.isServerConfigured()) {
+            this._getAuthTokenPromise = this.getAuthToken();
     }
+}
 
     /**
      * @internal
@@ -116,11 +128,11 @@ export class Client {
 
 
     public isServerConfigured(): boolean {
-        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
-        return (this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '';
+        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host, isSSO: this.isSSO});
+        return ((this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '') || this.isSSO;
     }
 
-    public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string): boolean {
+    public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string, isSSO?: boolean, authenticated?: boolean, stopFromLoading?: boolean): boolean {
         if (this.username !== username) {
             console.debug('username changed', {currentUsername: this.username, newUsername: username}, this);
             return true;
@@ -141,53 +153,73 @@ export class Client {
             console.debug('clientProtocolHostname changed', {currentClientProtocolHostname: this.clientProtocolHostname, newClientProtocolHostname: clientProtocolHostname}, this);
             return true;
         }
+        // if (this.version !== version) {
+        //     console.debug('version changed', {current: this.version, newVersion: version }, this);
+        //     return true;
+        // }
+        if (this.isSSO !== isSSO) {
+            console.debug('isSSO changed', {current: this.isSSO, newIsSSO: isSSO }, this);
+            return true;   
+        }
+        if (this.authenticated !== authenticated) {
+            console.debug('authentication changed', {current: this.authenticated, newAuthenticated: authenticated }, this);
+            return true;   
+        }
+        if (this.stopFromLoading !== stopFromLoading) {
+            console.debug('stop from loading var has changed', {current: this.stopFromLoading, newStopFromLoading: stopFromLoading }, this);
+            return true;   
+        }
         return false;
     }
-
+    
     public static isConfigurationValid(username: string, password: string, host: string): boolean {
         console.debug('isConfigurationValid', {username: username, password: password, host: host});
         return (username || '') !== '' && (password || '') !== '' && (host || '') !== '';
     }
 
- 
-    private async ssoLogin(): Promise<any> {   // keep calling to api based on rate limit
-        const state = await this.getAuthUrl();
+
+
+    public async delay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }  
+      //TODO cancel if new client
+    public async ssoLogin(): Promise<any> {   // keep calling to api based on rate limit
+        //TODO validate input
+        console.log('ssoLogin before the authentication, youre number ?')
+        if (this.authenticated && this.stopFromLoading) {
+        const state = await this.getAuthUrl();   
+        const url = state.auth_url;
+        console.log(url); //this is auth
         console.log(state.state);
-          let data = '';
-          let num = 1;
-          setTimeout(async () => {
-            while(num = 1) { //setTimeOut
-            const response = await (this.fetch)(`https://eks-skinny.grph.xyz/api/v2/o/sso-org/sso/oidc/jwt/${state.state}`, {
-                method: 'POST', 
-                headers: { //CORS ISSUE
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
-                },
-                body: JSON.stringify(data)
+        const startedMS = Date.now();
+   
+        await this.delay(200); //short initial delay as may already be logged in
+        while(true) {
+            console.log('later in the ssologin loop, youre number ?')
+            await this.delay(20000);
+            const response = await (this.fetch)(`https://eks-skinny.grph.xyz/api/v2/o/sso/oidc/jwt/${state.state}/`, {
+                method: 'GET', 
             });
-            data = await response.json();
-            console.log(data);
-            if (data) {
-                 console.log('data with jwt', data);
-                 num = 2;
+            await this.delay(15000);
+            console.log('authenticated');
+            console.info('ssoLogin response');
+            const data = await response.json(); // only do this if theyre done being authenticated/logged in
+            if (data) { //TODO and whatever success conditions
+                console.log('data with good jwt', data);
+                data['data']['auth_url'] = url;
                 return data;
             }
-            // if (timeElapsed > 90 seconds) {
-            //     throw new Error('Timeout');
-            // }
-            // await sleep 3s;
-            // */
-            // return data;
-        } 
-            }, 3000);
-        if (timeElasped > 9000) {
-            throw new Error('Timeout');
+            //TODO check if expected not-ready rejection, else throw unexpected error
+            if (Date.now() - startedMS > 60000) {
+                console.error('sso login timed out');
+                throw new Error('sso login timed out');
+            }
+            await this.delay(1000);
+            }
         }
-        } 
+    }
+
     
-
-
 
             /*
             (conditionally called by constructor instead of getAuthToken)
@@ -210,8 +242,6 @@ export class Client {
         if (!force && this.authTokenValid()) {
             return this._token || '';  // workaround ts not recognizing that _token is set
         }
-
-
 
         //Throw exception if invalid username or password
         if (!this.isServerConfigured()) {
@@ -243,7 +273,7 @@ export class Client {
 
     private async postToApi(url: string, data: any, headers: any): Promise<any> {    // eslint-disable-line @typescript-eslint/no-explicit-any
         console.debug('postToApi', {url, data});
-        const response = await (this.fetch)(this.getBaseUrl() + url, { // change this
+        const response = await this.fetch(this.getBaseUrl() + url, { // change this
             method: 'POST',
             headers,
             body: JSON.stringify(data),
@@ -251,52 +281,71 @@ export class Client {
         console.debug('postToApi', {url, data, headers, response});
         return await response.json();
     }
-    
-    private async getAuthUrlHelper(url: any, data:any, headers: any): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
-        console.debug(url, data, headers);
-        console.debug('getAuthUrl', {url, data, headers});
+     
 
-         const authCallback = (this.fetch)( url, {
+    private userLoginInfo (): any { // eslint-disable-line @typescript-eslint/no-explicit-any
+        // just incase i break stuff : /api/v2/o/sso-org/sso/oidc/login/gokta/
+        const org = ''; // change to input of user
+        const idp = ''; // change to input of user
+
+        const noOrgOrIdp = '/api/v2/g/sso/oidc/login/'; // sso-org + gokta should be var/ input from screen
+        const onlyOrg = `api/v2/o/${org}/sso/oidc/login/`;
+        const orgAndIdp = `api/v2/o/${org}/sso/oidc/login/${idp}/`; 
+            if ( org !== '' && idp !== '' ) { //
+                 return orgAndIdp;
+             } else if (org !== '' && idp == '') { // no idp
+                 return onlyOrg;
+             } else {  
+                return noOrgOrIdp; 
+            }
+     }
+    
+    public async getAuthUrlHelper( url?: any, data?:any, headers?: any): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+        // console.debug( url, data, headers);
+        // console.debug('getAuthUrl', { url, data, headers});
+        // eslint-disable-next-line prefer-const
+
+        if(this.authenticated) {
+            console.log('authHelper very early, youre number ? ')
+        const authCallback =  await this.fetch( url, { // this fetch not a function
              method: 'POST',
              headers,
              body: JSON.stringify(data),
       })
-      .then((response:any) => response.json()) // eslint-disable-line @typescript-eslint/no-explicit-any
-      .then((data:any) => {
+      .then(async (response:any) => await response.json())  // eslint-disable-line @typescript-eslint/no-explicit-any 
+      .then(async (data:any) => { // eslint-disable-line @typescript-eslint/no-explicit-any 
+        console.log('authhelper once youve gotten data, youre number ? ')
         console.log({"data":data,"State":data.data.state,"_authUrl":data.data.auth_url, "status": data.status});
-         if (data.status !== 'OK'){
+        if (data.status !== 'OK' ){
             console.error('Error in getting auth url', {url, data, headers});
             throw new Error('Error fetching popup window: non-OK server response');
         }
-        return data;
-      }) // eslint-disable-line @typescript-eslint/no-explicit-any
-      .catch((error: any) => {
+        console.debug('This is data', data.status); 
+        return await data;
+      }) 
+      .catch((error: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         console.error('getAuthUrl response error', error); //TODO notify user of error
         throw new Error('Error fetching popup window');
       });
-      console.debug(authCallback); 
-      
-     }
-    
-   
-    private async getAuthUrl(): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+      return await authCallback;
+    }
+    }
+
+    public async getAuthUrl(): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
         console.debug('testing authResponse is running');
-        const orgAndIdp = '/api/v2/o/sso-org/sso/oidc/login/gokta/'; //works
-        // const noOrgOrIdp = '/api/v2/g/sso/oidc/login/'; // not working
-        // const onlyOrg = 'api/v2/o/sso-org/sso/oidc/login/'; // not working
-        const url = this.getBaseAuthUrl() + orgAndIdp;   
-        const response = await this.getAuthUrlHelper(
-         url, //url
-         { }, 
-         this.getBaseHeaders(), //headers
+        // eslint-disable-next-line prefer-const
+        const url = this.getBaseAuthUrl() + this.userLoginInfo(); 
+        const response = await this.getAuthUrlHelper( 
+        url, // getting the auth url
+        { }, 
+        this.getBaseHeaders(), //headers
      )
          //this.authUrl = response.then(data => data.data.auth_url);
-         console.debug('getAuthUrl authResponse resolved', { response });
-         console.debug(response.data.auth_url); // delete 
-         return response.data;
-     }
-
-    
+        console.log('getAUTHURL youre number ?')
+        console.debug('getAuthUrl authResponse resolved', { response });
+        console.debug('this is the auth link', response.data.auth_url); // delete 
+        return await response.data
+    }
 
     private getBaseHeaders(): any {    // eslint-disable-line @typescript-eslint/no-explicit-any
         return ({
@@ -314,7 +363,7 @@ export class Client {
         return headers;
     }
 
-     private getBaseAuthUrl(): string {
+     public getBaseAuthUrl(): string {
          return 'https://eks-skinny.grph.xyz';
     }
 
