@@ -11,7 +11,10 @@ import { bg } from './bg';
 import { bindings, panelNames } from './bindings.js';
 import { Client as ClientBase } from '@graphistry/client-api';
 
+
 export const Client = ClientBase;
+
+const client = new Client();
 
 //https://blog.logrocket.com/how-to-get-previous-props-state-with-react-hooks/
 function usePrevious(value) {
@@ -485,12 +488,16 @@ function Graphistry(props) {
         (session ? `&session=${session}` : ``) +
         (workbook ? `&workbook=${workbook}` : ``);
 
-    const url = `${graphistryHost || ''}/graph/graph.html${''
+    const url = `${graphistryHost || ''}/graph/graph.html${'' // || accounts/login/jwt/?token=<jwt_token>&next=<target redirect url>.
         }?play=${playNormalized
         }&info=${showInfo
         }&splashAfter=${showSplashScreen
         }&dataset=${encodeURIComponent(dataset)
         }${optionalParams}`;
+
+    console.log('are we hitting here?')
+    const redirectUrl = client.getSSO() + url; // `accounts/login/jwt/?token=${client.getSSO()}&next=${url}`;
+    console.log('redirectUrl', redirectUrl);
 
     //Initial frame load and settings
     const iframeRef = generateIframeRef({
@@ -529,9 +536,23 @@ function Graphistry(props) {
         );
     }
     children.push(<div>
-        hello
+        GraphBI
     </div>)
-    if (dataset) {
+    if(dataset && client.isSSO){
+        children.push(
+            <iframe
+                key={`g_iframe_${redirectUrl}_${props.key}`}
+                ref={iframeRef}
+                scrolling='no'
+                style={iframeStyle}
+                className={iframeClassName}
+                allowFullScreen={!!allowFullScreen}
+                src={redirectUrl}
+                {...iframeProps}
+            />
+        );
+    }
+    else if (dataset) {
         children.push(
             <iframe
                 key={`g_iframe_${url}_${props.key}`}
@@ -542,9 +563,9 @@ function Graphistry(props) {
                 allowFullScreen={!!allowFullScreen}
                 src={url}
                 {...iframeProps}
-            />
-        );
-    }
+                // reload with accounts/login/jwt/?token=<jwt_token>&next=<target redirect url>.
+            /> // make else statement for iframeRef that includes SSO
+        );} 
     return <div style={containerStyle} className={containerClassName} {...containerProps}>{children}</div>;
 }
 
