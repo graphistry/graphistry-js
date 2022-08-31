@@ -7,7 +7,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
-## 4.1.4 - 2022-08-31
+## 4.1.6 - 2022-08-31
 
 ### Added
 - **client-api**: `updateSetting()` options `"neighborhoodHighlight"`, `"neighborhoodHighlightHops"`, `"labelInspectorEnabled"`, `"labelShowActions"`
