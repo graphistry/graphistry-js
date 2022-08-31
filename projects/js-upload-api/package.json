@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/js-upload-api",
-  "version": "4.1.3",
+  "version": "4.1.4-alpha.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
