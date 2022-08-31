@@ -78,8 +78,24 @@ export const EdgeStyle = (args) => <Graphistry {...defaultSettings}
     {...args}
 />;
 
+export const NeighborhoodHighlightStyle = (args) => <Graphistry {...defaultSettings}
+  neighborhoodHighlight={'incoming'}
+  neighborhoodHighlightHos={2}
+  {...args}
+/>;
+
 export const HoverPropertiesInsteadOfInspector = (args) => <Graphistry {...defaultSettings}
     showLabelPropertiesOnHover={true}
+    {...args}
+/>;
+
+export const LabelsWithoutProperties = (args) => <Graphistry {...defaultSettings}
+    showLabelInspector={false}
+    {...args}
+/>;
+
+export const LabelsWithoutActions = (args) => <Graphistry {...defaultSettings}
+    showLabelActions={false}
     {...args}
 />;
 
@@ -112,6 +128,8 @@ export const HideChromeButShowTools = (args) => <Graphistry {...defaultSettings}
   showMenu={false}
   showHistograms={true}
   showInspector={true}
+  showLabelInspector={true}
+  showLabelActions={true}
   {...args}
 />;
 
