@@ -14,6 +14,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 - **node-api**: Update `node-fetch` dependency
 - **node-api**: Dropped unused direct dependency on `debug`
 - **node-api**: Loosened unnecessarily pinned dependencies to minor (`^`) - `rimraf`, `node-fetch`
+- **gha**: Add `js-upload-api` to audit matrix + do as explicit matrix
 
 ## 4.1.6 - 2022-08-31
 
