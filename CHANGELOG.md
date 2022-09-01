@@ -7,6 +7,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.1.7 - 2022-09-01
+
+### Infra
+
+- **node-api**: Update `node-fetch` dependency
+- **node-api**: Dropped unused direct dependency on `debug`
+- **node-api**: Loosened unnecessarily pinned dependencies to minor (`^`) - `rimraf`, `node-fetch`
+
 ## 4.1.6 - 2022-08-31
 
 ### Added
