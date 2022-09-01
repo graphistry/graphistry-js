@@ -529,7 +529,6 @@ function Graphistry(props) {
         );
     }
     children.push(<div>
-        hello
     </div>)
     if (dataset) {
         children.push(
