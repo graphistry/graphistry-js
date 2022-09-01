@@ -5,11 +5,26 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Development
 
+# Latest
+
+## 4.1.7 - 2022-09-01
+
+### Infra
+
+- **node-api**: Update `node-fetch` dependency
+- **node-api**: Dropped unused direct dependency on `debug`
+- **node-api**: Loosened unnecessarily pinned dependencies to minor (`^`) - `rimraf`, `node-fetch`
+- **gha**: Add `js-upload-api` to audit matrix + do as explicit matrix
+
+## 4.1.6 - 2022-08-31
+
+### Added
+- **client-api**: `updateSetting()` options `"neighborhoodHighlight"`, `"neighborhoodHighlightHops"`, `"labelInspectorEnabled"`, `"labelShowActions"`
+- **client-api-react**: React props `neighborhoodHighlight`, `neighborhoodHighlightHops`, `showLabelInspector`, `showLabelActions`,  
 ### Docs
 
-- **Node:** Added data portion of row-oriented example
-
-# Latest
+- **Node**: Added data portion of row-oriented example
+- **client-api-react**: Stories for new modes
 
 ## 4.1.3 - 2022-06-29
 

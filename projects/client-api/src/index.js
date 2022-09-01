@@ -1196,6 +1196,8 @@ const G_API_SETTINGS = {
     'edgeCurvature': ['view', 'scene.renderer.edges.curvature'],
     'pointOpacity': ['view', 'scene.renderer.points.opacity'],
     'pointSize': ['view', 'scene.renderer.points.scaling'],
+    'neighbhorhoodHighlight': ['view', 'scene.renderer.points.neighborhoodHighlight'],
+    'neighbhorhoodHighlightHops': ['view', 'scene.renderer.points.neighborhoodHighlightHops'],
 
     //models/camera.js
     'zoom': ['view', 'camera.zoom'],
@@ -1205,6 +1207,8 @@ const G_API_SETTINGS = {
     'labelOpacity': ['view', 'labels.opacity'],
     'labelEnabled': ['view', 'labels.enabled'],
     'labelPropertiesEnabled': ['view', 'labels.propertiesEnabled'],
+    'labelInspectorEnabled': ['view', 'labels.inspectorEnabled'],
+    'labelShowActions': ['view', 'labels.showActions'],
     'labelPOI': ['view', 'labels.poiEnabled'],
     'labelLabelPOI': ['view', 'labels.poiLabelEnabled'],
     'labelPOIMax': ['view', 'labels.poiMax'],
@@ -1240,6 +1244,8 @@ const G_API_SETTINGS = {
  * | `edgeCurvature` | `number` (0.1 to 1) |
  * | `pointOpacity` | `number` (0 to 1) |
  * | `pointSize` | `number` (0.1 to 10) |
+ * | `neighborhoodHighlight` | `string` ("incoming", "outgoing", "both", "none") |
+ * | `neighborhoodHighlightHops` | `uint` |
  * | `zoom` | `uint` |
  * | `center` | `const 0` |
  * | `labelOpacity` | `boolean` |
@@ -1247,6 +1253,8 @@ const G_API_SETTINGS = {
  * | `labelPOI` | `boolean` |
  * | `labelLabelPOI` | `boolean` |
  * | `labelHighlightEnabled` | `boolean` |
+ * | `labelInspectorEnabled` | `boolean` |
+ * | `labelShowActions` | `boolean` |
  * | `labelColor` | color as hex or rgba `string` |
  * | `labelBackground` | color as hex or rgba `string` |
  * | `precisionVsSpeed` | `int` (-5 to +5) |

@@ -21,20 +21,16 @@ on:
 jobs:
   audit:
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 2
+      matrix:
+        project: [js-upload-api, client-api, client-api-react, node-api]
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
         with:
           persist-credentials: false
 
-      - name: client-api
-        working-directory: projects/client-api
-        run: npm audit --production
-
-      - name: client-api-react
-        working-directory: projects/client-api-react
-        run: npm audit --production
-
-      - name: node-api
-        working-directory: projects/node-api
+      - name: audit project
+        working-directory: "projects/${{ matrix.project }}"
         run: npm audit --production
