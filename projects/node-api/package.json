@@ -65,6 +65,6 @@
   },
   "dependencies": {
     "debug": "4.3.4",
-    "node-fetch": "3.2.4"
+    "node-fetch": "3.2.10"
   }
 }
