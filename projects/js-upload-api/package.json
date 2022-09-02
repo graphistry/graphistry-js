@@ -7,7 +7,7 @@
   },
   "homepage": "https://github.com/graphistry/graphistry-js",
   "private": false,
-  "description": "Graphistry API client for use with node.js",
+  "description": "Graphistry upload client for reuse by node and browser clients",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",

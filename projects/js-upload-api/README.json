@@ -1,0 +1,5 @@
+# Graphistry's JavaScript Upload API
+
+Environment-neutral core library used by browser and node clients
+
+For direct use, see `@graphistry/client-api` (JS), `@graphistry/client-api-react` (React), and `@graphistry/node-api` (node)
