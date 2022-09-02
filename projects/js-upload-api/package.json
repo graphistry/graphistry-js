@@ -6,7 +6,7 @@
     "url": "git+https://github.com/graphistry/graphistry-js.git"
   },
   "homepage": "https://github.com/graphistry/graphistry-js",
-  "private": true,
+  "private": false,
   "description": "Graphistry API client for use with node.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -52,9 +52,6 @@
   "devDependencies": {
     "@compodoc/live-server": "^1.2.3",
     "@tsconfig/node16": "^1.0.2",
-    "@types/debug": "^4.1.7",
-    "@types/node": "^17.0.33",
-    "@types/node-fetch": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "eslint": "^8.15.0",
@@ -63,8 +60,5 @@
     "ts-node": "^10.7.0",
     "typedoc": "^0.22.15",
     "typescript": "^4.6.4"
-  },
-  "dependencies": {
-    "debug": "4.3.4"
   }
 }
