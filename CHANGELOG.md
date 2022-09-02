@@ -7,6 +7,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.1.8 - 2022-09-01
+
+### Infra
+- **js-upload-api**: Drop unused production dependencies (all) - `debug`
+- **js-upload-api**: Publish
+
 ## 4.1.7 - 2022-09-01
 
 ### Infra
