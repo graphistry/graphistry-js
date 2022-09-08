@@ -5,6 +5,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Development
 
+## 4.1.8beta0 - 2022-09-8
+
+### Changed
+
+- **js-upload-api**: console.debug networking telemetry
+
 # Latest
 
 ## 4.1.8 - 2022-09-01

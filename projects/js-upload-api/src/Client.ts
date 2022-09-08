@@ -157,6 +157,7 @@ export class Client {
      * 
      */
     private async getAuthToken(force = false): Promise<string> {
+        const t0 = Date.now();
         if (!force && this.authTokenValid()) {
             return this._token || '';  // workaround ts not recognizing that _token is set
         }
@@ -182,6 +183,7 @@ export class Client {
 
         const tok : string = response.token;
         this._token = tok;
+        console.debug('getAuthToken ms', Date.now() - t0);
         return tok;
     }
 
@@ -191,6 +193,7 @@ export class Client {
     }
 
     private async postToApi(url: string, data: any, headers: any): Promise<any> {    // eslint-disable-line @typescript-eslint/no-explicit-any
+        const t0 = Date.now();
         const resolvedFetch = this.fetch;
         console.debug('postToApi', {url, data, headers});
         const response = await resolvedFetch(this.getBaseUrl() + url, { // change this
@@ -199,7 +202,9 @@ export class Client {
             body: JSON.stringify(data),
         })
         console.debug('postToApi', {url, data, headers, response});
-        return await response.json();
+        const out = await response.json();
+        console.debug('postToApi ms', Date.now() - t0);
+        return out;
     }
 
     private getBaseHeaders(): any {    // eslint-disable-line @typescript-eslint/no-explicit-any
