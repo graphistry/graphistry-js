@@ -5,11 +5,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Development
 
-## 4.1.8beta0 - 2022-09-8
+## 4.1.8beta1 - 2022-09-9
 
 ### Changed
 
 - **js-upload-api**: console.debug networking telemetry
+
+### Fix
+- **js-upload-api**: publish js-upload-api dist/
+- **client-api**: avoid client-api/dist/dist nesting
+- **client-api**: fix default import path typo
+
 
 # Latest
 
