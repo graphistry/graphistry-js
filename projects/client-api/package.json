@@ -12,8 +12,8 @@
     },
     "default": "./dist/index.full.esm.min.js"
   },
-  "main": "dist/index.cjs.full.min.js",
-  "module": "dist/index.esm.full.min.js",
+  "main": "dist/index.full.cjs.min.js",
+  "module": "dist/index.full.esm.min.js",
   "source": "src/index.js",
   "files": [
     "dist",
