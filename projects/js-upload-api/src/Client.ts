@@ -64,7 +64,22 @@ export class Client {
     public stopFromLoading: boolean;
 
 
-    private _getAuthTokenPromise?: Promise<string>;  // undefined if not configured
+    public _getAuthTokenPromise?: Promise<string>;  // undefined if not configured
+    private _getAuthUrlPromise?: Promise<string>; //redirect url for iframes
+    private _getAuthUrlSync?: string; //redirect url for iframes, undefined until defined
+    public async getRedirectUrl() {
+        if (!this._getAuthUrlPromise) {
+            throw new Error('getRedirectUrl called before ssoLogin');
+        }
+        const url = await this._getAuthUrlPromise;
+        return url;
+    }
+    public getRedirectUrlSync() {
+        if (!this._getAuthUrlPromise) {
+            throw new Error('getRedirectUrlSync called before ssoLogin');
+        }
+        return this._getAuthUrlSync;
+    }
 
     private _token?: string;
 
@@ -86,7 +101,7 @@ export class Client {
         agent = '@graphistry/js-upload-api',
         isSSO = false, 
         authenticated = false,
-        stopFromLoading = false
+        stopFromLoading = false,
     ) {
         this.isSSO = isSSO;
         this.authenticated = authenticated;
@@ -99,12 +114,10 @@ export class Client {
         this.version = version;
         this.agent = agent;
         this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
-        if (isSSO && authenticated) {
-            this._getAuthTokenPromise = this.ssoLogin();
-        }
-        else if (this.isServerConfigured()) {
+        if (isSSO) { // defer token fetch to manual interaction
+        } else if (this.isServerConfigured()) {
             this._getAuthTokenPromise = this.getAuthToken();
-    }
+        }
 }
 
     /**
@@ -181,29 +194,27 @@ export class Client {
         return new Promise(resolve => setTimeout(resolve, ms));
       }  
       //TODO cancel if new client
-    public async ssoLogin(): Promise<any> {   // keep calling to api based on rate limit
+    public async ssoLoginHelper(authResponse: any): Promise<any> {   // keep calling to api based on rate limit
         //TODO validate input
-        console.log('ssoLogin before the authentication, youre number ?')
-        if (this.authenticated && this.stopFromLoading) {
-        const state = await this.getAuthUrl();   
-        const url = state.auth_url;
+        //const state = await this.getAuthUrl();   // fix indentation
+        const url = authResponse.auth_url;
         console.log(url); //this is auth
-        console.log(state.state);
+        console.log(authResponse.state);
         const startedMS = Date.now();
    
-        await this.delay(200); //short initial delay as may already be logged in
+        await this.delay(200);//short initial delay as may already be logged in
         while(true) {
-            console.log('later in the ssologin loop, youre number ?')
-            await this.delay(20000);
-            const response = await (this.fetch)(`https://eks-skinny.grph.xyz/api/v2/o/sso/oidc/jwt/${state.state}/`, {
+            await this.delay(10000);
+            const response = await (this.fetch)(`https://eks-dev.grph.xyz/api/v2/o/sso/oidc/jwt/${authResponse.state}/`, {
                 method: 'GET', 
             });
-            await this.delay(15000);
+            await this.delay(6000);
             console.log('authenticated');
             console.info('ssoLogin response');
             const data = await response.json(); // only do this if theyre done being authenticated/logged in
             if (data) { //TODO and whatever success conditions
                 console.log('data with good jwt', data);
+                const jwtToken = data.data.token;
                 data['data']['auth_url'] = url;
                 return data;
             }
@@ -213,10 +224,17 @@ export class Client {
                 throw new Error('sso login timed out');
             }
             await this.delay(1000);
-            }
-        }
+        } 
     }
 
+    public async ssoLogin(authResponse: any): Promise<any> {
+        const auth = this.ssoLoginHelper(authResponse);
+        this._getAuthTokenPromise = auth.then(data =>data.data.token);
+        this._getAuthUrlPromise= auth.then(data => {
+            this._getAuthUrlSync = data.data.auth_url;
+            return data.data.auth_url;
+        });
+    }
     
 
             /*
@@ -286,7 +304,7 @@ export class Client {
         const org = ''; // change to input of user
         const idp = ''; // change to input of user
 
-        const noOrgOrIdp = '/api/v2/g/sso/oidc/login/'; // sso-org + gokta should be var/ input from screen
+        const noOrgOrIdp = 'api/v2/g/sso/oidc/login/'; // sso-org + gokta should be var/ input from screen
         const onlyOrg = `api/v2/o/${org}/sso/oidc/login/`;
         const orgAndIdp = `api/v2/o/${org}/sso/oidc/login/${idp}/`; 
             if ( org !== '' && idp !== '' ) { //
@@ -304,7 +322,6 @@ export class Client {
         // eslint-disable-next-line prefer-const
 
         if(this.authenticated) {
-            console.log('authHelper very early, youre number ? ')
         const authCallback =  await this.fetch( url, { // this fetch not a function
              method: 'POST',
              headers,
@@ -332,14 +349,16 @@ export class Client {
     public async getAuthUrl(): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
         console.debug('testing authResponse is running');
         // eslint-disable-next-line prefer-const
+        const testingEndpoint = 'api/v2/o/sso-org/sso/oidc/login/';
         const url = this.getBaseAuthUrl() + this.userLoginInfo(); 
+        console.debug('checking correct url', url);
         const response = await this.getAuthUrlHelper( 
         url, // getting the auth url
         { }, 
         this.getBaseHeaders(), //headers
      )
          //this.authUrl = response.then(data => data.data.auth_url);
-        console.log('getAUTHURL youre number ?')
+        
         console.debug('getAuthUrl authResponse resolved', { response });
         console.debug('this is the auth link', response.data.auth_url); // delete 
         return await response.data
@@ -361,8 +380,8 @@ export class Client {
         return headers;
     }
 
-     public getBaseAuthUrl(): string {
-         return 'https://eks-skinny.grph.xyz';
+    public getBaseAuthUrl(): string {
+        return 'https://eks-dev.grph.xyz/';
     }
 
     private getBaseUrl(): string {
