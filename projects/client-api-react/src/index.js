@@ -488,16 +488,32 @@ function Graphistry(props) {
         (session ? `&session=${session}` : ``) +
         (workbook ? `&workbook=${workbook}` : ``);
 
-    const url = `${graphistryHost || ''}/graph/graph.html${'' // || accounts/login/jwt/?token=<jwt_token>&next=<target redirect url>.
+    var url, redirectUrl;
+    if(dataset && client.isSSO){    
+        url = `/graph/graph.html${'' // || accounts/login/jwt/?token=<jwt_token>&next=<target redirect url>.
+            }?play=${playNormalized
+            }&info=${showInfo
+            }&splashAfter=${showSplashScreen
+            }&dataset=${encodeURIComponent(dataset)
+            }${optionalParams}`;
+        
+        redirectUrl = graphistryHost + `/accounts/login/jwt/?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImRlc0BncmFwaGlzdHJ5LmNvbSIsImlhdCI6MTY2NTA2MTY4OSwiZXhwIjoxNjY1MDY1Mjg5LCJqdGkiOiI1OTY3YjhiMS1iYmJiLTQ1MmMtOGM4NS0zZGE0ZmI0NmMyZWEiLCJ1c2VyX2lkIjozLCJvcmlnX2lhdCI6MTY2NTA2MTY4OX0.AnlRiYXMzOHyfxK-XJUljrk0EurN4e_Jl7-GVO1N2Bw&next=${url}`; // `accounts/login/jwt/?token=${client.getSSO()}&next=${url}`;
+        console.log('jwt token', client.jwtToken)
+    }
+    else{
+
+        url = `${'https://hub.graphistry.com/' || ''}/graph/graph.html${'' // || accounts/login/jwt/?token=<jwt_token>&next=<target redirect url>.
         }?play=${playNormalized
         }&info=${showInfo
         }&splashAfter=${showSplashScreen
         }&dataset=${encodeURIComponent(dataset)
         }${optionalParams}`;
-
-    console.log('are we hitting here?')
-    const redirectUrl = client.getSSO() + url; // `accounts/login/jwt/?token=${client.getSSO()}&next=${url}`;
+        //redirectUrl = graphistryHost + `/accounts/login/jwt/?token=${client._getAuthTokenPromise}&next=${newURL}`; // `accounts/login/jwt/?token=${client.getSSO()}&next=${url}`;
+    }
+    
     console.log('redirectUrl', redirectUrl);
+
+
 
     //Initial frame load and settings
     const iframeRef = generateIframeRef({
