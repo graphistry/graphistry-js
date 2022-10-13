@@ -261,7 +261,7 @@ export class Dataset {
      * @returns Promise that resolves when the dataset is uploaded
      */
     public async upload(client: Client): Promise<Dataset> {
-
+        const t0 = Date.now();
         if (!client) {
             throw new Error('No client provided');
         }
@@ -294,13 +294,14 @@ export class Dataset {
         };
         const bindings = { ...fileBindings, ...this.bindings };
         await this.createDataset(client, bindings);
-
+        console.debug('Created and uploaded dataset', this._datasetID, Date.now() - t0);
         return this;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
 
     private async createDataset(client: Client, bindings: Record<string, unknown>): Promise<string> {
+        const t0 = Date.now();
         this.fillMetadata(bindings, client);
         const dataJsonResults = await client.post('api/v2/upload/datasets/', bindings);
         this._createDatasetResponse = dataJsonResults;
@@ -310,6 +311,7 @@ export class Dataset {
         if (!datasetID) {
             throw new Error('Unexpected dataset response, check dataset._createDatasetResponse');
         }
+        console.debug('Created dataset', datasetID, Date.now() - t0);
         return datasetID;
     }
 
