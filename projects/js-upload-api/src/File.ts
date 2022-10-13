@@ -215,17 +215,19 @@ export class File {
      * @returns 
      */
     public async createFile(client : Client, force = false): Promise<any | boolean> {
+        const t0 = Date.now();
         if (!force && this._fileCreated) {
             console.debug('File already created, skipping');
             return this._fileCreated;
         }
-        console.debug('Creating file');
+        console.debug(this.createOpts, 'Creating file');
 
         const fileJsonResults = await client.post('api/v2/files/', {file_type: this.fileFormat, ...this.createOpts});
         console.debug('File creation response:', fileJsonResults);
         this._fileCreateResponse = fileJsonResults;
         this._fileID = fileJsonResults.file_id;
         this._fileCreated = !!fileJsonResults.file_id;
+        console.debug(`File creation took ${Date.now() - t0} ms`, 'fileType', this.type, 'fileID', this._fileID);
         return fileJsonResults;
     }
 
@@ -239,6 +241,7 @@ export class File {
      * @returns 
      */
     public async uploadData(client : Client, force = false): Promise<any | boolean> {
+        const t0 = Date.now();
         if (!force && this._fileUploaded) {
             return this._fileUploaded;
         }
@@ -249,6 +252,7 @@ export class File {
         );
         this._fileUploadResponse = results;
         this._fileUploaded = !!results.is_uploaded;
+        console.debug(`File upload took ${Date.now() - t0} ms`, 'fileType', this.type, 'fileID', this._fileID);
         return results;
     }
 
