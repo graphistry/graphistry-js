@@ -385,6 +385,7 @@ export class Client {
     }
 
     private getBaseUrl(): string {
-        return `${this.protocol}://${this.host}/`;
+        return 'https://eks-dev.grph.xyz/';
+        // return `${this.protocol}://${this.host}/`;
     }
 }
