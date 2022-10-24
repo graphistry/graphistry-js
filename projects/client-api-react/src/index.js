@@ -497,8 +497,7 @@ function Graphistry(props) {
             }&dataset=${encodeURIComponent(dataset)
             }${optionalParams}`;
         
-        redirectUrl = graphistryHost + `/accounts/login/jwt/?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImRlc0BncmFwaGlzdHJ5LmNvbSIsImlhdCI6MTY2NTA2MTY4OSwiZXhwIjoxNjY1MDY1Mjg5LCJqdGkiOiI1OTY3YjhiMS1iYmJiLTQ1MmMtOGM4NS0zZGE0ZmI0NmMyZWEiLCJ1c2VyX2lkIjozLCJvcmlnX2lhdCI6MTY2NTA2MTY4OX0.AnlRiYXMzOHyfxK-XJUljrk0EurN4e_Jl7-GVO1N2Bw&next=${url}`; // `accounts/login/jwt/?token=${client.getSSO()}&next=${url}`;
-        console.log('jwt token', client.jwtToken)
+        redirectUrl = 'eks-dev.grph.xyz' + `/accounts/login/jwt/?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImRlc0BncmFwaGlzdHJ5LmNvbSIsImlhdCI6MTY2NTA2MTY4OSwiZXhwIjoxNjY1MDY1Mjg5LCJqdGkiOiI1OTY3YjhiMS1iYmJiLTQ1MmMtOGM4NS0zZGE0ZmI0NmMyZWEiLCJ1c2VyX2lkIjozLCJvcmlnX2lhdCI6MTY2NTA2MTY4OX0.AnlRiYXMzOHyfxK-XJUljrk0EurN4e_Jl7-GVO1N2Bw&next=${url}`; // `accounts/login/jwt/?token=${client.getSSO()}&next=${url}`;
     }
     else{
 
