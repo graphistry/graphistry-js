@@ -3,9 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# Development
+## Development
 
-# Latest
+## 4.2.0 - 2022-10-29
+
+### Fix
+
+- **js-upload-api**: publish js-upload-api dist/
+- **client-api**: avoid client-api/dist/dist nesting
+- **client-api**: fix default import path typo
+- **client-app**: Update Falcor to gain `uuid@9` upgrade to work around cra / webpack 5 bundler polyfill bugs (crypto, sessions)
+- **client-app-react**: Update Falcor, `uuid@9` to work around cra / webpack 5 bundler polyfill bugs (crypto, sessions)
+- **infra**: Extract node-api, js-upload-api dist/ folders
 
 ## 4.1.8 - 2022-09-01
 

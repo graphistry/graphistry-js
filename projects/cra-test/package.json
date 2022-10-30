@@ -1,10 +1,10 @@
 {
   "name": "@graphistry/client-react-app-cra-test",
-  "version": "4.1.8",
+  "version": "4.2.0",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.2",
-    "@graphistry/client-api-react": "^4.1.8",
+    "@graphistry/client-api-react": "^4.2.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^14.2.0",
