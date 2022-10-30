@@ -149,7 +149,7 @@ export const setFilters = (args) => {
                     () => setMessages(arr => arr.concat(['Completed']))
         );
         ////////
-        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+        return () => sub.unsubscribe ? sub.unsubscribe() : null;
     }, [iframe]);
     
     return (
@@ -182,14 +182,14 @@ export const togglePanelFilters = (args) => {
                     () => setMessages(arr => arr.concat(['Completed']))
         );
         ////////
-        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+        return () => sub.unsubscribe ? sub.unsubscribe() : null;
     }, [iframe]);
     
     return (
         <iframe 
             {...defaultIframeProps}
             ref={iframe}
-            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            src={lesMisNoPlayNoSplash}
             {...args}
         />
     );
@@ -218,7 +218,7 @@ export const HideChrome = (args) => {
                     () => setMessages(arr => arr.concat(['Completed']))
         );
         ////////
-        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+        return () => sub.unsubscribe ? sub.unsubscribe() : null;
     }, [iframe]);
 
     return (
@@ -259,7 +259,7 @@ export const radialLayoutAndAxis = (args) => {
                     () => setMessages(arr => arr.concat(['Completed']))
         );
         ////////
-        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+        return () => sub.unsubscribe ? sub.unsubscribe() : null
     }, [iframe]);
 
     return (
@@ -319,7 +319,7 @@ export const verticalLayoutAndAxis = (args) => {
                     () => setMessages(arr => arr.concat(['Completed']))
         );
         ////////
-        return () => sub.unsubscribe();  //FIXME  throws 'sub.unsubscribe() is not a function'
+        return () => sub.unsubscribe ? sub.unsubscribe() : null
     }, [iframe]);
 
     return (
