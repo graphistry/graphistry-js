@@ -1,18 +1,18 @@
 {
   "name": "test18",
-  "version": "4.1.8",
+  "version": "4.2.0",
   "private": true,
   "dependencies": {
-    "@graphistry/client-api-react": "^4.1.8",
+    "@graphistry/client-api-react": "^4.2.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^13.5.0",
+    "crypto-browserify": "3.12.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4",
-    "crypto-browserify": "3.12.0",
-    "stream-browserify": "3.0.0"
+    "stream-browserify": "3.0.0",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
