@@ -58,7 +58,7 @@ echo
 echo "---------------"
 echo
 echo "[[ Generated JS binaries ]]"
-du -ah $DIST_PATH | grep "client-api/dist\|client-api-react/dist|node-api/dist"
+du -ah $DIST_PATH | grep "client-api/dist\|client-api-react/dist\|node-api/dist\|js-upload-api/dist"
 echo
 echo "Successfully exiting with return code 0"
 exit 0
