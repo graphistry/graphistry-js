@@ -7,6 +7,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # Latest
 
+## 4.2.0 - 2022-10-29
+
+### Fix
+
+- **client-app**: Update Falcor to gain `uuid@9` upgrade to work around cra / webpack 5 bundler polyfill bugs (crypto, sessions)
+- **client-app-react**: Update Falcor, `uuid@9` to work around cra / webpack 5 bundler polyfill bugs (crypto, sessions)
+
 ## 4.1.8 - 2022-09-01
 
 ### Infra
