@@ -73,10 +73,7 @@
     "crypto-browserify": "3.12.0",
     "prop-types": ">=15.6.0",
     "shallowequal": "1.1.0",
-    "uuid": "8.3.2"
-  },
-  "browser": {
-    "crypto": "crypto-browserify"
+    "uuid": "9.0.0"
   },
   "peerDependencies": {
     "react": ">=16.8.6",
