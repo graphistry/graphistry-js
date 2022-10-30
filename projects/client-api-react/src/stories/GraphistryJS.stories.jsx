@@ -23,9 +23,14 @@ import {
 } from '@graphistry/client-api';
 import { addExclusion } from '@graphistry/client-api/src';
 
+const basePath = 'https://hub.graphistry.com';
+const lesMisPath = `${basePath}/graph/graph.html?dataset=Miserables`;
+const lesMisConfigured = `${lesMisPath}&play=1000`;
+const lesMisNoPlayNoSplash = `${lesMisPath}&play=0&splashAfter=false`;
+
 function GraphistryIFrame (args) {
     return <iframe
-        src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=1000"}
+        src={lesMisConfigured}
         {...args}
     />;
 }
@@ -48,7 +53,7 @@ const defaultIframeProps = {
 
 //no default args
 export const PredefinedDataset = (args) => <iframe
-    src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=1000"}
+    src={lesMisConfigured}
     {...args}
 />;
 
@@ -76,7 +81,7 @@ export const InstantiateGraphistryJS = (args) => {
         <iframe
             {...defaultIframeProps}
             ref={iframe}
-            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            src={`${lesMisPath}&play=0&splashAfter=false`}
             {...args}
         />
         </div>
@@ -120,7 +125,7 @@ export const SetSettings = (args) => {
         <iframe
             {...defaultIframeProps}
             ref={iframe}
-            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            src={lesMisNoPlayNoSplash}
             {...args}
         />
         </div>
@@ -156,7 +161,7 @@ export const setFilters = (args) => {
         <iframe 
             {...defaultIframeProps}
             ref={iframe}
-            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            src={lesMisNoPlayNoSplash}
             {...args}
         />
     );
@@ -225,7 +230,7 @@ export const HideChrome = (args) => {
         <iframe
             {...defaultIframeProps}
             ref={iframe}
-            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            src={lesMisNoPlayNoSplash}
             {...args}
         />
     );
@@ -266,7 +271,7 @@ export const radialLayoutAndAxis = (args) => {
         <iframe
             {...defaultIframeProps}
             ref={iframe}
-            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&&play=0&splashAfter=false"}
+            src={lesMisNoPlayNoSplash}
             {...args}
         />
     );
@@ -326,7 +331,7 @@ export const verticalLayoutAndAxis = (args) => {
         <iframe
             {...defaultIframeProps}
             ref={iframe}
-            src={"https://hub.graphistry.com/graph/graph.html?dataset=Miserables&play=0&splashAfter=false"}
+            src={lesMisNoPlayNoSplash}
             {...args}
         />
     );
