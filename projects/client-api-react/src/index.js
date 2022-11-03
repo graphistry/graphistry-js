@@ -451,7 +451,8 @@ function Graphistry(props) {
         showLoadingIndicator, showSplashScreen,
         graphistryHost, type = 'vgraph',
         controls = '', workbook, session,
-        tolerateLoadErrors
+        tolerateLoadErrors,
+        jwtToken, isSSO=false,
     } = props;
 
     const [loading, setLoading] = useState(!!props.loading);
@@ -483,25 +484,29 @@ function Graphistry(props) {
     }, [prevSub, gSub]);
 
     const playNormalized = typeof play === 'boolean' ? play : (play | 0) * 1000;
-    const optionalParams = (type ? `&type=${type}` : ``) +
-        (controls ? `&controls=${controls}` : ``) +
-        (session ? `&session=${session}` : ``) +
-        (workbook ? `&workbook=${workbook}` : ``);
+    const amp = isSSO ? '%26' : '&';
+    const optionalParams = (type ? `${amp}type=${type}` : ``) +
+        (controls ? `${amp}controls=${controls}` : ``) +
+        (session ? `${amp}session=${session}` : ``) +
+        (workbook ? `${amp}workbook=${workbook}` : ``);
 
     var url, redirectUrl;
-    if(dataset && client.isSSO){    
+    if (isSSO) {
+        if (!jwtToken) {
+            throw new Error('jwtToken must be passed in for SSO')
+        }
         url = `/graph/graph.html${'' // || accounts/login/jwt/?token=<jwt_token>&next=<target redirect url>.
             }?play=${playNormalized
-            }&info=${showInfo
-            }&splashAfter=${showSplashScreen
-            }&dataset=${encodeURIComponent(dataset)
+            }%26info=${showInfo
+            }%26splashAfter=${showSplashScreen
+            }%26dataset=${encodeURIComponent(dataset)
             }${optionalParams}`;
         
-        redirectUrl = 'eks-dev.grph.xyz' + `/accounts/login/jwt/?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImRlc0BncmFwaGlzdHJ5LmNvbSIsImlhdCI6MTY2NTA2MTY4OSwiZXhwIjoxNjY1MDY1Mjg5LCJqdGkiOiI1OTY3YjhiMS1iYmJiLTQ1MmMtOGM4NS0zZGE0ZmI0NmMyZWEiLCJ1c2VyX2lkIjozLCJvcmlnX2lhdCI6MTY2NTA2MTY4OX0.AnlRiYXMzOHyfxK-XJUljrk0EurN4e_Jl7-GVO1N2Bw&next=${url}`; // `accounts/login/jwt/?token=${client.getSSO()}&next=${url}`;
-    }
-    else{
+        //redirectUrl = 'https://test-2-39-31-a.grph.xyz' + `/accounts/login/jwt/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRlc0BncmFwaGlzdHJ5LmNvbSIsImlhdCI6MTY2NzQyNzE0MiwiZXhwIjoxNjY3NDMwNzQyLCJqdGkiOiIxZjhmZTMyMy01YWIyLTRkMDAtYThiOS1jMGU1NGQwZThjNGMiLCJ1c2VyX2lkIjo3NTYyLCJvcmlnX2lhdCI6MTY2NzQyNzE0Mn0.ekNDxoEvSbnS3ZDqhPpqRyLI-8-DfkTOFv5d6BRn8_8&next=${url}`; // `accounts/login/jwt/?token=${client.getSSO()}&next=${url}`;
+        redirectUrl = `${graphistryHost}/accounts/login/jwt/?token=${jwtToken}&next=${url}`;
+    } else{
 
-        url = `${'https://hub.graphistry.com/' || ''}/graph/graph.html${'' // || accounts/login/jwt/?token=<jwt_token>&next=<target redirect url>.
+        url = `${'https://hub.graphistry.com' || ''}/graph/graph.html${'' // || accounts/login/jwt/?token=<jwt_token>&next=<target redirect url>.
         }?play=${playNormalized
         }&info=${showInfo
         }&splashAfter=${showSplashScreen
