@@ -67,6 +67,8 @@ export class Client {
     public _getAuthTokenPromise?: Promise<string>;  // undefined if not configured
     private _getAuthUrlPromise?: Promise<string>; //redirect url for iframes
     private _getAuthUrlSync?: string; //redirect url for iframes, undefined until defined
+    private _authTokenResolve?: (value: string) => void;
+    private _authTokenReject?: (reason?: any) => void;  // eslint-disable-line @typescript-eslint/no-explicit-any
     public async getRedirectUrl() {
         if (!this._getAuthUrlPromise) {
             throw new Error('getRedirectUrl called before ssoLogin');
@@ -114,7 +116,12 @@ export class Client {
         this.version = version;
         this.agent = agent;
         this.clientProtocolHostname = clientProtocolHostname || `${protocol}://${host}`;
+
         if (isSSO) { // defer token fetch to manual interaction
+            this._getAuthTokenPromise = new Promise((resolve, reject) => {
+                this._authTokenResolve = resolve;
+                this._authTokenReject = reject;
+            })
         } else if (this.isServerConfigured()) {
             this._getAuthTokenPromise = this.getAuthToken();
         }
@@ -139,8 +146,17 @@ export class Client {
 
 
     public isServerConfigured(): boolean {
-        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host, isSSO: this.isSSO});
-        return ((this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '') || this.isSSO;
+        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host, isSSO: this.isSSO, tokP: this._getAuthTokenPromise});
+        if (this.isSSO) {
+            if (this.host && this._getAuthTokenPromise) {
+                console.debug('host+tokp so in flight or already resolved tok');
+                return true;
+            } else {
+                console.debug('no host or user not began sso process yet');
+                return false;
+            }
+        }
+        return ((this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '') || ( (this.host || '') !== '' && this.isSSO);
     }
 
     public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string, isSSO?: boolean, authenticated?: boolean, stopFromLoading?: boolean): boolean {
@@ -205,7 +221,7 @@ export class Client {
         await this.delay(200);//short initial delay as may already be logged in
         while(true) {
             await this.delay(10000);
-            const response = await (this.fetch)(`https://eks-dev.grph.xyz/api/v2/o/sso/oidc/jwt/${authResponse.state}/`, {
+            const response = await (this.fetch)(`https://test-2-39-31-a.grph.xyz/api/v2/o/sso/oidc/jwt/${authResponse.state}/`, {
                 method: 'GET', 
             });
             await this.delay(6000);
@@ -213,6 +229,7 @@ export class Client {
             console.info('ssoLogin response');
             const data = await response.json(); // only do this if theyre done being authenticated/logged in
             if (data) { //TODO and whatever success conditions
+                this.authenticated = true;
                 console.log('data with good jwt', data);
                 const jwtToken = data.data.token;
                 data['data']['auth_url'] = url;
@@ -229,7 +246,17 @@ export class Client {
 
     public async ssoLogin(authResponse: any): Promise<any> {
         const auth = this.ssoLoginHelper(authResponse);
-        this._getAuthTokenPromise = auth.then(data =>data.data.token);
+        console.log('starting _getAuthTokenPromise');
+
+        auth.then(data => {
+            const token = data.data.token;
+            console.debug('recieved SSO token, notifying subscribers', {token})
+            this._authTokenResolve && this._authTokenResolve(token);
+        }).catch(err => {
+            console.error('SSO failed, notifying subscribers', {err});
+            this._authTokenReject && this._authTokenReject(err);
+        })
+
         this._getAuthUrlPromise= auth.then(data => {
             this._getAuthUrlSync = data.data.auth_url;
             return data.data.auth_url;
@@ -261,16 +288,17 @@ export class Client {
 
         //Throw exception if invalid username or password
         if (!this.isServerConfigured()) {
-            console.debug('current config', {username: this.username, _password: this._password, host: this.host});
-            throw new Error('Invalid username or password');
+            console.debug('incomplete current config', {username: this.username, _password: this._password, host: this.host});
+            throw new Error('Invalid username or password, or SSO not called not completed yet');
         }
 
         if (!force && this._getAuthTokenPromise) {
-            console.debug('reusing outstanding auth promise');
+            console.debug('reusing outstanding auth promise', this._getAuthTokenPromise);
             return await this._getAuthTokenPromise;
         }
+
         console.debug('just checking if updating')
-        console.debug('getAuthToken', {username: this.username, _password: this._password, host: this.host});
+        console.debug('getAuthToken', {force, username: this.username, _password: this._password, host: this.host, configured: this.isServerConfigured(), tokProm: this._getAuthTokenPromise});
         const response = await this.postToApi(
             'api/v2/auth/token/generate',
             { username: this.username, password: this._password },
@@ -321,13 +349,19 @@ export class Client {
         // console.debug('getAuthUrl', { url, data, headers});
         // eslint-disable-next-line prefer-const
 
-        if(this.authenticated) {
+        //  if(this.authenticated) {
+        console.log('getAuthUrlHelper fetching sso callback', {authenticated: this.authenticated});
         const authCallback =  await this.fetch( url, { // this fetch not a function
              method: 'POST',
              headers,
              body: JSON.stringify(data),
-      })
-      .then(async (response:any) => await response.json())  // eslint-disable-line @typescript-eslint/no-explicit-any 
+        })
+      .then(async (response:any) => {
+        console.log('waiting for auth response', {response});
+        const out = await response.json();
+        console.log('response out', {out});
+        return out;
+      })  // eslint-disable-line @typescript-eslint/no-explicit-any 
       .then(async (data:any) => { // eslint-disable-line @typescript-eslint/no-explicit-any 
         console.log('authhelper once youve gotten data, youre number ? ')
         console.log({"data":data,"State":data.data.state,"_authUrl":data.data.auth_url, "status": data.status});
@@ -335,15 +369,16 @@ export class Client {
             console.error('Error in getting auth url', {url, data, headers});
             throw new Error('Error fetching popup window: non-OK server response');
         }
-        console.debug('This is data', data.status); 
+        console.log('This is data', data.status); 
         return await data;
       }) 
       .catch((error: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         console.error('getAuthUrl response error', error); //TODO notify user of error
         throw new Error('Error fetching popup window');
       });
+      console.log('getAuthHelper out pre', {authCallback});
       return await authCallback;
-    }
+    //}
     }
 
     public async getAuthUrl(): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -381,11 +416,11 @@ export class Client {
     }
 
     public getBaseAuthUrl(): string {
-        return 'https://eks-dev.grph.xyz/';
+        return 'https://test-2-39-31-a.grph.xyz/';
     }
 
     private getBaseUrl(): string {
-        return 'https://eks-dev.grph.xyz/';
+        return 'https://test-2-39-31-a.grph.xyz/';
         // return `${this.protocol}://${this.host}/`;
     }
 }
