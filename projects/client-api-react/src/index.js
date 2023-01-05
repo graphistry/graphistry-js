@@ -9,7 +9,7 @@ import * as gAPI from '@graphistry/client-api';
 import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings, panelNames } from './bindings.js';
-import { Client as ClientBase } from '@graphistry/client-api';
+import { Client as ClientBase, selectionUpdates } from '@graphistry/client-api';
 
 export const Client = ClientBase;
 
@@ -96,7 +96,10 @@ const propTypes = {
 
     ticks: PropTypes.number,
 
-    tolerateLoadErrors: PropTypes.bool
+    tolerateLoadErrors: PropTypes.bool,
+
+    onUpdateObservableG: PropTypes.func,
+    onSelectionUpdate: PropTypes.func
 };
 
 const defaultProps = {
@@ -354,7 +357,7 @@ function handleUpdates({ g, isFirstRun, axesMap, props }) {
 
 // Regenerate on url change
 function generateIframeRef({
-    setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
+    setLoading, setLoadingMessage, setG, setGSub, setGObs, setFirstRun,
     url, dataset, props,
     axesMap,
     iframeStyle, iframeClassName, iframeProps, allowFullScreen,
@@ -370,8 +373,8 @@ function generateIframeRef({
             setLoading(true);
             setLoadingMessage('Fetching session');
             console.debug('new iframe', typeof (iframe), { iframe, dataset, propsDataset: props.dataset });
-            const sub = (graphistryJS(iframe))
-                .pipe(
+            const source = graphistryJS(iframe);
+            const obs = source.pipe(
                     tap(g => { console.debug('new graphistryJS', g); }),
                     switchMap(
                         (g) => of(g).pipe(
@@ -404,7 +407,9 @@ function generateIframeRef({
                             catchError(exn => {
                                 console.error('error in iframe initialization', exn);
                                 return of(g.updateStateWithResult(exn));
-                            }))),
+                            })
+                        )
+                    ),
                     tap((g) => {
                         console.debug('new iframe all init updates handled, if any', g);
                         setFirstRun(false);
@@ -413,17 +418,20 @@ function generateIframeRef({
                             props.onClientAPIConnected(g);
                         }
                     }),
-                )
-                .subscribe({
-                    next(v) { console.debug('iframe init sub hit', v); },
-                    error(e) { console.error('iframe init sub error', e); },
-                    complete() { console.debug('iframe init sub complete'); }
-                });
+                );
+            const sub = obs.subscribe({
+                next(v) { console.debug('iframe init sub hit', v); },
+                error(e) { console.error('iframe init sub error', e); },
+                complete() { console.debug('iframe init sub complete'); }
+            });
             setGSub(sub);
+            setGObs(obs);
             return () => {
                 // Not called in practice; maybe only if <Graphistry> itself is unmounted?
                 console.debug('iframe unmounted!', iframe);
                 sub.unsubscribe();
+                setGSub(null); // cause the useEffect to unsubscribe
+                setGObs(null);
             }
         } else {
             console.debug('no iframe', typeof (iframe), { iframe, dataset });
@@ -448,7 +456,9 @@ function Graphistry(props) {
         showLoadingIndicator, showSplashScreen,
         graphistryHost, type = 'vgraph',
         controls = '', workbook, session,
-        tolerateLoadErrors
+        tolerateLoadErrors,
+        onUpdateObservableG,
+        onSelectionUpdate
     } = props;
 
     const [loading, setLoading] = useState(!!props.loading);
@@ -456,6 +466,7 @@ function Graphistry(props) {
     const [loadingMessage, setLoadingMessage] = useState(props.loadingMessage || '');
 
     const [g, setG] = useState(null);
+    const [gObs, setGObs] = useState(null);
     const [gSub, setGSub] = useState(null);
     const prevSub = usePrevious(gSub);
 
@@ -479,6 +490,24 @@ function Graphistry(props) {
         }
     }, [prevSub, gSub]);
 
+    useEffect(() => {
+        if (gObs && gSub && onUpdateObservableG) {
+            onUpdateObservableG({observable: gObs, subscription: gSub});
+            return () => onUpdateObservableG(null);
+        }
+    }, [gObs, onUpdateObservableG]);
+
+    useEffect(() => {
+        if (g && onSelectionUpdate) {
+            const sub = selectionUpdates(g).subscribe(
+                (v) => onSelectionUpdate(v),
+                (error) => console.error('client-api-react selectionUpdates subscription error', error)
+            );
+
+            return sub.unsubscribe;
+        }
+    }, [g, onSelectionUpdate])
+
     const playNormalized = typeof play === 'boolean' ? play : (play | 0) * 1000;
     const optionalParams = (type ? `&type=${type}` : ``) +
         (controls ? `&controls=${controls}` : ``) +
@@ -494,7 +523,7 @@ function Graphistry(props) {
 
     //Initial frame load and settings
     const iframeRef = generateIframeRef({
-        setLoading, setLoadingMessage, setG, setGSub, setFirstRun,
+        setLoading, setLoadingMessage, setG, setGSub, setGObs, setFirstRun,
         url, dataset, props,
         axesMap,
         iframeStyle, iframeClassName, iframeProps, allowFullScreen,

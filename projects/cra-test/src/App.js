@@ -1,26 +1,29 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import './App.css';
-
-import { Client, Graphistry } from '@graphistry/client-api-react';
-
+import { Graphistry } from '@graphistry/client-api-react';
 
 console.debug('app', { Graphistry, React });
 
 function App() {
-  const onSubscription = (obs, sub) => {
-    console.debug('sub', { obs, sub });
-  }
+  const onUpdateObservableG = useCallback((arg) => {
+    console.debug('CRA.onUpdateObservableG', arg, 'exor')
+  }, []);
+
+  const onSelectionUpdate = useCallback((v) => {
+    console.debug('CRA.onSelectionUpdate', v, 'exor')
+  }, []);
 
   return (
     <div className="App">
       <header className="App-header">
-        Embeded Graphistry
+        Embeded Graphistree
       </header>
       <Graphistry 
+        dataset='Miserables'
         containerClassName='Content'
-        dataset={'Miserables'}
         iframeStyle={{ height: '100%', width: '100%', border: 0 }}
-        onSubscription={onSubscription}
+        onUpdateObservableG={onUpdateObservableG}
+        onSelectionUpdate={onSelectionUpdate}
       />
     </div>
   );

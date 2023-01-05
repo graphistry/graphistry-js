@@ -1304,6 +1304,31 @@ export function updateZoom(level) {
 chainList.updateZoom = updateZoom;
 
 /**
+ * Subscribe to label change and exit events
+ * @function selectionUpdates
+ * @param {object} [cache] - An optional cache object (empty object) to use for caching label updates across subscriptions.
+ * @return {Subscription} A {@link Subscription} that can be used to stop reacting to label updates
+ * @example
+ * GraphistryJS(document.getElementById('viz'))
+ *     .pipe(
+ *          selectionUpdates,
+ *          tap((s) => {
+ *                 console.log(s);
+ *          }),
+ *     })
+ *     .subscribe();
+ */
+export function selectionUpdates(cache = {}) {
+    //FIXME cache on specific iframe
+    return cache.selectionStream || (cache.selectionStream = fromEvent(window, 'message')
+        .pipe(
+            map(o => o.data),
+            filter(o => o && o.type === 'selections-update'),
+            shareReplay({ bufferSize: 1, refCount: true })
+        ));
+}
+
+/**
  * Get or create an {@link Observable} stream of all label updates from the visualization.
  * <p>
  * The {@link Observable} returned by this method emits inner Observables, where each
@@ -1324,7 +1349,7 @@ chainList.updateZoom = updateZoom;
  * @example
  * GraphistryJS(document.getElementById('viz'))
  *     .pipe(
- *          labelUpdates(),
+ *          labelUpdates,
  *          tap(({ id, tag, pageX, pageY }) => {
  *                 // prints messages like
  *                 // > 'Label 13 added at (200, 340)'
