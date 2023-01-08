@@ -64,6 +64,8 @@ import {
     of,
     pipe,
     ReplaySubject,
+    BehaviorSubject,
+    finalize,
     retryWhen,
     scan,
     share,
@@ -1318,15 +1320,46 @@ chainList.updateZoom = updateZoom;
  *     })
  *     .subscribe();
  */
-export function selectionUpdates(cache = {}) {
+export function selectionUpdates(g) {
+    console.log('selectionUpdates cache:', g, 'exor');
+
+    const SELECTION_PATH = "workbooks.open.views.current.selection['edge','point']";
+    // const SELECTION_PATH = "workbooks.open.id";
     //FIXME cache on specific iframe
-    return cache.selectionStream || (cache.selectionStream = fromEvent(window, 'message')
+    return g.selectionStream || (g.selectionStream = new BehaviorSubject('value'))
         .pipe(
-            map(o => o.data),
-            filter(o => o && o.type === 'selections-update'),
-            shareReplay({ bufferSize: 1, refCount: true })
-        ));
+            tap((v) => {
+                const message = { type: 'subscribe', agent: 'graphistryjs', path: SELECTION_PATH };
+                console.debug('client-api.APISUB', 'message to viz', message, 'exor');
+                g.iFrame.contentWindow.postMessage(message, '*');
+                
+            }),
+            finalize(() => {
+                console.debug('client-api.APISUB', 'finalize', 'exor');
+            }),
+            switchMap(() =>
+                fromEvent(window, 'message').pipe(
+                    map(o => o.data),
+                    filter(o => o && o.type === 'update' && o.subscriptionPaths && o.subscriptionPaths.includes(SELECTION_PATH)),
+                    tap((o) => {
+                        // Update g's model
+                    }),
+                    map(o => o.jsonGraph.workbooksById.cycle.viewsById.cycle.selection),
+                    shareReplay({ bufferSize: 1, refCount: true }),
+                )
+            ),
+            tap((v) => {
+                console.debug('client-api.APISUB', 'RECIEVED SELECTION', v, 'exor');
+            })
+        );
+    // return new BehaviorSubject('value').pipe
 }
+
+
+
+
+
+
 
 /**
  * Get or create an {@link Observable} stream of all label updates from the visualization.

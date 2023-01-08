@@ -8,8 +8,10 @@ import {
     pipe,
     retryWhen,
     ReplaySubject,
+    BehaviorSubject,
     Subject,
-    timer
+    timer,
+    finalize
 } from 'rxjs';
 
 import { ajax } from 'rxjs/ajax';
@@ -57,12 +59,14 @@ export {
     scan,
     share,
     shareReplay,
+    BehaviorSubject,
     startWith,
     Subject,
     switchMap,
     take,
     takeLast,
     tap,
-    timer
+    timer,
+    finalize
 };
 

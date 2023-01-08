@@ -498,13 +498,19 @@ function Graphistry(props) {
     }, [gObs, onUpdateObservableG]);
 
     useEffect(() => {
+        console.info('client-api-react', 'useeffect', [g, onSelectionUpdate], 'exor');
         if (g && onSelectionUpdate) {
-            const sub = selectionUpdates(g).subscribe(
-                (v) => onSelectionUpdate(v),
-                (error) => console.error('client-api-react selectionUpdates subscription error', error)
-            );
+            console.info('client-api-react.APISUB', 'useeffect subscribe', 'exor');
+            const sub = selectionUpdates(g)
+                .subscribe(
+                    (v) => onSelectionUpdate(v),
+                    (error) => console.error('client-api-react selectionUpdates subscription error', error, 'exor')
+                );
 
-            return sub.unsubscribe;
+            return () => {
+                console.info('client-api-react.APISUB', 'useeffect unsubscribing', 'exor');
+                sub && sub.unsubscribe();
+            };
         }
     }, [g, onSelectionUpdate])
 
