@@ -1329,22 +1329,37 @@ export function selectionUpdates(g) {
     return g.selectionStream || (g.selectionStream = new BehaviorSubject('value'))
         .pipe(
             tap((v) => {
-                const message = { type: 'subscribe', agent: 'graphistryjs', path: SELECTION_PATH };
-                console.debug('client-api.APISUB', 'message to viz', message, 'exor');
-                g.iFrame.contentWindow.postMessage(message, '*');
-                
+                console.debug('client-api.APISUB', 'post graphistry-subscribe', 'exor');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: SELECTION_PATH }, '*');
             }),
             finalize(() => {
-                console.debug('client-api.APISUB', 'finalize', 'exor');
+                console.debug('client-api.APISUB', 'finalize post graphistry-unsubscribe', 'exor');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: SELECTION_PATH }, '*');
             }),
             switchMap(() =>
                 fromEvent(window, 'message').pipe(
                     map(o => o.data),
-                    filter(o => o && o.type === 'update' && o.subscriptionPaths && o.subscriptionPaths.includes(SELECTION_PATH)),
-                    tap((o) => {
-                        // Update g's model
+                    tap(o => console.log('client-api.APISUB', 'recieved message', o, 'exor')),
+                    filter(o => o && o.type === 'graphistry-update' && o.path === SELECTION_PATH),
+                    map(o => o.data),
+                    tap(({ edge, point}) => {
+                        g.models.model.setCache({
+                            json: {
+                                workbooks: {
+                                    open: {
+                                        views: {
+                                            current: {
+                                                selection: {
+                                                    edge: edge,
+                                                    point: point
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
                     }),
-                    map(o => o.jsonGraph.workbooksById.cycle.viewsById.cycle.selection),
                     shareReplay({ bufferSize: 1, refCount: true }),
                 )
             ),
@@ -1352,7 +1367,6 @@ export function selectionUpdates(g) {
                 console.debug('client-api.APISUB', 'RECIEVED SELECTION', v, 'exor');
             })
         );
-    // return new BehaviorSubject('value').pipe
 }
 
 

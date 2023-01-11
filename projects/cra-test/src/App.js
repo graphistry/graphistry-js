@@ -16,7 +16,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        Embeded Graphistree
+        Embeded Graphistry
       </header>
       <Graphistry 
         dataset='Miserables'

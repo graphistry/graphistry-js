@@ -504,7 +504,7 @@ function Graphistry(props) {
             const sub = selectionUpdates(g)
                 .subscribe(
                     (v) => onSelectionUpdate(v),
-                    (error) => console.error('client-api-react selectionUpdates subscription error', error, 'exor')
+                    (error) => console.error('client-api-react.APISUB selectionUpdates subscription error', error, 'exor')
                 );
 
             return () => {
