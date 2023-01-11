@@ -9,7 +9,7 @@ import * as gAPI from '@graphistry/client-api';
 import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings, panelNames } from './bindings.js';
-import { Client as ClientBase, selectionUpdates } from '@graphistry/client-api';
+import { Client as ClientBase, selectionUpdates, labelUpdates } from '@graphistry/client-api';
 
 export const Client = ClientBase;
 
@@ -99,7 +99,8 @@ const propTypes = {
     tolerateLoadErrors: PropTypes.bool,
 
     onUpdateObservableG: PropTypes.func,
-    onSelectionUpdate: PropTypes.func
+    onSelectionUpdate: PropTypes.func,
+    onLabelsUpdate: PropTypes.func
 };
 
 const defaultProps = {
@@ -458,7 +459,8 @@ function Graphistry(props) {
         controls = '', workbook, session,
         tolerateLoadErrors,
         onUpdateObservableG,
-        onSelectionUpdate
+        onSelectionUpdate,
+        onLabelsUpdate
     } = props;
 
     const [loading, setLoading] = useState(!!props.loading);
@@ -498,9 +500,8 @@ function Graphistry(props) {
     }, [gObs, onUpdateObservableG]);
 
     useEffect(() => {
-        console.info('client-api-react', 'useeffect', [g, onSelectionUpdate], 'exor');
+        console.info('client-api-react.APISUB', 'useeffect', Boolean(g && onSelectionUpdate), [g, onSelectionUpdate], 'exor');
         if (g && onSelectionUpdate) {
-            console.info('client-api-react.APISUB', 'useeffect subscribe', 'exor');
             const sub = selectionUpdates(g)
                 .subscribe(
                     (v) => onSelectionUpdate(v),
@@ -513,6 +514,22 @@ function Graphistry(props) {
             };
         }
     }, [g, onSelectionUpdate])
+
+    useEffect(() => {
+        console.info('client-api-react.APISUB', 'useeffect', Boolean(g && onLabelsUpdate), [g, onLabelsUpdate], 'exor');
+        if (g && onLabelsUpdate) {
+            const sub = labelUpdates(g)
+                .subscribe(
+                    (v) => onLabelsUpdate(v),
+                    (error) => console.error('client-api-react.APISUB labelUpdates subscription error', error, 'exor')
+                );
+
+            return () => {
+                console.info('client-api-react.APISUB', 'useeffect unsubscribing', 'exor');
+                sub && sub.unsubscribe();
+            };
+        }
+    }, [g, onLabelsUpdate])
 
     const playNormalized = typeof play === 'boolean' ? play : (play | 0) * 1000;
     const optionalParams = (type ? `&type=${type}` : ``) +
