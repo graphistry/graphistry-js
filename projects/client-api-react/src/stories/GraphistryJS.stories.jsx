@@ -21,9 +21,8 @@ import {
     tap,
     delay
 } from '@graphistry/client-api';
-import { addExclusion } from '@graphistry/client-api/src';
 
-const basePath = 'https://hub.graphistry.com';
+const basePath = 'http://0.0.0.0:3000';
 const lesMisPath = `${basePath}/graph/graph.html?dataset=Miserables`;
 const lesMisConfigured = `${lesMisPath}&play=1000`;
 const lesMisNoPlayNoSplash = `${lesMisPath}&play=0&splashAfter=false`;
@@ -87,6 +86,50 @@ export const InstantiateGraphistryJS = (args) => {
         </div>
     );
 }
+
+// export const GraphistryJSSubscribeToSelection = (args) => {
+//     const iframe = useRef(null);
+//     const [messages, setMessages] = useState(['loading...']);
+
+//     const pushMessage = (s) => setMessages(arr => {
+//         arr.push(s);
+//         return arr;
+//     });
+    
+//     useEffect(() => {
+//         //////// Instantiate GraphistryJS for an iframe
+//         const subA = (
+//             graphistryJS(iframe.current)
+//                 .pipe(
+//                     tap(() => pushMessage('A: graphistryJS instantiated')),
+
+//                 )
+//                 .subscribe(
+//                     () => {},
+//                     (err) => pushMessage(`A: Error: ${err}`),
+//                     () => pushMessage('A: Completed')
+//         ));
+
+//         // const subB = (
+//         //     graphistryJS(iframe.current)
+//         // )
+//         ////////
+//         return () => subA.unsubscribe();
+//     }, [iframe]);
+    
+//     return (
+//         <div>
+//         <h3>Instantiate GraphistryJS session for iframe</h3>
+//         <ol>{ messages.map((m, i) => <li key={i}>{m}</li>) }</ol>
+//         <iframe
+//             {...defaultIframeProps}
+//             ref={iframe}
+//             src={`${lesMisPath}&play=0&splashAfter=false`}
+//             {...args}
+//         />
+//         </div>
+//     );
+// }
 
 export const SetSettings = (args) => {
     const iframe = useRef(null);

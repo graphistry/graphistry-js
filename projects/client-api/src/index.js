@@ -60,6 +60,7 @@ import {
     last,
     map,
     mergeMap,
+    mergeAll,
     Observable,
     of,
     pipe,
@@ -1505,7 +1506,8 @@ export function labelUpdates(g) {
             sources: Object.create(null),
             prevLabelsById: Object.create(null),
         }),
-        mergeMap(({ newSources }) => newSources)
+        mergeMap(({ newSources }) => newSources),
+        mergeAll(),
     ));
 }
 //subscribable (g.labelUpdates())

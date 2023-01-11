@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import '../../assets/index.css';
 
 import { Graphistry } from '../index';
@@ -13,9 +13,11 @@ export const Empty = (args) => <Graphistry {...args} />;
 export const PredefinedDataset = (args) => <Graphistry {...args} dataset='Miserables' showSplashScreen={true} />;
 
 const defaultSettings = {
+  // graphistryHost: "http://0.0.0.0:3000",
   dataset: 'Miserables',
   play: 1,
-  showSplashScreen: true
+  showSplashScreen: true,
+  // session: "cycle"
 };
 
 export const NoSplashScreen = (args) => <Graphistry {...defaultSettings} {...args} showSplashScreen={false} />;
@@ -33,6 +35,31 @@ export const OnClientAPIConnected = (args) => {
   </div>);
 }
 
+export const OnSelectionUpdate = (args) => {
+  const [ selection, setSelection ] = useState(undefined);
+  
+  return (<div>
+    { `Selection: ${JSON.stringify(selection)}`}
+    <Graphistry {...defaultSettings}
+      {...args}
+      onSelectionUpdate={setSelection}
+      onLabelsUpdate={undefined}
+    />
+  </div>);
+}
+
+export const OnLabelUpdate = (args) => {
+  const [ labels, setLabels ] = useState(undefined);
+  
+  return (<div>
+    { `Labels: ${JSON.stringify(labels)}`}
+    <Graphistry {...defaultSettings}
+      {...args}
+      onSelectionUpdate={undefined} // Otherwise storybook seems to auto set this.
+      onLabelsUpdate={setLabels}
+    />
+  </div>);
+}
 
 
 export const NoClusteringOnLoad = (args) => <Graphistry {...defaultSettings} {...args} play={0} />;
