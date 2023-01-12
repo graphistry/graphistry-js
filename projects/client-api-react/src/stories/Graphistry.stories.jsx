@@ -5,7 +5,11 @@ import { Graphistry } from '../index';
 
 export default {
   title: 'Graphistry: React style',
-  component: Graphistry
+  component: Graphistry,
+
+  // override the default behaviour of passing action-props for every prop that
+  // starts with 'on' (see the Storybook config 'preview.js')
+  parameters: { actions: { argTypesRegex: null } },
 };
 
 //no default args
@@ -13,11 +17,11 @@ export const Empty = (args) => <Graphistry {...args} />;
 export const PredefinedDataset = (args) => <Graphistry {...args} dataset='Miserables' showSplashScreen={true} />;
 
 const defaultSettings = {
-  // graphistryHost: "http://0.0.0.0:3000",
+  graphistryHost: "http://0.0.0.0:3000", // TODO: remove
+  session: "cycle",
   dataset: 'Miserables',
-  play: 1,
+  play: 0,
   showSplashScreen: true,
-  // session: "cycle"
 };
 
 export const NoSplashScreen = (args) => <Graphistry {...defaultSettings} {...args} showSplashScreen={false} />;
@@ -42,8 +46,7 @@ export const OnSelectionUpdate = (args) => {
     { `Selection: ${JSON.stringify(selection)}`}
     <Graphistry {...defaultSettings}
       {...args}
-      onSelectionUpdate={setSelection}
-      onLabelsUpdate={undefined}
+      onSelectionUpdate={(err, v) => setSelection({v, err})}
     />
   </div>);
 }
@@ -55,8 +58,7 @@ export const OnLabelUpdate = (args) => {
     { `Labels: ${JSON.stringify(labels)}`}
     <Graphistry {...defaultSettings}
       {...args}
-      onSelectionUpdate={undefined} // Otherwise storybook seems to auto set this.
-      onLabelsUpdate={setLabels}
+      onLabelsUpdate={(err, v) => setLabels({v, err})}
     />
   </div>);
 }

@@ -13,16 +13,16 @@ const LOCAL_DEV = {
 // const LOCAL_DEV = {};
 
 function App() {
-  const onUpdateObservableG = useCallback((arg) => {
-    console.info('CRA.onUpdateObservableG', arg, 'exor')
+  const onUpdateObservableG = useCallback((err, v) => {
+    console.info('CRA.onUpdateObservableG', v, 'exor')
   }, []);
 
-  const onSelectionUpdate = useCallback((v) => {
-    console.info('CRA.onSelectionUpdate', v, 'exor')
+  const onSelectionUpdate = useCallback((err, v) => {
+    console.info('CRA.onSelectionUpdate', v, err, 'exor')
   }, []);
 
-  const onLabelUpdate = useCallback((v) => {
-    console.info('CRA.onLabelUpdate', v, 'exor')
+  const onLabelsUpdate = useCallback((err, v) => {
+    console.info('CRA.onLabelsUpdate', v, err, 'exor')
   }, []);
 
   return (
@@ -36,7 +36,7 @@ function App() {
         iframeStyle={{ height: '100%', width: '100%', border: 0 }}
         onUpdateObservableG={onUpdateObservableG}
         onSelectionUpdate={onSelectionUpdate}
-        onLabelUpdate={onLabelUpdate}
+        onLabelsUpdate={onLabelsUpdate}
         {...LOCAL_DEV}
       />
     </div>

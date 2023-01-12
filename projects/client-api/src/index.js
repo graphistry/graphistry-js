@@ -72,7 +72,7 @@ import {
     share,
     shareReplay,
     startWith,
-    //Subject,
+    Subject,
     switchMap,
     take,
     takeLast,
@@ -1307,30 +1307,28 @@ export function updateZoom(level) {
 chainList.updateZoom = updateZoom;
 
 /**
- * Subscribe to label change and exit events
+ * Get or create an {@link Observable} stream of all selection updates from the visualization.
  * @function selectionUpdates
- * @param {object} [cache] - An optional cache object (empty object) to use for caching label updates across subscriptions.
- * @return {Subscription} A {@link Subscription} that can be used to stop reacting to label updates
+ * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable}
+ * @return {Subscription} A {@link Subscription} that can be used to react to the selection updates
  * @example
  * GraphistryJS(document.getElementById('viz'))
  *     .pipe(
- *          selectionUpdates,
- *          tap((s) => {
- *                 console.log(s);
- *          }),
+ *          map(selectionUpdates),
+ *          tap(({ edge, point}) => console.log('Edge array:', edge, 'Point array:', point)),
  *     })
  *     .subscribe();
  */
 export function selectionUpdates(g) {
-    console.log('client-api.APISUB', 'selectionUpdates', g, 'exor');
+    console.log('client-api.APISUB', 'selectionStream', g.selectionStream, 'exor');
     if (!(g.subscriptionAPIVersion >= 1)) {
         throw new Error('selectionUpdates is not available the currently embedded graphistry viz.');
     }
 
     const SELECTION_PATH = "workbooks.open.views.current.selection['edge','point']";
-    return g.selectionStream || (g.selectionStream = new BehaviorSubject('value'))
+    return g.selectionStream || (g.selectionStream = new BehaviorSubject('Initialize selectionUpdates stream')
         .pipe(
-            tap((v) => {
+            tap(() => {
                 console.debug('client-api.APISUB', 'post graphistry-subscribe', 'exor');
                 g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: SELECTION_PATH }, '*');
             }),
@@ -1362,13 +1360,31 @@ export function selectionUpdates(g) {
                             }
                         });
                     }),
-                )
+                    shareReplay({ bufferSize: 1, refCount: true })
+                ),
             ),
-            shareReplay({ bufferSize: 1, refCount: true }),
             tap((v) => {
-                console.debug('client-api.APISUB', 'RECIEVED SELECTION', v, 'exor');
+                console.debug('client-api.APISUB', 'EMIT SELECTION', v, 'exor');
             })
-        );
+        ));
+}
+
+/**
+ * Subscribe to selection change events
+ * @function subscribeSelections
+ * @param {Object} - An Object with `onChange` and `onExit` callbacks
+ * @return {Subscription} A {@link Subscription} that can be used to stop reacting to label updates
+ * @example
+ * var sub = graphistryJS(document.getElementById('viz'))
+ *    .pipe((g) => subscribeSelections({
+ *       g,
+ *       onChange: ({ edge, point}) => console.log('Edge array:', edge, 'Point array:', point)
+ *    }
+ * }));
+ * setTimeout(() => { sub.unsubscribe(); }, 5000);
+ */
+export function subscribeSelections({ onChange, g }) {
+    return selectionUpdates(g).subscribe({ next: onChange });
 }
 
 /**
@@ -1386,13 +1402,13 @@ export function selectionUpdates(g) {
  * The inner {@link Observable} for a label will complete if the label is removed from the screen.
  * </p><p>
  * @function labelUpdates
- * @param {object} [cache] - An optional cache object (empty object) to use for caching label updates across subscriptions.
+ * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable} or depricated, cache an object.
  * @return {Observable<Observable<LabelEvent>>} An {@link Observable} of inner {Observables}, where each
  * inner {@link Observable} represents the lifetime of a label in the visualization.
  * @example
  * GraphistryJS(document.getElementById('viz'))
  *     .pipe(
- *          labelUpdates,
+ *          map(g => labelUpdates(g)),
  *          tap(({ id, tag, pageX, pageY }) => {
  *                 // prints messages like
  *                 // > 'Label 13 added at (200, 340)'
@@ -1406,25 +1422,29 @@ export function selectionUpdates(g) {
  *     })
  *     .subscribe();
  * @example
- * var cache = {};
  * //first use
  * GraphistryJS(document.getElementById('viz'))
- *    .pipe(labelUpdates(cache))
+ *    .pipe(map((g) => labelUpdates(g)))
  *    .subscribe();
  * //second time reuse the cache to avoid excess event queue slowdowns 
  * GraphistryJS(document.getElementById('viz'))
- *      .pipe(labelUpdates(cache))
+ *      .pipe(map((g) => labelUpdates(g)))
  *     .subscribe()
  */
-
-export function labelUpdates(g) {
+export function labelUpdates(g={}) {
     const LABELS_PATH = ".labels"
 
     var src;
+    console.log('APISUB', 'subscriptionVersion', (g.subscriptionAPIVersion >= 1), !(g.subscriptionAPIVersion >= 1));
+
     if (!(g.subscriptionAPIVersion >= 1)) {
+        console.log('APISUB', 'using legacy scr');
+
         src = fromEvent(window, 'message')
             .pipe(
+                tap(v => console.log('APISUB', 'recieved message', v, 'exor')),
                 map(o => o.data),
+                tap(v => console.log('APISUB', 'recieved message map', v, 'exor')),
                 filter(o => o && o.type === 'labels-update'),
                 shareReplay({ bufferSize: 1, refCount: true }),
             );
@@ -1448,6 +1468,7 @@ export function labelUpdates(g) {
     }
     
     return g.labelsStream || (g.labelsStream  = src.pipe(
+        tap(v => console.log('APISUB', 'pre scan', v, 'exor')),
         scan((memo, { labels, simulating, semanticZoomLevel }) => {
 
             labels = labels || [];
@@ -1506,11 +1527,9 @@ export function labelUpdates(g) {
             sources: Object.create(null),
             prevLabelsById: Object.create(null),
         }),
-        mergeMap(({ newSources }) => newSources),
-        mergeAll(),
+        mergeMap(({ newSources }) => newSources)
     ));
 }
-//subscribable (g.labelUpdates())
 
 /**
  * Subscribe to label change and exit events
@@ -1519,7 +1538,8 @@ export function labelUpdates(g) {
  * @return {Subscription} A {@link Subscription} that can be used to stop reacting to label updates
  * @example
  * var sub = graphistryJS(document.getElementById('viz'))
- *    .pipe(subscribeLabels({
+ *    .pipe((g) => subscribeLabels({
+ *       g,
  *       onChange: (label) => {
  *         console.log(`Label ${label.id} changed at (${label.pageX}, ${label.pageY})`);
  *      },
@@ -1530,19 +1550,23 @@ export function labelUpdates(g) {
  * setTimeout(() => { sub.unsubscribe(); }, 5000);
  */
 export function subscribeLabels({ onChange, onExit, g }) {
-    //throw new Error('subscribeLabels not implemented', onChange, onExit);
-
     return labelUpdates(g)
         .pipe(
             mergeMap((group) => {
                 return group
                     .pipe(
+                        tap(v => console.log('APISUB', 'subscribeLabels', { onChange, onExit, g, v }, 'exor')),
                         tap((event) => onChange && onChange(event)),
                         takeLast(1),
                         tap((event) => onExit && onExit(event)));
             }))
-        .subscribe();
+        .subscribe({
+            next: (v) => console.log('client-api.APISUB - subscribeLabels', 'next', v),
+            error: (e) => console.error('client-api.APISUB - subscribeLabels', 'error', e),
+            complete: (v) => console.log('client-api.APISUB - subscribeLabels', 'complete', v)
+        });
 }
+
 class GraphistryState {
 
     constructor(subscriptionAPIVersion, iFrame, models, result) {
@@ -1640,6 +1664,8 @@ function addCallbacks(obs, target) {
     */
     target.labelUpdates = labelUpdates;// lift(obs, labelUpdates);
     target.subscribeLabels = subscribeLabels;//lift(obs, subscribeLabels);
+    target.selectionUpdates = selectionUpdates; // lift(obs, selectionUpdates);
+    target.subscribeLabels
     return target;
 }
 
@@ -1701,7 +1727,7 @@ export function graphistryJS(iFrame) {
                 map(target => target.contentWindow),
                 tap((target) => {
                     console.info(`Graphistry API: connecting to client`, target);
-                    target.postMessage({ type: 'ready', agent: 'graphistryjs' }, '*');
+                    target.postMessage({ type: 'ready', agent: 'graphistryjs', subscriptionAPIVersion: 1 }, '*');
                 }),
                 switchMap(
                     ((target) =>
@@ -1818,10 +1844,12 @@ export {
     last,
     map,
     mergeMap,
+    mergeAll,
     Observable,
     of,
     pipe,
     ReplaySubject,
+    Subject,
     scan,
     share,
     shareReplay,

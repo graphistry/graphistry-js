@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import '../../assets/index.css';
+import { combineLatest } from 'rxjs';
 
 import {
     //graphistry
@@ -16,15 +17,22 @@ import {
     toggleInspector,
 
     encodeAxis,
+    selectionUpdates,
   
     //rxjs
     tap,
-    delay
+    delay,
+    filter,
+    scan,
+    map,
+    switchMap
+    // Observable
 } from '@graphistry/client-api';
+import { interval, takeWhile } from 'rxjs';
 
-const basePath = 'http://0.0.0.0:3000';
+const basePath = 'http://0.0.0.0:3000'; // TODO: return to https://hub.graphistry.com
 const lesMisPath = `${basePath}/graph/graph.html?dataset=Miserables`;
-const lesMisConfigured = `${lesMisPath}&play=1000`;
+const lesMisConfigured = `${lesMisPath}&play=0`;
 const lesMisNoPlayNoSplash = `${lesMisPath}&play=0&splashAfter=false`;
 
 function GraphistryIFrame (args) {
@@ -87,49 +95,107 @@ export const InstantiateGraphistryJS = (args) => {
     );
 }
 
-// export const GraphistryJSSubscribeToSelection = (args) => {
-//     const iframe = useRef(null);
-//     const [messages, setMessages] = useState(['loading...']);
+const SUBSCRIPTION_TEST = [
+    {a: true, b: false},
+    {a: true, b: true},
+    {a: false, b: true},
+    {a: true, b: true},
+    {a: true, b: false},
+    {a: false, b: false},
+    {a: true, b: false},
+    {a: false, b: false},
+    {a: true, b: true},
+];
 
-//     const pushMessage = (s) => setMessages(arr => {
-//         arr.push(s);
-//         return arr;
-//     });
+const statusString = (a, b) => `${a ? 'A' : '..'} ${b ? 'B' : '..'}`;
+
+export const GraphistryJSSubscribeToSelection = (args) => {
+    const iframe = useRef(null);
+    const [messages, setMessages] = useState(['loading...']);
+    const pushMessage = (s) => setMessages(arr => arr.concat([s]));
+    const [valA, setValA] = useState(null);
+    const [valB, setValB] = useState(null);
+
+    useEffect(() => {
+        if (!iframe.current) {
+            return;
+        }
+
+        combineLatest([graphistryJS(iframe.current), graphistryJS(iframe.current)]).pipe(
+            filter(([gA, gB]) => gA && gB),
+            delay(1000), // Allow the viz iframe to initialize
+            switchMap(([gA, gB]) => interval(1500).pipe(map(idx => ({idx, gA, gB})))),
+            takeWhile(({idx}) => idx < SUBSCRIPTION_TEST.length),
+            tap(({idx}) => {
+                if (idx == 0) {
+                    pushMessage('Starting test');
+                    console.log('APISUB', 'Starting test');
+                }
+            }),
+            scan(({A, B}, {gA, gB, idx}) => {
+                const {a, b} = SUBSCRIPTION_TEST[idx];
+                pushMessage(statusString(a, b));
+                console.log('APISUB', statusString(A, B), ' -> ', statusString(a, b));
+
+                if (a && !A) {
+                    A = selectionUpdates(gA).subscribe({
+                        next: (v) => {
+                            setValB(v);
+                            console.log('APISUB', 'Subscription A got selection', v)
+                        },
+                        error: (err) => console.error('APISUB', 'Subscription A got error', err),
+                        complete: () => console.log('APISUB', 'Subscription A completed')
+                    });
+                }
+
+                if (!a && A) {
+                    A.unsubscribe();
+                    A = null;
+                }
+
+                if (b && !B) {
+                    B = selectionUpdates(gB).subscribe({
+                        next: (v) => {
+                            setValA(v);
+                            console.log('APISUB', 'Subscription B got selection', v)
+                        },
+                        error: (err) => console.error('APISUB', 'Subscription B got error', err),
+                        complete: () => console.log('APISUB', 'Subscription B completed')
+                    });
+                }
+
+                if (!b && B) {
+                    B.unsubscribe();
+                    B = null;
+                }
+
+
+                return {A, B};
+            }, {A: null, B: null}),
+        ).subscribe({
+            error: (err) => pushMessage(`Error: ${err}`),
+            complete: () => pushMessage('Completed')
+        });
+    }, [iframe]);
     
-//     useEffect(() => {
-//         //////// Instantiate GraphistryJS for an iframe
-//         const subA = (
-//             graphistryJS(iframe.current)
-//                 .pipe(
-//                     tap(() => pushMessage('A: graphistryJS instantiated')),
-
-//                 )
-//                 .subscribe(
-//                     () => {},
-//                     (err) => pushMessage(`A: Error: ${err}`),
-//                     () => pushMessage('A: Completed')
-//         ));
-
-//         // const subB = (
-//         //     graphistryJS(iframe.current)
-//         // )
-//         ////////
-//         return () => subA.unsubscribe();
-//     }, [iframe]);
-    
-//     return (
-//         <div>
-//         <h3>Instantiate GraphistryJS session for iframe</h3>
-//         <ol>{ messages.map((m, i) => <li key={i}>{m}</li>) }</ol>
-//         <iframe
-//             {...defaultIframeProps}
-//             ref={iframe}
-//             src={`${lesMisPath}&play=0&splashAfter=false`}
-//             {...args}
-//         />
-//         </div>
-//     );
-// }
+    return (
+        <div>
+            <h3>Test subscribe and unsubscribe to selections.</h3>
+            <p>Click or shift drag to make selextions in the viz.</p>
+            <ul>
+                <li>A: {JSON.stringify(valA)}</li>
+                <li>B: {JSON.stringify(valB)}</li>
+            </ul>
+            <ol>{ messages.map((m, i) => <li key={i}>{m}</li>) }</ol>
+            <iframe
+                {...defaultIframeProps}
+                ref={iframe}
+                src={`${lesMisPath}&play=0&splashAfter=false&session=cycle`}
+                {...args}
+            />
+        </div>
+    );
+}
 
 export const SetSettings = (args) => {
     const iframe = useRef(null);

@@ -9,7 +9,7 @@ import * as gAPI from '@graphistry/client-api';
 import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings, panelNames } from './bindings.js';
-import { Client as ClientBase, selectionUpdates, labelUpdates } from '@graphistry/client-api';
+import { Client as ClientBase, selectionUpdates, subscribeLabels } from '@graphistry/client-api';
 
 export const Client = ClientBase;
 
@@ -358,7 +358,7 @@ function handleUpdates({ g, isFirstRun, axesMap, props }) {
 
 // Regenerate on url change
 function generateIframeRef({
-    setLoading, setLoadingMessage, setG, setGSub, setGObs, setFirstRun,
+    setLoading, setLoadingMessage, setG, setGSub, setGObs, setGErr, setFirstRun,
     url, dataset, props,
     axesMap,
     iframeStyle, iframeClassName, iframeProps, allowFullScreen,
@@ -422,7 +422,10 @@ function generateIframeRef({
                 );
             const sub = obs.subscribe({
                 next(v) { console.debug('iframe init sub hit', v); },
-                error(e) { console.error('iframe init sub error', e); },
+                error(e) { 
+                    setGErr(e);
+                    console.error('iframe init sub error', e);
+                },
                 complete() { console.debug('iframe init sub complete'); }
             });
             setGSub(sub);
@@ -470,6 +473,7 @@ function Graphistry(props) {
     const [g, setG] = useState(null);
     const [gObs, setGObs] = useState(null);
     const [gSub, setGSub] = useState(null);
+    const [gErr, setGErr] = useState(undefined);
     const prevSub = usePrevious(gSub);
 
     const [axesMap] = useState(new WeakMap());
@@ -494,18 +498,21 @@ function Graphistry(props) {
 
     useEffect(() => {
         if (gObs && gSub && onUpdateObservableG) {
-            onUpdateObservableG({observable: gObs, subscription: gSub});
-            return () => onUpdateObservableG(null);
+            onUpdateObservableG(gErr, {observable: gObs, subscription: gSub});
+            return () => onUpdateObservableG(undefined, undefined);
         }
     }, [gObs, onUpdateObservableG]);
 
     useEffect(() => {
-        console.info('client-api-react.APISUB', 'useeffect', Boolean(g && onSelectionUpdate), [g, onSelectionUpdate], 'exor');
+        console.info('client-api-react.APISUB', 'useeffect.onSelectionUpdate', Boolean(g && onSelectionUpdate), [g, onSelectionUpdate], 'exor');
         if (g && onSelectionUpdate) {
             const sub = selectionUpdates(g)
                 .subscribe(
-                    (v) => onSelectionUpdate(v),
-                    (error) => console.error('client-api-react.APISUB selectionUpdates subscription error', error, 'exor')
+                    (v) => onSelectionUpdate(undefined, v),
+                    (error) => {
+                        onSelectionUpdate(error);
+                        console.error('client-api-react.APISUB selectionUpdates subscription error', error, 'exor');
+                    }
                 );
 
             return () => {
@@ -516,13 +523,13 @@ function Graphistry(props) {
     }, [g, onSelectionUpdate])
 
     useEffect(() => {
-        console.info('client-api-react.APISUB', 'useeffect', Boolean(g && onLabelsUpdate), [g, onLabelsUpdate], 'exor');
+        console.info('client-api-react.APISUB', 'useeffect.onLabelsUpdate', Boolean(g && onLabelsUpdate), [g, onLabelsUpdate], 'exor');
         if (g && onLabelsUpdate) {
-            const sub = labelUpdates(g)
-                .subscribe(
-                    (v) => onLabelsUpdate(v),
-                    (error) => console.error('client-api-react.APISUB labelUpdates subscription error', error, 'exor')
-                );
+            const sub = subscribeLabels({
+                g,
+                onChange: (v) => onLabelsUpdate(undefined, {change: v}),
+                onExit: (v) => onLabelsUpdate(undefined, {exit: v}),
+            })
 
             return () => {
                 console.info('client-api-react.APISUB', 'useeffect unsubscribing', 'exor');
@@ -546,7 +553,7 @@ function Graphistry(props) {
 
     //Initial frame load and settings
     const iframeRef = generateIframeRef({
-        setLoading, setLoadingMessage, setG, setGSub, setGObs, setFirstRun,
+        setLoading, setLoadingMessage, setG, setGSub, setGObs, setGErr, setFirstRun,
         url, dataset, props,
         axesMap,
         iframeStyle, iframeClassName, iframeProps, allowFullScreen,
@@ -580,8 +587,7 @@ function Graphistry(props) {
             </div>
         );
     }
-    children.push(<div>
-    </div>)
+    children.push(<div key={`graphistry-div-${props.key}`}></div>)
     if (dataset) {
         children.push(
             <iframe
