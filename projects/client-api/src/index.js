@@ -1320,7 +1320,6 @@ chainList.updateZoom = updateZoom;
  *     .subscribe();
  */
 export function selectionUpdates(g) {
-    console.log('client-api.APISUB', 'selectionStream', g.selectionStream, 'exor');
     if (!(g.subscriptionAPIVersion >= 1)) {
         throw new Error('selectionUpdates is not available the currently embedded graphistry viz.');
     }
@@ -1329,18 +1328,17 @@ export function selectionUpdates(g) {
     return g.selectionStream || (g.selectionStream = new BehaviorSubject('Initialize selectionUpdates stream')
         .pipe(
             tap(() => {
-                console.debug('client-api.APISUB', 'post graphistry-subscribe', 'exor');
+                console.debug('postMessage subscription', '@client-api.selectionUpdates');
                 g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: SELECTION_PATH }, '*');
             }),
             finalize(() => {
-                console.debug('client-api.APISUB', 'finalize post graphistry-unsubscribe', 'exor');
+                console.debug('postMessage unsubscribe', '@client-api.selectionUpdates');
                 g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: SELECTION_PATH }, '*');
             }),
             switchMap(() =>
                 fromEvent(window, 'message').pipe(
                     map(o => o.data),
-                    tap(o => console.log('client-api.APISUB', 'recieved message', o, 'exor')),
-                    filter(o => o && o.type === 'graphistry-update' && o.path === SELECTION_PATH),
+                    filter(o => o && o.type === 'graphistry-sub-update' && o.path === SELECTION_PATH),
                     map(o => o.data),
                     tap(({ edge, point}) => {
                         g.models.model.setCache({
@@ -1362,10 +1360,7 @@ export function selectionUpdates(g) {
                     }),
                     shareReplay({ bufferSize: 1, refCount: true })
                 ),
-            ),
-            tap((v) => {
-                console.debug('client-api.APISUB', 'EMIT SELECTION', v, 'exor');
-            })
+            )
         ));
 }
 
@@ -1433,33 +1428,32 @@ export function subscribeSelections({ onChange, g }) {
  */
 export function labelUpdates(g={}) {
     const LABELS_PATH = ".labels"
-
     var src;
-    console.log('APISUB', 'subscriptionVersion', (g.subscriptionAPIVersion >= 1), !(g.subscriptionAPIVersion >= 1));
+
 
     if (!(g.subscriptionAPIVersion >= 1)) {
-        console.log('APISUB', 'using legacy scr');
+        console.debug('Using legacy source, version:', g.subscriptionAPIVersion, '@client-api.labelUpdates');
 
         src = fromEvent(window, 'message')
             .pipe(
-                tap(v => console.log('APISUB', 'recieved message', v, 'exor')),
                 map(o => o.data),
-                tap(v => console.log('APISUB', 'recieved message map', v, 'exor')),
                 filter(o => o && o.type === 'labels-update'),
                 shareReplay({ bufferSize: 1, refCount: true }),
             );
     } else {
         src = new BehaviorSubject('value').pipe(
             tap((v) => {
+                console.debug('postMessage subscription', '@client-api.labelUpdates');
                 g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: LABELS_PATH }, '*');
             }),
             finalize(() => {
+                console.debug('postMessage subscription', '@client-api.labelUpdates');
                 g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: LABELS_PATH }, '*');
             }),
             switchMap(() =>
                 fromEvent(window, 'message').pipe(
                     map(o => o.data),
-                    filter(o => o && o.type === 'graphistry-update' && o.path === LABELS_PATH),
+                    filter(o => o && o.type === 'graphistry-sub-update' && o.path === LABELS_PATH),
                     map(o => o.data),
                 )
             ),
@@ -1468,7 +1462,6 @@ export function labelUpdates(g={}) {
     }
     
     return g.labelsStream || (g.labelsStream  = src.pipe(
-        tap(v => console.log('APISUB', 'pre scan', v, 'exor')),
         scan((memo, { labels, simulating, semanticZoomLevel }) => {
 
             labels = labels || [];
@@ -1543,28 +1536,26 @@ export function labelUpdates(g={}) {
  *       onChange: (label) => {
  *         console.log(`Label ${label.id} changed at (${label.pageX}, ${label.pageY})`);
  *      },
- *     onExit: (label) => {
+ *      onExit: (label) => {
  *        console.log(`Label ${label.id} removed at (${label.pageX}, ${label.pageY})`);
- *    }
+ *      },
+ *      onError: (e) => {
+ *        console.error('Error in label subscription', e);
+ *      }
  * }));
  * setTimeout(() => { sub.unsubscribe(); }, 5000);
  */
-export function subscribeLabels({ onChange, onExit, g }) {
+export function subscribeLabels({ onChange, onExit, onError, g }) {
     return labelUpdates(g)
         .pipe(
             mergeMap((group) => {
                 return group
                     .pipe(
-                        tap(v => console.log('APISUB', 'subscribeLabels', { onChange, onExit, g, v }, 'exor')),
                         tap((event) => onChange && onChange(event)),
                         takeLast(1),
                         tap((event) => onExit && onExit(event)));
             }))
-        .subscribe({
-            next: (v) => console.log('client-api.APISUB - subscribeLabels', 'next', v),
-            error: (e) => console.error('client-api.APISUB - subscribeLabels', 'error', e),
-            complete: (v) => console.log('client-api.APISUB - subscribeLabels', 'complete', v)
-        });
+        .subscribe({ error: onError });
 }
 
 class GraphistryState {

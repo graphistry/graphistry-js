@@ -504,35 +504,29 @@ function Graphistry(props) {
     }, [gObs, onUpdateObservableG]);
 
     useEffect(() => {
-        console.info('client-api-react.APISUB', 'useeffect.onSelectionUpdate', Boolean(g && onSelectionUpdate), [g, onSelectionUpdate], 'exor');
         if (g && onSelectionUpdate) {
             const sub = selectionUpdates(g)
                 .subscribe(
                     (v) => onSelectionUpdate(undefined, v),
-                    (error) => {
-                        onSelectionUpdate(error);
-                        console.error('client-api-react.APISUB selectionUpdates subscription error', error, 'exor');
-                    }
+                    (error) => onSelectionUpdate(error)
                 );
 
             return () => {
-                console.info('client-api-react.APISUB', 'useeffect unsubscribing', 'exor');
                 sub && sub.unsubscribe();
             };
         }
     }, [g, onSelectionUpdate])
 
     useEffect(() => {
-        console.info('client-api-react.APISUB', 'useeffect.onLabelsUpdate', Boolean(g && onLabelsUpdate), [g, onLabelsUpdate], 'exor');
         if (g && onLabelsUpdate) {
             const sub = subscribeLabels({
                 g,
                 onChange: (v) => onLabelsUpdate(undefined, {change: v}),
                 onExit: (v) => onLabelsUpdate(undefined, {exit: v}),
+                onError: (e) => onLabelsUpdate(e)
             })
 
             return () => {
-                console.info('client-api-react.APISUB', 'useeffect unsubscribing', 'exor');
                 sub && sub.unsubscribe();
             };
         }

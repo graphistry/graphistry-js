@@ -10,19 +10,17 @@ const LOCAL_DEV = {
   session: "cycle"
 }
 
-// const LOCAL_DEV = {};
-
 function App() {
   const onUpdateObservableG = useCallback((err, v) => {
-    console.info('CRA.onUpdateObservableG', v, 'exor')
+    console.info('onUpdateObservableG', v, '@CRA')
   }, []);
 
   const onSelectionUpdate = useCallback((err, v) => {
-    console.info('CRA.onSelectionUpdate', v, err, 'exor')
+    console.info('onSelectionUpdate', v, err, '@CRA')
   }, []);
 
   const onLabelsUpdate = useCallback((err, v) => {
-    console.info('CRA.onLabelsUpdate', v, err, 'exor')
+    console.info('onLabelsUpdate', v, err, '@CRA')
   }, []);
 
   return (
@@ -37,7 +35,6 @@ function App() {
         onUpdateObservableG={onUpdateObservableG}
         onSelectionUpdate={onSelectionUpdate}
         onLabelsUpdate={onLabelsUpdate}
-        {...LOCAL_DEV}
       />
     </div>
   );

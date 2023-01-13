@@ -17,11 +17,9 @@ export const Empty = (args) => <Graphistry {...args} />;
 export const PredefinedDataset = (args) => <Graphistry {...args} dataset='Miserables' showSplashScreen={true} />;
 
 const defaultSettings = {
-  graphistryHost: "http://0.0.0.0:3000", // TODO: remove
-  session: "cycle",
   dataset: 'Miserables',
-  play: 0,
-  showSplashScreen: true,
+  play: 1,
+  showSplashScreen: true
 };
 
 export const NoSplashScreen = (args) => <Graphistry {...defaultSettings} {...args} showSplashScreen={false} />;
@@ -41,24 +39,34 @@ export const OnClientAPIConnected = (args) => {
 
 export const OnSelectionUpdate = (args) => {
   const [ selection, setSelection ] = useState(undefined);
+
+  const onSelectionUpdate = (err, v) => {
+    console.log('onSelectionUpdate', err, v);
+    setSelection({v, err});
+  }
   
   return (<div>
     { `Selection: ${JSON.stringify(selection)}`}
     <Graphistry {...defaultSettings}
       {...args}
-      onSelectionUpdate={(err, v) => setSelection({v, err})}
+      onSelectionUpdate={onSelectionUpdate}
     />
   </div>);
 }
 
 export const OnLabelUpdate = (args) => {
   const [ labels, setLabels ] = useState(undefined);
+
+  const onLabelsUpdate = (err, v) => {
+    console.log('onLabelsUpdate', err, v);
+    setLabels({v, err});
+  }
   
   return (<div>
     { `Labels: ${JSON.stringify(labels)}`}
     <Graphistry {...defaultSettings}
       {...args}
-      onLabelsUpdate={(err, v) => setLabels({v, err})}
+      onLabelsUpdate={onLabelsUpdate}
     />
   </div>);
 }
