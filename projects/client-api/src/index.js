@@ -77,7 +77,8 @@ import {
     take,
     takeLast,
     tap,
-    timer
+    timer,
+    throwError
 } from './rxjs';  // abstract to simplify tolerating constant rxjs namespace manglings
 
 
@@ -1321,7 +1322,7 @@ chainList.updateZoom = updateZoom;
  */
 export function selectionUpdates(g) {
     if (!(g.subscriptionAPIVersion >= 1)) {
-        throw new Error('selectionUpdates is not available the currently embedded graphistry viz.');
+        return throwError(() => new Error('selectionUpdates is not available the currently embedded graphistry viz.'));
     }
 
     const SELECTION_PATH = "workbooks.open.views.current.selection['edge','point']";

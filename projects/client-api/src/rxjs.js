@@ -11,7 +11,8 @@ import {
     BehaviorSubject,
     Subject,
     timer,
-    finalize
+    finalize,
+    throwError
 } from 'rxjs';
 
 import { ajax } from 'rxjs/ajax';
@@ -69,6 +70,7 @@ export {
     takeLast,
     tap,
     timer,
-    finalize
+    finalize,
+    throwError
 };
 
