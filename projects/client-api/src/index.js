@@ -1727,7 +1727,7 @@ export function graphistryJS(iFrame) {
                 map(target => target.contentWindow),
                 tap((target) => {
                     console.info(`Graphistry API: connecting to client`, target);
-                    target.postMessage({ type: 'ready', agent: 'graphistryjs', subscriptionAPIVersion: 1 }, '*');
+                    target.postMessage({ type: 'ready', agent: 'graphistryjs' }, '*');
                 }),
                 switchMap(
                     ((target) =>
@@ -1743,7 +1743,11 @@ export function graphistryJS(iFrame) {
                                         return false;
                                     }
                                 }),
-                                tap((v) => { console.debug('Starting iframe protocol listen flow: Message filtered', v) }),
+                                tap((v) => {
+                                    target.postMessage({ type: 'graphistry-init-ack', agent: 'graphistryjs', subscriptionAPIVersion: 1 }, '*');
+                                    console.debug('Starting iframe protocol listen flow: Message filtered and sent graphistry-init-ack', v) 
+                                }),
+                            
                                 map(({ data: { cache, subscriptionAPIVersion }, cache: cache2 }) => ({ target, cache, cache2, subscriptionAPIVersion }))))),
                 switchMap(({ target, cache, cache2, subscriptionAPIVersion }) => {
 
