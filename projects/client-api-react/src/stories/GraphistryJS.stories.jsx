@@ -30,7 +30,7 @@ import {
 } from '@graphistry/client-api';
 import { interval, takeWhile } from 'rxjs';
 
-const basePath = 'http://0.0.0.0:3000'; // TODO: return to https://hub.graphistry.com
+const basePath = 'https://hub.graphistry.com';
 const lesMisPath = `${basePath}/graph/graph.html?dataset=Miserables`;
 const lesMisConfigured = `${lesMisPath}&play=0`;
 const lesMisNoPlayNoSplash = `${lesMisPath}&play=0&splashAfter=false`;

@@ -6,6 +6,8 @@ import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
 import { Client as ClientBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
 
 
+const CLIENT_SUBSCRIPTION_API_VERSION = 1;
+
 //export const Client = ClientBase;
 export const Dataset = DatasetBase;
 export const File = FileBase;
@@ -1431,7 +1433,6 @@ export function labelUpdates(g={}) {
     const LABELS_PATH = ".labels"
     var src;
 
-
     if (!(g.subscriptionAPIVersion >= 1)) {
         console.debug('Using legacy source, version:', g.subscriptionAPIVersion, '@client-api.labelUpdates');
 
@@ -1719,30 +1720,20 @@ export function graphistryJS(iFrame) {
                 map(target => target.contentWindow),
                 tap((target) => {
                     console.info(`Graphistry API: connecting to client`, target);
-                    target.postMessage({ type: 'ready', agent: 'graphistryjs' }, '*');
+                    target.postMessage({ type: 'ready', agent: 'graphistryjs', subscriptionAPIVersion: CLIENT_SUBSCRIPTION_API_VERSION }, '*');
                 }),
-                switchMap(
-                    ((target) =>
+                switchMap(((target) =>
                         fromEvent(window, 'message') //FIXME why not target? how to ensure proper frame?
                             .pipe(
                                 tap((v) => { console.debug('Starting iframe protocol listen flow: Message', v) }),
-                                filter(({ data, cache, ...rest }) => {
-                                    if (data && data.type === 'init') {
-                                        console.debug('received valid postMessage handshake', { data, cache, rest });
-                                        return true;
-                                    } else {
-                                        console.debug('received irrelevant postMessage handshake', { data, cache, rest });
-                                        return false;
-                                    }
-                                }),
+                                filter(({ data}) => data && data.type === 'init'),
                                 tap((v) => {
-                                    target.postMessage({ type: 'graphistry-init-ack', agent: 'graphistryjs', subscriptionAPIVersion: 1 }, '*');
-                                    console.debug('Starting iframe protocol listen flow: Message filtered and sent graphistry-init-ack', v) 
+                                    target.postMessage({ type: 'graphistry-init-ack', agent: 'graphistryjs', subscriptionAPIVersion: CLIENT_SUBSCRIPTION_API_VERSION }, '*');
+                                    console.debug('Starting iframe protocol listen flow: Got type: init and sent graphistry-init-ack', v) 
                                 }),
-                            
-                                map(({ data: { cache, subscriptionAPIVersion }, cache: cache2 }) => ({ target, cache, cache2, subscriptionAPIVersion }))))),
+                                map(({ data: { cache, subscriptionAPIVersion }, cache: cache2 }) => ({ target, cache, cache2, subscriptionAPIVersion })))
+                )),
                 switchMap(({ target, cache, cache2, subscriptionAPIVersion }) => {
-
                     console.debug('Graphistry API: init filter passed 2, handling', { target, cache, cache2, subscriptionAPIVersion });
 
                     //Observable wrapper insulating from Model's rxjs version

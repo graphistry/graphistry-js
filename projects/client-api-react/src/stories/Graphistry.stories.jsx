@@ -42,7 +42,7 @@ export const OnSelectionUpdate = (args) => {
 
   const onSelectionUpdate = (err, v) => {
     console.log('onSelectionUpdate', err, v);
-    setSelection({v, err});
+    setSelection({v, err: (err || {}).message});
   }
   
   return (<div>
