@@ -109,7 +109,9 @@ const SUBSCRIPTION_TEST = [
 
 const statusString = (a, b) => `${a ? 'A' : '..'} ${b ? 'B' : '..'}`;
 
-export const GraphistryJSSubscribeToSelection = (args) => {
+// TODO: Move this to a testing file.
+console.log('Not exporting', GraphistryJSSubscribeToSelection);
+const GraphistryJSSubscribeToSelection = (args) => {
     const iframe = useRef(null);
     const [messages, setMessages] = useState(['loading...']);
     const pushMessage = (s) => setMessages(arr => arr.concat([s]));
