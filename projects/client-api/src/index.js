@@ -1736,6 +1736,10 @@ export function graphistryJS(iFrame) {
                 switchMap(({ target, cache, cache2, subscriptionAPIVersion }) => {
                     console.debug('Graphistry API: init filter passed 2, handling', { target, cache, cache2, subscriptionAPIVersion });
 
+                    if (!subscriptionAPIVersion) {
+                        console.error('Viz is using a previous version of the subscription API. Downgrade for labelUpdates.');
+                    }
+
                     //Observable wrapper insulating from Model's rxjs version
                     // ... assume just new/get/subscribe/unsubscribe
                     const model = new Model({
