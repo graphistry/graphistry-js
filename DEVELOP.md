@@ -119,6 +119,8 @@ To regenerate:
 
 ## Publish for public consumption (Maintainer only)
 
+0. Login to npm: `npm login`
+
 1. Build from a local checkout of branch with a corresponding PR:
 
 Ex:
