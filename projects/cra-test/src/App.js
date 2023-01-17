@@ -12,15 +12,15 @@ const LOCAL_DEV = {
 
 function App() {
   const onUpdateObservableG = useCallback((err, v) => {
-    console.info('onUpdateObservableG', v, '@CRA')
+    console.info('onUpdateObservableG returned', v, '@CRA')
   }, []);
 
   const onSelectionUpdate = useCallback((err, v) => {
-    console.info('onSelectionUpdate', v, err, '@CRA')
+    console.info('onSelectionUpdate returned', v, err, '@CRA')
   }, []);
 
   const onLabelsUpdate = useCallback((err, v) => {
-    console.info('onLabelsUpdate', v, err, '@CRA')
+    console.info('onLabelsUpdate returned', v, err, '@CRA')
   }, []);
 
   return (
@@ -29,6 +29,7 @@ function App() {
         Embeded Graphistry
       </header>
       <Graphistry 
+        graphistryHost="https://test-2-39-43-a.grph.xyz"
         dataset='Miserables'
         containerClassName='Content'
         iframeStyle={{ height: '100%', width: '100%', border: 0 }}
