@@ -6,6 +6,8 @@ import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
 import { Client as ClientBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
 
 
+const CLIENT_SUBSCRIPTION_API_VERSION = 1;
+
 //export const Client = ClientBase;
 export const Dataset = DatasetBase;
 export const File = FileBase;
@@ -60,21 +62,25 @@ import {
     last,
     map,
     mergeMap,
+    mergeAll,
     Observable,
     of,
     pipe,
     ReplaySubject,
+    BehaviorSubject,
+    finalize,
     retryWhen,
     scan,
     share,
     shareReplay,
     startWith,
-    //Subject,
+    Subject,
     switchMap,
     take,
     takeLast,
     tap,
-    timer
+    timer,
+    throwError
 } from './rxjs';  // abstract to simplify tolerating constant rxjs namespace manglings
 
 
@@ -1304,6 +1310,82 @@ export function updateZoom(level) {
 chainList.updateZoom = updateZoom;
 
 /**
+ * Get or create an {@link Observable} stream of all selection updates from the visualization.
+ * @function selectionUpdates
+ * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable}
+ * @return {Subscription} A {@link Subscription} that can be used to react to the selection updates
+ * @example
+ * GraphistryJS(document.getElementById('viz'))
+ *     .pipe(
+ *          map(selectionUpdates),
+ *          tap(({ edge, point}) => console.log('Edge array:', edge, 'Point array:', point)),
+ *     })
+ *     .subscribe();
+ */
+export function selectionUpdates(g) {
+    if (!(g.subscriptionAPIVersion >= 1)) {
+        return throwError(() => new Error('selectionUpdates is not available the currently embedded graphistry viz.'));
+    }
+
+    const SELECTION_PATH = "workbooks.open.views.current.selection['edge','point']";
+    return g.selectionStream || (g.selectionStream = new BehaviorSubject('Initialize selectionUpdates stream')
+        .pipe(
+            tap(() => {
+                console.debug('postMessage subscription', '@client-api.selectionUpdates');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: SELECTION_PATH }, '*');
+            }),
+            finalize(() => {
+                console.debug('postMessage unsubscribe', '@client-api.selectionUpdates');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: SELECTION_PATH }, '*');
+            }),
+            switchMap(() =>
+                fromEvent(window, 'message').pipe(
+                    map(o => o.data),
+                    filter(o => o && o.type === 'graphistry-sub-update' && o.path === SELECTION_PATH),
+                    map(o => o.data),
+                    tap(({ edge, point}) => {
+                        g.models.model.setCache({
+                            json: {
+                                workbooks: {
+                                    open: {
+                                        views: {
+                                            current: {
+                                                selection: {
+                                                    edge: edge,
+                                                    point: point
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }),
+                    shareReplay({ bufferSize: 1, refCount: true })
+                ),
+            )
+        ));
+}
+
+/**
+ * Subscribe to selection change events
+ * @function subscribeSelections
+ * @param {Object} - An Object with `onChange` and `onExit` callbacks
+ * @return {Subscription} A {@link Subscription} that can be used to stop reacting to label updates
+ * @example
+ * var sub = graphistryJS(document.getElementById('viz'))
+ *    .pipe((g) => subscribeSelections({
+ *       g,
+ *       onChange: ({ edge, point}) => console.log('Edge array:', edge, 'Point array:', point)
+ *    }
+ * }));
+ * setTimeout(() => { sub.unsubscribe(); }, 5000);
+ */
+export function subscribeSelections({ onChange, g }) {
+    return selectionUpdates(g).subscribe({ next: onChange });
+}
+
+/**
  * Get or create an {@link Observable} stream of all label updates from the visualization.
  * <p>
  * The {@link Observable} returned by this method emits inner Observables, where each
@@ -1318,13 +1400,13 @@ chainList.updateZoom = updateZoom;
  * The inner {@link Observable} for a label will complete if the label is removed from the screen.
  * </p><p>
  * @function labelUpdates
- * @param {object} [cache] - An optional cache object (empty object) to use for caching label updates across subscriptions.
+ * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable} or depricated, cache an object.
  * @return {Observable<Observable<LabelEvent>>} An {@link Observable} of inner {Observables}, where each
  * inner {@link Observable} represents the lifetime of a label in the visualization.
  * @example
  * GraphistryJS(document.getElementById('viz'))
  *     .pipe(
- *          labelUpdates(),
+ *          map(g => labelUpdates(g)),
  *          tap(({ id, tag, pageX, pageY }) => {
  *                 // prints messages like
  *                 // > 'Label 13 added at (200, 340)'
@@ -1338,86 +1420,111 @@ chainList.updateZoom = updateZoom;
  *     })
  *     .subscribe();
  * @example
- * var cache = {};
  * //first use
  * GraphistryJS(document.getElementById('viz'))
- *    .pipe(labelUpdates(cache))
+ *    .pipe(map((g) => labelUpdates(g)))
  *    .subscribe();
  * //second time reuse the cache to avoid excess event queue slowdowns 
  * GraphistryJS(document.getElementById('viz'))
- *      .pipe(labelUpdates(cache))
+ *      .pipe(map((g) => labelUpdates(g)))
  *     .subscribe()
  */
+export function labelUpdates(g={}) {
+    const LABELS_PATH = ".labels"
+    var src;
 
-export function labelUpdates(cache = {}) {
+    if (!(g.subscriptionAPIVersion >= 1)) {
+        console.debug('Using legacy source, version:', g.subscriptionAPIVersion, '@client-api.labelUpdates');
 
-    //FIXME cache on specific iframe
-    return cache.labelsStream || (cache.labelsStream = fromEvent(window, 'message')
-        .pipe(
-            map(o => o.data),
-            filter(o => o && o.type === 'labels-update'),
+        src = fromEvent(window, 'message')
+            .pipe(
+                map(o => o.data),
+                filter(o => o && o.type === 'labels-update'),
+                shareReplay({ bufferSize: 1, refCount: true }),
+            );
+    } else {
+        src = new BehaviorSubject('value').pipe(
+            tap((v) => {
+                console.debug('postMessage subscription', '@client-api.labelUpdates');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: LABELS_PATH }, '*');
+            }),
+            finalize(() => {
+                console.debug('postMessage subscription', '@client-api.labelUpdates');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: LABELS_PATH }, '*');
+            }),
+            switchMap(() =>
+                fromEvent(window, 'message').pipe(
+                    map(o => o.data),
+                    filter(o => o && o.type === 'graphistry-sub-update' && o.path === LABELS_PATH),
+                    map(o => o.data),
+                )
+            ),
             shareReplay({ bufferSize: 1, refCount: true }),
-            scan((memo, { labels, simulating, semanticZoomLevel }) => {
+        );
+    }
+    
+    return g.labelsStream || (g.labelsStream  = src.pipe(
+        scan((memo, { labels, simulating, semanticZoomLevel }) => {
 
-                labels = labels || [];
-                const updates = [], newSources = [];
-                const labelsById = Object.create(null);
-                const nextSources = Object.create(null);
-                const { sources, prevLabelsById } = memo;
-                let idx = -1, len = labels.length, label;
+            labels = labels || [];
+            const updates = [], newSources = [];
+            const labelsById = Object.create(null);
+            const nextSources = Object.create(null);
+            const { sources, prevLabelsById } = memo;
+            let idx = -1, len = labels.length, label;
 
-                while (++idx < len) {
-                    let source;
-                    label = labels[idx];
-                    const { id } = label;
+            while (++idx < len) {
+                let source;
+                label = labels[idx];
+                const { id } = label;
 
-                    if (id in sources) {
-                        source = sources[id];
-                        delete sources[id];
-                        if (memo.simulating !== simulating ||
-                            memo.semanticZoomLevel !== semanticZoomLevel ||
-                            !shallowEqual(prevLabelsById[id], label)) {
-                            updates.push({ ...label, simulating, semanticZoomLevel, tag: 'updated' });
-                        }
-                    } else {
-                        newSources.push(source = new ReplaySubject(1));
-                        updates.push({ ...label, simulating, semanticZoomLevel, tag: 'added' });
-                        source.key = id;
+                if (id in sources) {
+                    source = sources[id];
+                    delete sources[id];
+                    if (memo.simulating !== simulating ||
+                        memo.semanticZoomLevel !== semanticZoomLevel ||
+                        !shallowEqual(prevLabelsById[id], label)) {
+                        updates.push({ ...label, simulating, semanticZoomLevel, tag: 'updated' });
                     }
-
-                    labelsById[id] = label;
-                    nextSources[id] = source;
+                } else {
+                    newSources.push(source = new ReplaySubject(1));
+                    updates.push({ ...label, simulating, semanticZoomLevel, tag: 'added' });
+                    source.key = id;
                 }
 
-                for (const id in sources) {
-                    sources[id].complete();
-                }
+                labelsById[id] = label;
+                nextSources[id] = source;
+            }
 
-                idx = -1;
-                len = updates.length;
-                while (++idx < len) {
-                    label = updates[idx];
-                    nextSources[label.id].next(label);
-                }
+            for (const id in sources) {
+                sources[id].complete();
+            }
 
-                return {
-                    newSources,
-                    simulating,
-                    semanticZoomLevel,
-                    sources: nextSources,
-                    prevLabelsById: labelsById
-                };
+            idx = -1;
+            len = updates.length;
+            while (++idx < len) {
+                label = updates[idx];
+                nextSources[label.id].next(label);
+            }
+
+            return {
+                newSources,
+                simulating,
+                semanticZoomLevel,
+                sources: nextSources,
+                prevLabelsById: labelsById
+            };
 
 
-            },
-                {
-                    newSources: [],
-                    sources: Object.create(null),
-                    prevLabelsById: Object.create(null),
-                }),
-            mergeMap(({ newSources }) => newSources)));
+        },
+        {
+            newSources: [],
+            sources: Object.create(null),
+            prevLabelsById: Object.create(null),
+        }),
+        mergeMap(({ newSources }) => newSources)
+    ));
 }
-//subscribable (g.labelUpdates())
 
 /**
  * Subscribe to label change and exit events
@@ -1426,20 +1533,22 @@ export function labelUpdates(cache = {}) {
  * @return {Subscription} A {@link Subscription} that can be used to stop reacting to label updates
  * @example
  * var sub = graphistryJS(document.getElementById('viz'))
- *    .pipe(subscribeLabels({
+ *    .pipe((g) => subscribeLabels({
+ *       g,
  *       onChange: (label) => {
  *         console.log(`Label ${label.id} changed at (${label.pageX}, ${label.pageY})`);
  *      },
- *     onExit: (label) => {
+ *      onExit: (label) => {
  *        console.log(`Label ${label.id} removed at (${label.pageX}, ${label.pageY})`);
- *    }
+ *      },
+ *      onError: (e) => {
+ *        console.error('Error in label subscription', e);
+ *      }
  * }));
  * setTimeout(() => { sub.unsubscribe(); }, 5000);
  */
-export function subscribeLabels({ onChange, onExit, cache = {} }) {
-    //throw new Error('subscribeLabels not implemented', onChange, onExit);
-
-    return labelUpdates(cache)
+export function subscribeLabels({ onChange, onExit, onError, g }) {
+    return labelUpdates(g)
         .pipe(
             mergeMap((group) => {
                 return group
@@ -1448,20 +1557,20 @@ export function subscribeLabels({ onChange, onExit, cache = {} }) {
                         takeLast(1),
                         tap((event) => onExit && onExit(event)));
             }))
-        .subscribe();
+        .subscribe({ error: onError });
 }
-
 
 class GraphistryState {
 
-    constructor(iFrame, models, result) {
+    constructor(subscriptionAPIVersion, iFrame, models, result) {
+        this.subscriptionAPIVersion = subscriptionAPIVersion;
         this._iFrame = iFrame;
         this._models = models;
         this.result = result;
     }
 
     clone() {
-        return new GraphistryState(this.iFrame, this.models, this.result);
+        return new GraphistryState(this.subscriptionAPIVersion, this.iFrame, this.models, this.result);
     }
 
     get iFrame() {
@@ -1548,6 +1657,8 @@ function addCallbacks(obs, target) {
     */
     target.labelUpdates = labelUpdates;// lift(obs, labelUpdates);
     target.subscribeLabels = subscribeLabels;//lift(obs, subscribeLabels);
+    target.selectionUpdates = selectionUpdates; // lift(obs, selectionUpdates);
+    target.subscribeLabels
     return target;
 }
 
@@ -1609,27 +1720,25 @@ export function graphistryJS(iFrame) {
                 map(target => target.contentWindow),
                 tap((target) => {
                     console.info(`Graphistry API: connecting to client`, target);
-                    target.postMessage({ type: 'ready', agent: 'graphistryjs' }, '*');
+                    target.postMessage({ type: 'ready', agent: 'graphistryjs', subscriptionAPIVersion: CLIENT_SUBSCRIPTION_API_VERSION }, '*');
                 }),
-                switchMap(
-                    ((target) =>
+                switchMap(((target) =>
                         fromEvent(window, 'message') //FIXME why not target? how to ensure proper frame?
                             .pipe(
                                 tap((v) => { console.debug('Starting iframe protocol listen flow: Message', v) }),
-                                filter(({ data, cache, ...rest }) => {
-                                    if (data && data.type === 'init') {
-                                        console.debug('received valid postMessage handshake', { data, cache, rest });
-                                        return true;
-                                    } else {
-                                        console.debug('received irrelevant postMessage handshake', { data, cache, rest });
-                                        return false;
-                                    }
+                                filter(({ data}) => data && data.type === 'init'),
+                                tap((v) => {
+                                    target.postMessage({ type: 'graphistry-init-ack', agent: 'graphistryjs', subscriptionAPIVersion: CLIENT_SUBSCRIPTION_API_VERSION }, '*');
+                                    console.debug('Starting iframe protocol listen flow: Got type: init and sent graphistry-init-ack', v) 
                                 }),
-                                tap((v) => { console.debug('Starting iframe protocol listen flow: Message filtered', v) }),
-                                map(({ data: { cache }, cache: cache2 }) => ({ target, cache, cache2 }))))),
-                switchMap(({ target, cache, cache2 }) => {
+                                map(({ data: { cache, subscriptionAPIVersion }, cache: cache2 }) => ({ target, cache, cache2, subscriptionAPIVersion })))
+                )),
+                switchMap(({ target, cache, cache2, subscriptionAPIVersion }) => {
+                    console.debug('Graphistry API: init filter passed 2, handling', { target, cache, cache2, subscriptionAPIVersion });
 
-                    console.debug('Graphistry API: init filter passed 2, handling', { target, cache, cache2 });
+                    if (!subscriptionAPIVersion) {
+                        console.error('Viz is using a previous version of the subscription API. Downgrade for labelUpdates.');
+                    }
 
                     //Observable wrapper insulating from Model's rxjs version
                     // ... assume just new/get/subscribe/unsubscribe
@@ -1665,7 +1774,7 @@ export function graphistryJS(iFrame) {
                                 return { workbook, view };
                             }),
                             tap((v) => { console.debug('Starting iframe protocol obs tap2', v) }),
-                            map(({ workbook, view }) => new GraphistryState(iFrame, { model, view, workbook })),
+                            map(({ workbook, view }) => new GraphistryState(subscriptionAPIVersion, iFrame, { model, view, workbook })),
                             tap((result) => {
                                 console.info(`Graphistry API: connected to client`, result)
                             }));
@@ -1726,10 +1835,12 @@ export {
     last,
     map,
     mergeMap,
+    mergeAll,
     Observable,
     of,
     pipe,
     ReplaySubject,
+    Subject,
     scan,
     share,
     shareReplay,

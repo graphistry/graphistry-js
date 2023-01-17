@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-//import './index.css';
+import './index.css';
 import '@graphistry/client-api-react/assets/index.less';
 import App from './App';
 import reportWebVitals from './reportWebVitals';

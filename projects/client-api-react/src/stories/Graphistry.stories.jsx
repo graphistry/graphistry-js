@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import '../../assets/index.css';
 
 import { Graphistry } from '../index';
 
 export default {
   title: 'Graphistry: React style',
-  component: Graphistry
+  component: Graphistry,
+
+  // override the default behaviour of passing action-props for every prop that
+  // starts with 'on' (see the Storybook config 'preview.js')
+  parameters: { actions: { argTypesRegex: null } },
 };
 
 //no default args
@@ -33,6 +37,39 @@ export const OnClientAPIConnected = (args) => {
   </div>);
 }
 
+export const OnSelectionUpdate = (args) => {
+  const [ selection, setSelection ] = useState(undefined);
+
+  const onSelectionUpdate = (err, v) => {
+    console.log('onSelectionUpdate', err, v);
+    setSelection({v, err: (err || {}).message});
+  }
+  
+  return (<div>
+    { `Selection: ${JSON.stringify(selection)}`}
+    <Graphistry {...defaultSettings}
+      {...args}
+      onSelectionUpdate={onSelectionUpdate}
+    />
+  </div>);
+}
+
+export const OnLabelUpdate = (args) => {
+  const [ labels, setLabels ] = useState(undefined);
+
+  const onLabelsUpdate = (err, v) => {
+    console.log('onLabelsUpdate', err, v);
+    setLabels({v, err});
+  }
+  
+  return (<div>
+    { `Labels: ${JSON.stringify(labels)}`}
+    <Graphistry {...defaultSettings}
+      {...args}
+      onLabelsUpdate={onLabelsUpdate}
+    />
+  </div>);
+}
 
 
 export const NoClusteringOnLoad = (args) => <Graphistry {...defaultSettings} {...args} play={0} />;
