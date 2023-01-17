@@ -28,8 +28,7 @@ function App() {
       <header className="App-header">
         Embeded Graphistry
       </header>
-      <Graphistry 
-        graphistryHost="https://test-2-39-43-a.grph.xyz"
+      <Graphistry
         dataset='Miserables'
         containerClassName='Content'
         iframeStyle={{ height: '100%', width: '100%', border: 0 }}
