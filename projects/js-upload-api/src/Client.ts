@@ -221,7 +221,7 @@ export class Client {
         await this.delay(200);//short initial delay as may already be logged in
         while(true) {
             await this.delay(10000);
-            const response = await (this.fetch)(`https://test-2-39-31-a.grph.xyz/api/v2/o/sso/oidc/jwt/${authResponse.state}/`, {
+            const response = await (this.fetch)(`${this.protocol}://${this.host}/api/v2/o/sso/oidc/jwt/${authResponse.state}/`, {
                 method: 'GET', 
             });
             await this.delay(6000);
@@ -416,11 +416,10 @@ export class Client {
     }
 
     public getBaseAuthUrl(): string {
-        return 'https://test-2-39-31-a.grph.xyz/';
+        return `${this.protocol}://${this.host}/`;
     }
 
     private getBaseUrl(): string {
-        return 'https://test-2-39-31-a.grph.xyz/';
-        // return `${this.protocol}://${this.host}/`;
+        return `${this.protocol}://${this.host}/`;
     }
 }
