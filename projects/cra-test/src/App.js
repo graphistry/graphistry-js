@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import './App.css';
 import { Graphistry } from '@graphistry/client-api-react';
+import SidebarSelection from './SidebarSelection';
 
 console.debug('app', { Graphistry, React });
 
@@ -9,6 +10,7 @@ const LOCAL_DEV = {
   play: 0,
   session: "cycle"
 }
+
 
 function App() {
   const onUpdateObservableG = useCallback((err, v) => {
@@ -23,10 +25,13 @@ function App() {
     console.info('onLabelsUpdate returned', v, err, '@CRA')
   }, []);
 
+  const [sidebarShow, setSidebarShow] = useState(false);
+
+
   return (
     <div className="App">
       <header className="App-header">
-        Embeded Graphistry
+        Embeded Graphistry~
       </header>
       <Graphistry
         dataset='Miserables'
@@ -35,9 +40,13 @@ function App() {
         onUpdateObservableG={onUpdateObservableG}
         onSelectionUpdate={onSelectionUpdate}
         onLabelsUpdate={onLabelsUpdate}
+        {...LOCAL_DEV}
       />
+      <div>
+        <SidebarSelection show={sidebarShow} style={{ width: sidebarShow ? 400:200}} />
+      </div>
+      <button onClick={ () => setSidebarShow(!sidebarShow)}>Sidebar</button>
     </div>
   );
-}
-
+  }
 export default App;
