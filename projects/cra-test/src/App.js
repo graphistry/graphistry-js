@@ -13,19 +13,21 @@ const LOCAL_DEV = {
 
 
 function App() {
+  const [selection, setSelection] = useState(undefined);
+  const [sidebarShow, setSidebarShow] = useState(false);
+
   const onUpdateObservableG = useCallback((err, v) => {
     console.info('onUpdateObservableG returned', v, '@CRA')
   }, []);
 
   const onSelectionUpdate = useCallback((err, v) => {
+    setSelection(v);
     console.info('onSelectionUpdate returned', v, err, '@CRA')
   }, []);
 
   const onLabelsUpdate = useCallback((err, v) => {
     console.info('onLabelsUpdate returned', v, err, '@CRA')
   }, []);
-
-  const [sidebarShow, setSidebarShow] = useState(false);
 
 
   return (
@@ -43,9 +45,9 @@ function App() {
         {...LOCAL_DEV}
       />
       <div>
-        <SidebarSelection show={sidebarShow} style={{ width: sidebarShow ? 400:200}} />
+        <SidebarSelection show={ sidebarShow } selection={ selection } style={{ width: sidebarShow ? 400:200 }} />
       </div>
-      <button onClick={ () => setSidebarShow(!sidebarShow)}>Sidebar</button>
+      <button onClick={ () => setSidebarShow(!sidebarShow)}>Sidebar</button> 
     </div>
   );
   }
