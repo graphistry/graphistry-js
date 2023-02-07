@@ -11,10 +11,11 @@ const LOCAL_DEV = {
   session: "cycle"
 }
 
+// If this is inline it causes graphistry to refresh.
+const IFRAME_STYLE = { height: '100%', width: '100%', border: 0 };
 
 function App() {
   const [selection, setSelection] = useState(undefined);
-  const [sidebarShow, setSidebarShow] = useState(false);
 
   const onUpdateObservableG = useCallback((err, v) => {
     console.info('onUpdateObservableG returned', v, '@CRA')
@@ -33,21 +34,20 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        Embeded Graphistry~
+        Embeded Graphistry
       </header>
-      <Graphistry
-        dataset='Miserables'
-        containerClassName='Content'
-        iframeStyle={{ height: '100%', width: '100%', border: 0 }}
-        onUpdateObservableG={onUpdateObservableG}
-        onSelectionUpdate={onSelectionUpdate}
-        onLabelsUpdate={onLabelsUpdate}
-        {...LOCAL_DEV}
-      />
-      <div>
-        <SidebarSelection show={ sidebarShow } selection={ selection } style={{ width: sidebarShow ? 400:200 }} />
+      <div className="Content">
+        <Graphistry
+          dataset='Miserables'
+          containerClassName='graphistry-container'
+          iframeStyle={IFRAME_STYLE}
+          onUpdateObservableG={onUpdateObservableG}
+          onSelectionUpdate={onSelectionUpdate}
+          onLabelsUpdate={onLabelsUpdate}
+          {...LOCAL_DEV}
+        />
+        <SidebarSelection selection={ selection } />
       </div>
-      <button onClick={ () => setSidebarShow(!sidebarShow)}>Sidebar</button> 
     </div>
   );
   }
