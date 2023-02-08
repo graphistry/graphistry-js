@@ -6,7 +6,7 @@ import SidebarSelection from './SidebarSelection';
 console.debug('app', { Graphistry, React });
 
 const LOCAL_DEV = {
-  graphistryHost: "http://0.0.0.0:3000",
+  graphistryHost: "https://test-2-39-44-a.grph.xyz/",
   play: 0,
   session: "cycle"
 }
@@ -38,7 +38,7 @@ function App() {
       </header>
       <div className="Content">
         <Graphistry
-          dataset='Miserables'
+          dataset='f30d35859b95470c92946082f04ab3d8'
           containerClassName='graphistry-container'
           iframeStyle={IFRAME_STYLE}
           onUpdateObservableG={onUpdateObservableG}
