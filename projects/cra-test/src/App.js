@@ -7,7 +7,7 @@ console.debug('app', { Graphistry, React });
 
 const LOCAL_DEV = {
   graphistryHost: "https://test-2-39-44-a.grph.xyz/",
-  play: 0,
+  play: 500,
   session: "cycle"
 }
 
@@ -38,7 +38,7 @@ function App() {
       </header>
       <div className="Content">
         <Graphistry
-          dataset='f30d35859b95470c92946082f04ab3d8'
+          dataset='0aa3f0699fde518db9e0b6d8db519182'
           containerClassName='graphistry-container'
           iframeStyle={IFRAME_STYLE}
           onUpdateObservableG={onUpdateObservableG}
