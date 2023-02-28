@@ -6,8 +6,8 @@ import SidebarSelection from './SidebarSelection';
 console.debug('app', { Graphistry, React });
 
 const LOCAL_DEV = {
-  graphistryHost: "https://test-2-39-44-a.grph.xyz/",
-  play: 500,
+  graphistryHost: "http://0.0.0.0:3000",
+  play: 0,
   session: "cycle"
 }
 
@@ -38,13 +38,12 @@ function App() {
       </header>
       <div className="Content">
         <Graphistry
-          dataset='0aa3f0699fde518db9e0b6d8db519182'
           containerClassName='graphistry-container'
+          dataset="Miserables"
           iframeStyle={IFRAME_STYLE}
           onUpdateObservableG={onUpdateObservableG}
           onSelectionUpdate={onSelectionUpdate}
           onLabelsUpdate={onLabelsUpdate}
-          {...LOCAL_DEV}
         />
         <SidebarSelection selection={ selection } />
       </div>
