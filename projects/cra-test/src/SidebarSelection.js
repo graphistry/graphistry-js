@@ -81,7 +81,7 @@ const KeyInput = ({ value, onChange }) => {
 )};
 
 const SidebarSelection = ({ selection }) => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [query, setQuery] = useState(Object.values(CONTEXTS)[0]);
   // const debouncedQuery = useDebounce(query, 800);
   const debouncedSelection = useDebounce(selection, 200); // Only get the first 10 nodes

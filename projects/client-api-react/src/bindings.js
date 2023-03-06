@@ -46,13 +46,6 @@ const bindingsTable = {
     
     ticks:                  [PropTypes.number,      undefined,                   undefined,        'tickClustering'],
 
-    filters:                [
-        PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-                                                     undefined,                   undefined,      'addFilters'],
-    exclusions:             [
-                            PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-                                                     undefined,                   undefined,      'addExclusions'],
-
     encodePointSize: [
         PropTypes.oneOfType([
             PropTypes.string,
@@ -123,4 +116,14 @@ const bindings =
         };
     });
 
-export { bindings, panelNames };
+// TODO: infer this from chainList in client-api
+const calls = bindings.map(b => b.jsCommand).filter(Boolean).concat([
+    'addFilter',
+    'addFilters',
+    'addExclusion',
+    'addExclusions',
+    'setSelectionExternal',
+    'setHighlightExternal'
+])
+
+export { bindings, panelNames, calls };
