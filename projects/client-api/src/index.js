@@ -1188,6 +1188,38 @@ export function addExclusions(expr) {
 }
 chainList.addExclusions = addExclusions;
 
+/**
+ * UNSTABLE: Set the selection.
+ * Currently, this uses internal ids and will be updated to use external ids.
+ * @function setSelectionExternal
+ * @param {Object} selection - point array and edge array
+ * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+ * @example
+ * GraphistryJS(document.getElementById('viz'))
+ *     .pipe(setSelectionExternal({point: [1, 2, 3], edge: []}))
+ *     .subscribe();
+ */
+export function setSelectionExternal({point = [], edge = []} = {}) {
+    return makeCaller('view', 'selection.setExternal', {point, edge});
+}
+chainList.setSelectionExternal = setSelectionExternal;
+
+/**
+ * UNSTABLE: Set the highlight.
+ * Currently, this uses internal ids and will be updated to use external ids.
+ * @function setHighlightExternal
+ * @param {Object} selection - point array, edge array and darken boolean
+ * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+ * @example
+ * GraphistryJS(document.getElementById('viz'))
+ *     .pipe(setHighlightExternal({point: [1, 2, 3], edge: []}))
+ *     .subscribe();
+ */
+export function setHighlightExternal({point = [], edge = [], darken = true} = {}) {
+    return makeCaller('view', 'highlight.setExternal', {point, edge});
+}
+chainList.setHighlightExternal = setHighlightExternal;
+
 const G_API_SETTINGS = {
 
     //models/toolbar.js
@@ -1311,6 +1343,9 @@ chainList.updateZoom = updateZoom;
 
 /**
  * Get or create an {@link Observable} stream of all selection updates from the visualization.
+ * UNSTABLE: This API is subject to change in future versions.
+ * The security model for this is being developed, in the mean time it is disabled by default.
+ * Contact us for help to prototype this feature.
  * @function selectionUpdates
  * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable}
  * @return {Subscription} A {@link Subscription} that can be used to react to the selection updates
@@ -1322,28 +1357,28 @@ chainList.updateZoom = updateZoom;
  *     })
  *     .subscribe();
  */
-export function selectionUpdates(g) {
+export function selectionUpdates(g, {withColumns=false, pageSize=1000} = {}) {
     if (!(g.subscriptionAPIVersion >= 1)) {
         return throwError(() => new Error('selectionUpdates is not available the currently embedded graphistry viz.'));
     }
 
-    const SELECTION_PATH = "workbooks.open.views.current.selection['edge','point']";
+    const selectionPath = ".selection.labels";
     return g.selectionStream || (g.selectionStream = new BehaviorSubject('Initialize selectionUpdates stream')
         .pipe(
             tap(() => {
                 console.debug('postMessage subscription', '@client-api.selectionUpdates');
-                g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: SELECTION_PATH }, '*');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: selectionPath, options: { pageSize, withColumns } }, '*');
             }),
             finalize(() => {
                 console.debug('postMessage unsubscribe', '@client-api.selectionUpdates');
-                g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: SELECTION_PATH }, '*');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: selectionPath }, '*');
             }),
             switchMap(() =>
                 fromEvent(window, 'message').pipe(
                     map(o => o.data),
-                    filter(o => o && o.type === 'graphistry-sub-update' && o.path === SELECTION_PATH),
+                    filter(o => o && o.type === 'graphistry-sub-update' && o.path === selectionPath),
                     map(o => o.data),
-                    tap(({ edge, point}) => {
+                    tap(({ edge, point, labels }) => {
                         g.models.model.setCache({
                             json: {
                                 workbooks: {
@@ -1351,8 +1386,9 @@ export function selectionUpdates(g) {
                                         views: {
                                             current: {
                                                 selection: {
-                                                    edge: edge,
-                                                    point: point
+                                                    edge,
+                                                    point,
+                                                    labels
                                                 }
                                             }
                                         }
@@ -1698,7 +1734,7 @@ function addCallbacks(obs, target) {
  *            (g) => { console.log('event', g); },
  *            (err) => { console.log('error', err); },
  *           () => { console.log('all done'); }
-*         });
+ *         });
  * </script>
  *
  */

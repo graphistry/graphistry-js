@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useImperativeHandle, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import shallowEqual from 'shallowequal';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,7 +8,7 @@ import { graphistryJS, updateSetting, encodeAxis } from '@graphistry/client-api'
 import * as gAPI from '@graphistry/client-api';
 import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
-import { bindings, panelNames } from './bindings.js';
+import { bindings, panelNames, calls } from './bindings.js';
 import { Client as ClientBase, selectionUpdates, subscribeLabels } from '@graphistry/client-api';
 
 export const Client = ClientBase;
@@ -100,7 +100,8 @@ const propTypes = {
 
     onUpdateObservableG: PropTypes.func,
     onSelectionUpdate: PropTypes.func,
-    onLabelsUpdate: PropTypes.func
+    onLabelsUpdate: PropTypes.func,
+    selectionUpdateOptions: PropTypes.object,
 };
 
 const defaultProps = {
@@ -447,11 +448,9 @@ function generateIframeRef({
     ]);
 }
 
-
 // iframe refreshes on key arg changes: via <iframe key={f(url)}
 // graphistryjs connects on mount, unsubscribes on new graphistry or unmount
-function Graphistry(props) {
-
+const Graphistry = forwardRef((props, ref) => {
     const {
         containerStyle, containerClassName, containerProps,
         iframeStyle, iframeClassName, iframeProps,
@@ -463,7 +462,8 @@ function Graphistry(props) {
         tolerateLoadErrors,
         onUpdateObservableG,
         onSelectionUpdate,
-        onLabelsUpdate
+        onLabelsUpdate,
+        selectionUpdateOptions
     } = props;
 
     const [loading, setLoading] = useState(!!props.loading);
@@ -503,9 +503,31 @@ function Graphistry(props) {
         }
     }, [gObs, onUpdateObservableG]);
 
+    // Expose g to the parent with a ref
+    useImperativeHandle(ref, () => {
+        const exportedCalls = {};
+        Object.values(calls).forEach((jsCommand) => {
+            exportedCalls[jsCommand] = (...args) => {
+                if (!g) {
+                    console.error(`g not ready for ${jsCommand}`);
+                    return;
+                }
+                console.log('calling', jsCommand, args);
+                return g[jsCommand](...args);
+            }
+        });
+
+        console.log('Updating forward ref', {g, calls, exportedCalls});
+
+        return {
+            g,
+            ...exportedCalls
+        };
+    }, [g]);
+
     useEffect(() => {
         if (g && onSelectionUpdate) {
-            const sub = selectionUpdates(g)
+            const sub = selectionUpdates(g, selectionUpdateOptions)
                 .subscribe(
                     (v) => onSelectionUpdate(undefined, v),
                     (error) => onSelectionUpdate(error)
@@ -515,7 +537,7 @@ function Graphistry(props) {
                 sub && sub.unsubscribe();
             };
         }
-    }, [g, onSelectionUpdate])
+    }, [g, onSelectionUpdate, selectionUpdateOptions])
 
     useEffect(() => {
         if (g && onLabelsUpdate) {
@@ -597,7 +619,7 @@ function Graphistry(props) {
         );
     }
     return <div style={containerStyle} className={containerClassName} {...containerProps}>{children}</div>;
-}
+});
 
 Graphistry.propTypes = propTypes;
 Graphistry.defaultProps = defaultProps;

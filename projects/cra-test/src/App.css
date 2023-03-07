@@ -8,9 +8,10 @@
 
 .App-header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  gap: 0.5em;
   font-size: 2em;
   margin: 0.5em;
   color: white;
@@ -18,4 +19,155 @@
 
 .Content {
   flex-grow: 1;
+  position: relative;
+}
+
+.graphistry-container {
+  width: 100%;
+  height: 100%;
+}
+
+
+.sb {
+  position: absolute;
+  left: -3px;
+  top: 120px;
+  width: 300px;
+  height: 500px;
+  max-height: calc(100% - 280px);
+  border-radius: 4px;
+  margin: 12px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px;
+  transition: width 0.1s, height 0.3s;
+  overflow: hidden;
+}
+
+.sb-closed {
+  position: absolute;
+  left: -3px;
+  top: 120px;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  margin: 12px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px;
+  transition: width 0.3s, height 0.1s;
+  overflow: hidden;
+}
+
+.sb-toggle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  background-color: white;
+  border-radius: 4px;
+}
+
+.sb-body {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100%;
+  min-height: calc(100% - 280px);
+  border-radius: 4px;
+  overflow: scroll;
+  border: none;
+  background-color: white;
+
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
+.sb-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sb-result {
+  flex-grow: 1;
+  padding: 16px;
+  overflow-wrap: break-word;
+}
+
+.sb-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.sb-label {
+  align-self: flex-end;
+  font-size: 8px;
+  color:rgba(0, 0, 0, 0.6);
+  padding-bottom: 4px;
+}
+
+.select {
+  height: 18px;
+  margin: 2px;
+  color:rgba(0, 0, 0, 0.6);
+  border-color:rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  outline: none;
+}
+
+.select:focus {
+  outline: none;
+  border-color:rgba(0, 0, 0, 0.6);
+}
+
+.query-input {
+  border: none;
+  padding: 8px 0px 4px 0px;
+  margin: 18px 16px 4px;
+  border-bottom: solid 1px #ccc;
+}
+
+.query-input:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.sb-submit-bar {
+  display: flex;
+  margin: 0 12px 12px;
+  align-items: center;
+}
+
+.sb-flex-grow {
+  flex-grow: 1;
+}
+
+.sb-icon-button {
+  cursor: pointer;
+  fill: rgba(0, 0, 0, 0.4);
+}
+
+.sb-icon-button:hover {
+  fill: rgba(0, 0, 0, 0.6);
+}
+
+.sb-footer {
+  color:rgba(0, 0, 0, 0.4);
+  font-size: 8px;
+  padding: 4px;
+  overflow-wrap: break-word;  
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.key-input-label {
+  cursor: pointer;
+}
+
+.alert {
+  color: red;
 }
