@@ -1,4 +1,7 @@
-FROM node:16.13.0-slim as base
+FROM node:16.13.0-alpine as base
+WORKDIR /opt/graphistry-js
+COPY lerna.json package.json package-lock.json ./
+RUN apk add --no-cache python3 make g++
 WORKDIR /opt/graphistry-js
 COPY lerna.json package.json package-lock.json ./
 RUN --mount=type=cache,target=/usr/src/app/.npm \

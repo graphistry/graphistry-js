@@ -15,7 +15,7 @@ and
 docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/cli.js run lint
 ```
 
-## Docs
+# Docs
 
 We use Storybook for React, plugged into github pages
 
@@ -47,9 +47,27 @@ docker compose build
 ./docs-build/jsdocs  # jsdocs
 ```
 
-## Docker
+# Example dev setup for `client-api` / `react-client-api`
 
-### Environment
+Terminal A
+ - `cd projects/client-api`
+ - `npm link @graphistry/client-api`
+ - `npm run build:esm:min:full:watch`
+
+Terminal B
+ - `cd projects/client-api-react`
+ - `npm link @graphistry/client-api-react`
+ - `npm link @graphistry/client-api`
+ - `npm run build:rollup-watch`
+
+Terminal C
+ - `cd projects/cra-test`
+ - `npm link @graphistry/client-api-react`
+ - `npm start`
+
+# Docker
+
+## Environment
 
 Enable buildkit for Docker and docker-compose, such as in your `.profile`:
 
@@ -60,13 +78,13 @@ export COMPOSE_DOCKER_CLI_BUILD=1
 
 For convenience, we setup `./dc` to do `docker compose` commands this for you, such as `./dc build`
 
-### Build
+## Build
 
 ```bash
 docker compose build
 ```
 
-### Run
+## Run
 
 ```bash
 docker compose run --rm graphistry-js
@@ -84,7 +102,7 @@ docker run --rm -it graphistry/graphistry:latest
 root@8f18f077e0b6:/opt/graphistry-js#
 ```
 
-### Extract binaries
+## Extract binaries
 
 You can build natively to get per-project binaries (see below), or via docker:
 
@@ -117,7 +135,7 @@ To regenerate:
 - check in the updated `package-lock.json`
 
 
-## Publish for public consumption (Maintainer only)
+# Publish for public consumption (Maintainer only)
 
 0. Login to npm: `npm login`
 

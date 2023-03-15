@@ -33,7 +33,7 @@ echo "1. Recreate container $CONTAINER_NAME from image $IMAGE_NAME as needed"
 if [ "$(docker ps -a | grep $CONTAINER_NAME)" ]; then
     #echo "... No container '$CONTAINER_NAME', create"
     echo "Removing contaier"
-    docker rm --name "$CONTAINER_NAME"
+    docker rm "$CONTAINER_NAME"
 fi
 echo "Creating container"
 docker create -it --name "$CONTAINER_NAME" "$IMAGE_NAME" bash    

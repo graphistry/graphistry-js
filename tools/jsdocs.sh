@@ -9,7 +9,7 @@ VERSION=$(cat projects/client-api/package.json | jq -r .version)
 rm -rf docs-build/jsdocs
 mkdir -p docs-build/jsdocs
 docker run --rm \
-    --entrypoint=/bin/bash \
+    --entrypoint=/bin/sh \
     -w=/opt/graphistry-js/projects/client-api \
     -v `pwd`/projects/client-api/jsdoc-conf.json:/opt/graphistry-js/projects/client-api/jsdoc-conf.json:ro \
     -v `pwd`/projects/client-api/src:/opt/graphistry-js/projects/client-api/src:ro \
