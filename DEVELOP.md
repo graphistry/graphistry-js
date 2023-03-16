@@ -12,7 +12,7 @@ Docker compose (`docker compose` or `docker-compose`, with or without `sudo`):
 and
 
 ```bash
-docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/cli.js run lint
+docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/dist/cli.js run lint
 ```
 
 # Docs

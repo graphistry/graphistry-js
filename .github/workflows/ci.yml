@@ -58,7 +58,7 @@ jobs:
 
     - name: "Lint"
       run: |
-        docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/cli.js run lint
+        docker-compose run --rm --entrypoint=/usr/local/bin/node graphistry-js ./node_modules/lerna/dist/cli.js run lint
 
     #- name: Storybook 🔧
     #  run: ./tools/storybook.sh

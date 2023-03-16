@@ -16,7 +16,7 @@
 ---
 
 # GraphistryJS
-## Web libraries for uploading and embedding graph visualization 
+## Web libraries for uploading and embedding graph visualizations
 
  - `@graphistry/client-api` - Pure JS API for manipulating Graphistry visualizations 
  - `@graphistry/client-api-react` - Graphistry vizualization React component
