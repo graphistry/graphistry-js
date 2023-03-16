@@ -46,6 +46,7 @@
     "build:js-aliases:min:full-rest": "cp dist/index.full.iife.min.js dist/GraphistryJS.min.js && cp dist/index.full.iife.min.js.map dist/GraphistryJS.min.js.map && cp dist/index.full.iife.js dist/GraphistryJS.js && cp dist/index.full.iife.js.map dist/GraphistryJS.js.map",
     "build:cjs:min:full": "esbuild --bundle src/index.js --minify --sourcemap --target=es6 --format=cjs  --outfile=dist/index.full.cjs.min.js",
     "build:esm:min:full": "esbuild --bundle src/index.js --minify --sourcemap --target=es6 --format=esm  --outfile=dist/index.full.esm.min.js",
+    "build:esm:min:full:watch": "esbuild --watch --bundle src/index.js --minify --sourcemap --target=es6 --format=esm  --outfile=dist/index.full.esm.min.js",
     "build:iife:min:full": "esbuild --bundle src/index.js --minify --sourcemap --target=es6 --format=iife --outfile=dist/index.full.iife.min.js --global-name=GraphistryModule",
     "build:docs": "rimraf docs && mkdir -p docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
     "lock:fix": "npm i --package-lock-only",
@@ -73,10 +74,10 @@
   "devDependencies": {
     "@babel/core": "^7.17.10",
     "@babel/preset-env": "7.17.10",
-    "clean-jsdoc-theme": "3.3.2",
+    "clean-jsdoc-theme": "^4.2.6",
     "esbuild": "0.14.39",
     "eslint": "7.32.0",
-    "jsdoc": "3.6.10",
+    "jsdoc": "^4.0.2",
     "jsdoc-babel": "~0.5.0",
     "rimraf": "3.0.2"
   },
