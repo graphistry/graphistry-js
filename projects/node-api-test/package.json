@@ -16,6 +16,7 @@
   "author": "Graphistry, Inc.",
   "license": "Apache-2.0",
   "dependencies": {
-    "@graphistry/node-api": "^4.4.1"
+    "@graphistry/node-api": "^4.4.1",
+    "apache-arrow": "^11.0.0"
   }
 }
