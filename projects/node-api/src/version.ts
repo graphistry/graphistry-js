@@ -23,8 +23,17 @@ try {
     const packageJSON = JSON.parse(packageFile);
     resolvedVersion = packageJSON.version;
 } catch (e) {
-    console.warn('Could not resolve version from package.json', e);
-    resolvedVersion = 'unknown';
+    try {
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = path.dirname(__filename);
+        const packagePath = path.join(__dirname, '../', 'package.json');
+        const packageFile = readFileSync(packagePath, 'utf8');
+        const packageJSON = JSON.parse(packageFile);
+        resolvedVersion = packageJSON.version;    
+    } catch (e) {
+        console.warn('Could not resolve version from package.json', e);
+        resolvedVersion = 'unknown';
+    }
 }
 
 /**
