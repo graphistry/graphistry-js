@@ -133,6 +133,9 @@ export class File {
     private _fileUploaded = false;
     public get fileUploaded(): any { return this._fileUploaded; }
 
+    private _fileValidated = false;
+    public get fileValidated(): any { return this._fileValidated; }
+
     private _fileUploadResponse : any;
     public get fileUploadResponse(): any { return this._fileUploadResponse; }
 
@@ -200,6 +203,9 @@ export class File {
         if (!this._fileCreated) {
             throw new Error('Unexpected file upload response, check file._fileUploadResponse');
         }
+        if (!this._fileValidated) {
+            throw new Error('Unexpected file validation response, check file._fileValidateResponse');
+        }
         return this;
     }
 
@@ -249,6 +255,7 @@ export class File {
         );
         this._fileUploadResponse = results;
         this._fileUploaded = !!results.is_uploaded;
+        this._fileValidated = !!results.is_valid;
         return results;
     }
 
