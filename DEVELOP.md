@@ -69,7 +69,7 @@ Terminal C
 
 ## Environment
 
-Enable buildkit for Docker and docker-compose, such as in your `.profile`:
+Enable buildkit for Docker and docker compose plugin, such as in your `.profile`:
 
 ```bash
 export DOCKER_BUILDKIT=1
