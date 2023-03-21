@@ -8,6 +8,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Added
 - **js-upload-api**: Apache Arrow upload support
 
+### Fix
+- **js-upload-api**: Throw error if invalid credentials
+- **js-upload-api**: Throw error if file upload has an unrecognized format
+
 ## 4.2.0 - 2022-10-29
 
 ### Fix
