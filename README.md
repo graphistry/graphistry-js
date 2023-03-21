@@ -18,13 +18,15 @@
 # GraphistryJS
 ## Web libraries for uploading and embedding graph visualizations
 
- - `@graphistry/client-api` - Pure JS API for manipulating Graphistry visualizations 
- - `@graphistry/client-api-react` - Graphistry vizualization React component
- - `@graphistry/node-api` - Node bindings to upload into Graphistry ecosystem
- - `@graphistry/js-upload-api` - Pure JS library for graph upload
- - `@graphistry/cra-test` - Example react app using these libraries
+ - [@graphistry/client-api](projects/client-api) - Pure JS API for manipulating Graphistry visualizations 
+   - [Storybook](https://graphistry.github.io/graphistry-js/?path=/story/graphistry-vanilla-js)
+ - [@graphistry/client-api-react](projects/client-api-react) - Graphistry vizualization React component
+   - [Storybook](https://graphistry.github.io/graphistry-js/?path=/story/graphistry-react-style--predefined-dataset)
+ - [@graphistry/node-api](projects/node-api) - Node bindings to upload into Graphistry ecosystem
+ - [@graphistry/js-upload-api](projects/js-upload-api) - Pure JS library for graph upload
+ - [@graphistry/cra-test](projects/cra-test) - Example react app using these libraries
 
-[Dev guide for contributors](./DEVELOP.md)
+Dev guide for contributors: [DEVELOP.md](./DEVELOP.md)
 
 <br><br>
 
