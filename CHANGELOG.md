@@ -5,6 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Development
 
+### Added
+- **js-upload-api**: Apache Arrow upload support
+
 ## 4.2.0 - 2022-10-29
 
 ### Fix

@@ -1,5 +1,7 @@
 import { EdgeFile, NodeFile, Dataset, Client } from '@graphistry/node-api';
 import { tableFromArrays, tableToIPC } from 'apache-arrow';
+import { tableFromIPC } from 'apache-arrow';
+import { readFileSync, writeFileSync } from 'fs';
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -48,7 +50,7 @@ if (false) {
 
     const edgesFile = new EdgeFile(edges);
     const nodesFile = new NodeFile(nodes);  // optional
-    await Promise.all([edgesFile.uploadUrlOpts(client), nodesFile.uploadUrlOpts(client)]);
+    await Promise.all([edgesFile.upload(client), nodesFile.upload(client)]);
 
     const dataset = new Dataset({
         node_encodings: { bindings: { node: 'n' } },
@@ -186,7 +188,7 @@ if (false) {
     const edgesFile = new EdgeFile(edges);
     const nodesFile = new NodeFile(nodes);  // optional
 
-    Promise.all([edgesFile.uploadUrlOpts(client), nodesFile.uploadUrlOpts(client)])
+    Promise.all([edgesFile.upload(client), nodesFile.upload(client)])
     .then(() => (new Dataset({
             node_encodings: { bindings: { node: 'n' } },
             edge_encodings: { bindings: { source: 's', destination: 'd' } },
@@ -201,6 +203,33 @@ if (false) {
         console.error('Oops', err);
     });
 
+} else if (false) {
+
+    //convert edges to apache-arrow table
+    const edgesArr = tableFromArrays(edges);
+    const nodesArr = tableFromArrays(nodes);
+    const client = new Client(user, password, protocol, host);
+
+    function arrToUint8Array(arr) {
+        const ui8 = tableToIPC(arr, 'file');
+        return ui8;
+    }
+
+    const edgesFile = new EdgeFile(arrToUint8Array(edgesArr), 'arrow');
+    const nodesFile = new NodeFile(arrToUint8Array(nodesArr), 'arrow');  // optional
+    await Promise.all([edgesFile.upload(client), nodesFile.upload(client)]);
+
+    const dataset = new Dataset({
+        node_encodings: { bindings: { node: 'n' } },
+        edge_encodings: { bindings: { source: 's', destination: 'd' } },
+        metadata: {},
+        name: 'testdata',
+    }, edgesFile, nodesFile);
+    await dataset.upload(client);
+
+    console.info(`View dataset ${dataset.datasetID} at ${dataset.datasetURL}`);
+    console.info(`Dataset using node file ${nodesFile.fileID}, edge file ${edgesFile.fileID}`);
+
 } else {
 
     //convert edges to apache-arrow table
@@ -208,8 +237,8 @@ if (false) {
     const nodesArr = tableFromArrays(nodes);
     const client = new Client(user, password, protocol, host);
 
-    const edgesFile = new EdgeFile(Buffer.from(tableToIPC(edgesArr)), 'arrow');
-    const nodesFile = new NodeFile(Buffer.from(tableToIPC(nodesArr)), 'arrow');  // optional
+    const edgesFile = new EdgeFile(edgesArr, 'arrow');
+    const nodesFile = new NodeFile(nodesArr, 'arrow');  // optional
     await Promise.all([edgesFile.upload(client), nodesFile.upload(client)]);
 
     const dataset = new Dataset({

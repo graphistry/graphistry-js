@@ -101,6 +101,20 @@ export enum FileType {
  * ```
  * 
  * <br>
+* 
+ * @example **Upload a {@link NodeFile} from an Apache Arrow Table**
+ * ```javascript
+ * import { tableFromArrays, tableToIPC } from 'apache-arrow';
+ * import { NodeFile } from '@graphistry/node-api';
+ * const json = {'n': ['a', 'b', 'c']};
+ * const arr = tableFromArrays(json);
+ * const uint8Buf = tableToIPC(arr);
+ * const nodesFile = new NodeFile(uint8Buf, 'arrow');
+ * await nodesFile.upload(client);
+ * console.log(`NodeFile uploaded as ID ${nodesFile.fileID}`);
+ * ```
+ * 
+ * <br>
  *  
  * @example **Create a {@link File} by ID (e.g., previously uploaded) for use with {@link Dataset}s**
  * ```javascript
@@ -158,7 +172,7 @@ export class File {
      *   * Upload step options: https://hub.graphistry.com/docs/api/2/rest/files/#uploadfiledata
      * 
      * @param type FileType.Node or FileType.Edge
-     * @param data Payload to pass to node-fetch 
+     * @param data Payload to pass to node-fetch. Use TypedArrays such as Uint8Array for binary data such as arrow
      * @param fileFormat File format to use, e.g. 'json', 'csv', 'arrow', 'parquet', 'orc', 'xls' 
      * @param name Name of the file to use, e.g. 'my-file' 
      * @param createOpts JSON post body options to use in createFile()
@@ -251,7 +265,8 @@ export class File {
         this.fillMetadata(this._data, client);
         const results = await client.post(
             `api/v2/upload/files/${this._fileID}${ this.uploadUrlOpts ? `?${this.uploadUrlOpts}` : ''}`,
-            this._data
+            this._data,
+            this.fileFormat != 'json' ? {} : undefined
         );
         this._fileUploadResponse = results;
         this._fileUploaded = !!results.is_uploaded;
@@ -280,6 +295,10 @@ export class File {
     private fillMetadata(data: any, client: Client): void {
         if (!data) {
             throw new Error('No data to fill metadata; call setData() first or provide to File constructor');
+        }
+
+        if (data instanceof Uint8Array) {
+            return;
         }
 
         if (!data['agent_name']) {

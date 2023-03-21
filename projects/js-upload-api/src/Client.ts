@@ -100,11 +100,12 @@ export class Client {
      * Internal helper
      * @param uri The URI to upload to.
      * @param payload The payload to upload. 
+     * @param baseHeaders Optionally override base header object to mix with auth header for the upload.
      * @returns The response from the server. 
      */
-    public async post(uri: string, payload: any): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    public async post(uri: string, payload: any, baseHeaders: any = undefined): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
         console.debug('post', {uri, payload});
-        const headers = await this.getSecureHeaders();
+        const headers = await this.getSecureHeaders(baseHeaders);
         console.debug('post', {headers});
         const response = await this.postToApi(uri, payload, headers);
         console.debug('post response', {uri, payload, response});
@@ -182,6 +183,12 @@ export class Client {
 
         const tok : string = response.token;
         this._token = tok;
+
+        if (!this.authTokenValid()) {
+            console.error('auth token failure', {response, username: this.username, host: this.host});
+            throw new Error({'error': 'Auth token failure', ...(response||{})});
+        }
+
         return tok;
     }
 
@@ -196,7 +203,10 @@ export class Client {
         const response = await resolvedFetch(this.getBaseUrl() + url, { // change this
             method: 'POST',
             headers,
-            body: JSON.stringify(data),
+            body: 
+                //TypedArray
+                ArrayBuffer.isView(data) && !(data instanceof DataView) ? data
+                : JSON.stringify(data),
         })
         console.debug('postToApi', {url, data, headers, response});
         return await response.json();
@@ -209,8 +219,8 @@ export class Client {
         });
     }
     
-    private async getSecureHeaders(): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
-        const headers = this.getBaseHeaders();
+    private async getSecureHeaders(baseHeaders: any = undefined): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
+        const headers = baseHeaders || this.getBaseHeaders();
         const tok = await this.getAuthToken();
         console.debug('getSecureHeaders', {headers, tok});
         headers.Authorization = `Bearer ${tok}`;

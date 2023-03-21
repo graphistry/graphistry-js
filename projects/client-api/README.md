@@ -90,3 +90,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 ```
+
+## Uploads
+
+You can also use the library to configure & upload visualization data, and get back dataset IDs to embed as a live visualization:
+
+```javascript
+import { Client, Dataset, File, EdgeFile, NodeFile } from '@graphistry/client-api';
+
+//defaults: 'https', 'hub.graphistry.com', 'https://hub.graphistry.com'
+const client = new Client('my_username', 'my_password');
+
+//columnar data is fastest; column per attribute; reuse across datasets
+const edgesFile = new EdgeFile({'s': ['a1', 'b2'], 'd': ['b2', 'c3']});
+const nodesFile = new NodeFile({'n': ['a1', 'b2', 'c3'], 'a1': ['x', 'y', 'z']});
+
+const dataset = new Dataset({
+    node_encodings: { bindings: { node: 'n' } },
+    edge_encodings: { bindings: { source: 's', destination: 'd' } },
+    metadata: {},
+    name: 'testdata',
+}, edgesFile, nodesFile);
+
+await dataset.upload();
+console.info(`View at ${dataset.datasetID} at ${dataset.datasetURL}`);
+```
+
+See additional examples in the `@graphistry/node-api` docs or API references here

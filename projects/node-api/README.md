@@ -83,6 +83,21 @@ const nodesFile = new NodeFile({'n': ['a1', 'b2', 'c3'], 'a1': ['x', 'y', 'z']})
 })
 ```
 
+### Ex: Apache Arrow uploads
+
+We recommend uploading [Apache Arrow](https://arrow.apache.org/docs/dev/index.html) format data in most scenarios due to the speed and reliability guarantees:
+
+```javascript
+import { tableFromArrays, tableToIPC } from 'apache-arrow';
+import { EdgeFile } from '@graphistry/node-api';
+
+//columnar data is fastest; column per attribute; reuse across datasets
+const edgesJSON = {'s': ['a1', 'b2'], 'd': ['b2', 'c3']};
+const edgesArr = tableFromArrays(edgesJSON);
+const edgesUint8 = tableToIPC(edgesArr);
+const edgesFile = new EdgeFile(edgesUint8, 'arrow');
+```
+
 ### Using API Options
 
 * Set parsing options for different `File` formats and shapes
