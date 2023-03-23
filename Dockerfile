@@ -17,17 +17,24 @@ COPY \
     projects/js-upload-api/package.json \
     projects/js-upload-api/package-lock.json \
     /opt/graphistry-js/projects/js-upload-api/
+COPY \
+    projects/node-api/package.json \
+    projects/node-api/package-lock.json \
+    /opt/graphistry-js/projects/node-api/
+
 # Rebuild esbuild due to exec format err: https://github.com/evanw/esbuild/issues/1223
+
+
 RUN --mount=type=cache,target=/usr/src/app/.npm\
     echo "=== Installing and linking project dependencies ===" \
     && npm run bootstrap \
     && ( cd projects/client-api && npm rebuild esbuild ) \
     && ( cd projects/client-api-react && npm rebuild esbuild ) \
-    && ( cd projects/js-upload-api && npm rebuild esbuild )
+    && ( cd projects/js-upload-api && npm rebuild esbuild ) \
+    && ( cd projects/node-api && npm rebuild esbuild )
 
 # Shared src
 COPY \
-    projects/js-upload-api/package.json \
     projects/js-upload-api/tsconfig.json \
     /opt/graphistry-js/projects/js-upload-api/
 COPY \
@@ -59,9 +66,17 @@ RUN echo "=== Building client-api-react ===" \
 
 FROM base as base_node
 WORKDIR /opt/graphistry-js
-COPY projects/node-api /opt/graphistry-js/projects/node-api
+COPY projects/node-api/src /opt/graphistry-js/projects/node-api/src
+COPY \
+    projects/node-api/.eslintignore \
+    projects/node-api/.eslintrc.cjs \
+    projects/node-api/tsconfig.json \
+    /opt/graphistry-js/projects/node-api/
 RUN echo "=== Building node-api ===" \
+    && ( cd projects/node-api && ls -alh node_modules/@graphistry || echo ok) \
     && ( cd projects/node-api && npm i ) \
+    && ( cd projects/node-api && ls -alh node_modules/@graphistry || echo ok) \
+    && npm run bootstrap \
     && ./node_modules/lerna/dist/cli.js run build --scope="@graphistry/node-api"
 
 # #############################################################################

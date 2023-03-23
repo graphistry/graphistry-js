@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Client } from './Client.js';
 import { File, FileType, EdgeFile, NodeFile } from './File.js';
-import { Kind, Mode, ModeAction, Privacy } from './Privacy.js';
+import { Mode, ModeAction, Privacy } from './Privacy.js';
 
 /**
  * # Dataset examples
