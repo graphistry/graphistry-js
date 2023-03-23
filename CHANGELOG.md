@@ -7,9 +7,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Added
 - **js-upload-api**: Apache Arrow upload support
+- **js-upload-api**: Privacy settings support
 
 ### Change
 - **node-api**: Refactor to importing from `js-upload-api` vs previous code clone
+- **node-api**: Refactor exports (non-breaking)
+
+### Docs
+- **js-upload-api**: Methods point to examples
 
 ### Fix
 - **js-upload-api**: Throw error if invalid credentials
