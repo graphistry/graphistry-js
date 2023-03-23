@@ -49,6 +49,13 @@
  * );
  * ```
  * 
+ * <br>
+ * 
+ * @example **Create a client with an externally-provided JWT token**
+ * ```javascript
+ * import { Client } from '@graphistry/node-api';
+ * const client = new Client();
+ * client.setToken('Bearer 123abc');
  */
 export class Client {
 
@@ -96,6 +103,20 @@ export class Client {
         if (this.isServerConfigured()) {
             this._getAuthTokenPromise = this.getAuthToken();
         }
+    }
+
+    /**
+     * 
+     * See examples at top of file
+     * 
+     * Set JWT token if already known
+     * 
+     * @param token The token to use for authentication.
+     * @returns The client instance.
+     */
+    public setToken(token: string) {
+        this._token = token;
+        return this;
     }
 
     /**

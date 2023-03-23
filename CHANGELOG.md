@@ -8,6 +8,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Added
 - **js-upload-api**: Apache Arrow upload support
 - **js-upload-api**: Privacy settings support
+- **js-upload-api**: `Client::setToken()` for passing in existing JWT tokens
 
 ### Change
 - **node-api**: Refactor to importing from `js-upload-api` vs previous code clone
