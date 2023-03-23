@@ -165,6 +165,8 @@ export class File {
 
     /**
      * 
+     * See examples at top of file
+     * 
      * Create a new {@link File} object for uploading or use with {@link Dataset}
      * 
      * For more information on the available options, see:
@@ -196,6 +198,9 @@ export class File {
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * 
+     * See examples at top of file
+     * 
      * Upload curent {@link File} object to the server
      * 
      * By default, this will skip reuploading files that have already been uploaded.
@@ -226,6 +231,9 @@ export class File {
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * 
+     * See examples at top of file
+     * 
      * Helper function to create the file on the server but not yet upload its data
      * 
      * By default, this will skip recreating files that have already been created.
@@ -250,6 +258,9 @@ export class File {
     }
 
     /**
+     * 
+     * See examples at top of file
+     * 
      * Helper function to upload the data to the server
      * 
      * By default, this will skip reuploading data that has already been uploaded.
@@ -275,6 +286,9 @@ export class File {
     }
 
     /**
+     * 
+     * See examples at top of file
+     * 
      * Populate data for later uploading if it wasn't set during construction
      * 
      * Cannot run this function if the file has already been uploaded
@@ -315,6 +329,9 @@ export class File {
 
 /**
  * Helper class for tracking intent when creating a {@link File} object for uploading
+ * 
+ * See examples at top of file
+ * 
  */
 export class EdgeFile extends File {
     constructor(data: any = undefined, fileFormat = 'json', name = 'my file', createOpts = {}, urlOpts = '') {
@@ -324,6 +341,8 @@ export class EdgeFile extends File {
 
 /**
  * Helper class for tracking intent when creating a {@link File} object for uploading
+ * 
+ * See examples at top of file
  */
 export class NodeFile extends File {
     constructor(data: any = undefined, fileFormat = 'json', name = 'my file', createOpts = {}, urlOpts = '') {

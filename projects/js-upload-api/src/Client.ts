@@ -68,6 +68,9 @@ export class Client {
     private fetch: any;  // eslint-disable-line @typescript-eslint/no-explicit-any
 
     /**
+     * 
+     * See examples at top of file
+     * 
      * @param username The username to authenticate with.
      * @param password The password to authenticate with.
      * @param protocol The protocol to use for the server during uploads: 'http' or 'https'.

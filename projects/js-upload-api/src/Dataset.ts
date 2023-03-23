@@ -197,6 +197,8 @@ export class Dataset {
 
     /**
      * 
+     * See examples at top of file
+     * 
      * Dataset definitions including required node_encodings, edge_encodings, metadata and name.
      * Optional definitions include edge_hypergraph_transform, and description, and various subfields.
      * URL settings may also be specified for additional styling.
@@ -249,6 +251,8 @@ export class Dataset {
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * 
+     * See examples at top of file
      * 
      * Upload the dataset to the Graphistry server.
      * 
@@ -327,6 +331,9 @@ export class Dataset {
     }
 
     /**
+     *
+     * See examples at top of file
+     * 
      * Add an additional node or edge file to the existing ones.
      * 
      * @param file File object. Does not need to be uploaded yet.
