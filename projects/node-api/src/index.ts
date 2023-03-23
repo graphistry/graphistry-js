@@ -1,14 +1,14 @@
-import { Client as ClientBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
+import { Client as ClientBase } from '@graphistry/js-upload-api';
 import { version as VERSION } from './version.js';
 import fetch, { Headers } from 'node-fetch';
 
-const CLIENT_SUBSCRIPTION_API_VERSION = 1;
+export {
+    Dataset, File, EdgeFile, NodeFile,
+    FileType,
+    Privacy, Mode, ModeAction, ModeActionRaw
+} from '@graphistry/js-upload-api';
 
-//export const Client = ClientBase;
-export const Dataset = DatasetBase;
-export const File = FileBase;
-export const EdgeFile = EdgeFileBase;
-export const NodeFile = NodeFileBase;
+const CLIENT_SUBSCRIPTION_API_VERSION = 1;
 
 //FIXME not generating jsdoc
 /**

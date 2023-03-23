@@ -237,8 +237,12 @@ if (false) {
     const nodesArr = tableFromArrays(nodes);
     const client = new Client(user, password, protocol, host);
 
-    const edgesFile = new EdgeFile(edgesArr, 'arrow');
-    const nodesFile = new NodeFile(nodesArr, 'arrow');  // optional
+    function arrToUint8Array(arr) {
+        const ui8 = tableToIPC(arr, 'file');
+        return ui8;
+    }
+    const edgesFile = new EdgeFile(arrToUint8Array(edgesArr), 'arrow');
+    const nodesFile = new NodeFile(arrToUint8Array(nodesArr), 'arrow');  // optional
     await Promise.all([edgesFile.upload(client), nodesFile.upload(client)]);
 
     const dataset = new Dataset({
@@ -251,5 +255,7 @@ if (false) {
 
     console.info(`View dataset ${dataset.datasetID} at ${dataset.datasetURL}`);
     console.info(`Dataset using node file ${nodesFile.fileID}, edge file ${edgesFile.fileID}`);
+
+    await dataset.privacy(client);
 
 }
