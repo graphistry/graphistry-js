@@ -98,6 +98,16 @@ const edgesUint8: Uint8Array : = tableToIPC(edgesArr);
 const edgesFile = new EdgeFile(edgesUint8, 'arrow');
 ```
 
+### Ex: Custom token
+
+If you already have a JWT token, you can pass it in
+
+```javascript
+import { Client } from '@graphistry/node-api';
+const c = new Client();
+c.setToken('Bearer 123abc');
+```
+
 ### Using API Options
 
 * Set parsing options for different `File` formats and shapes
