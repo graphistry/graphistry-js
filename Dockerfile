@@ -73,11 +73,12 @@ COPY \
     projects/node-api/tsconfig.json \
     /opt/graphistry-js/projects/node-api/
 RUN echo "=== Building node-api ===" \
-    && ( cd projects/node-api && ls -alh node_modules/@graphistry || echo ok) \
-    && ( cd projects/node-api && npm i ) \
-    && ( cd projects/node-api && ls -alh node_modules/@graphistry || echo ok) \
-    && npm run bootstrap \
-    && ./node_modules/lerna/dist/cli.js run build --scope="@graphistry/node-api"
+    && ( cd projects/node-api && npm i) \
+    && ( cd projects/js-upload-api && npm link) \
+    && ( cd projects/node-api && npm link '@graphistry/js-upload-api') \
+    && ./node_modules/lerna/dist/cli.js run build --scope="@graphistry/node-api" \
+    && echo "--- Removing symbolic link before next docker layer ---" \
+    && ( cd projects/node-api && npm unlink '@graphistry/js-upload-api')
 
 # #############################################################################
 
