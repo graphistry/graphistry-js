@@ -107,3 +107,6 @@ COPY --from=base_node \
     /opt/graphistry-js/projects/node-api
 RUN  echo "== Final node client" \
     && find /opt/graphistry-js/projects/node-api
+
+RUN (cd projects/js-upload-api && npm link) \
+    && (cd projects/node-api && npm link '@graphistry/js-upload-api')
