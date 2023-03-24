@@ -157,6 +157,8 @@ lerna version X.Y.Z-alpha.2
 lerna publish #  if failed: lerna publish from-package
 ```
 
+As an even bigger hammer, to update even unchanged dependencies, try `lerna publish X.Y.Z --force-publish`
+
 4. Merge the PR in github
 
 This publishes ghpages
