@@ -94,7 +94,7 @@ import { EdgeFile } from '@graphistry/node-api';
 //columnar data is fastest; column per attribute; reuse across datasets
 const edgesJSON = {'s': ['a1', 'b2'], 'd': ['b2', 'c3']};
 const edgesTable: Table = tableFromArrays(edgesJSON);
-const edgesUint8: Uint8Array : = tableToIPC(edgesArr);
+const edgesUint8: Uint8Array = tableToIPC(edgesArr);
 const edgesFile = new EdgeFile(edgesUint8, 'arrow');
 ```
 
