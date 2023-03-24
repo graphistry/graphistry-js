@@ -5,6 +5,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Development
 
+### Added
+- **js-upload-api**: Apache Arrow upload support
+- **js-upload-api**: Privacy settings support
+- **js-upload-api**: `Client::setToken()` for passing in existing JWT tokens
+
+### Change
+- **node-api**: Refactor to importing from `js-upload-api` vs previous code clone
+- **node-api**: Refactor exports (non-breaking)
+
+### Docs
+- **js-upload-api**: Methods point to examples
+
+### Fix
+- **js-upload-api**: Throw error if invalid credentials
+- **js-upload-api**: Throw error if file upload has an unrecognized format
+
 ## 4.2.0 - 2022-10-29
 
 ### Fix

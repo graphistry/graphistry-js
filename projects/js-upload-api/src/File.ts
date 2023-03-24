@@ -101,6 +101,20 @@ export enum FileType {
  * ```
  * 
  * <br>
+* 
+ * @example **Upload a {@link NodeFile} from an Apache Arrow Table**
+ * ```javascript
+ * import { tableFromArrays, tableToIPC } from 'apache-arrow';
+ * import { NodeFile } from '@graphistry/node-api';
+ * const json = {'n': ['a', 'b', 'c']};
+ * const arr = tableFromArrays(json);
+ * const uint8Buf = tableToIPC(arr);
+ * const nodesFile = new NodeFile(uint8Buf, 'arrow');
+ * await nodesFile.upload(client);
+ * console.log(`NodeFile uploaded as ID ${nodesFile.fileID}`);
+ * ```
+ * 
+ * <br>
  *  
  * @example **Create a {@link File} by ID (e.g., previously uploaded) for use with {@link Dataset}s**
  * ```javascript
@@ -133,6 +147,9 @@ export class File {
     private _fileUploaded = false;
     public get fileUploaded(): any { return this._fileUploaded; }
 
+    private _fileValidated = false;
+    public get fileValidated(): any { return this._fileValidated; }
+
     private _fileUploadResponse : any;
     public get fileUploadResponse(): any { return this._fileUploadResponse; }
 
@@ -148,6 +165,8 @@ export class File {
 
     /**
      * 
+     * See examples at top of file
+     * 
      * Create a new {@link File} object for uploading or use with {@link Dataset}
      * 
      * For more information on the available options, see:
@@ -155,7 +174,7 @@ export class File {
      *   * Upload step options: https://hub.graphistry.com/docs/api/2/rest/files/#uploadfiledata
      * 
      * @param type FileType.Node or FileType.Edge
-     * @param data Payload to pass to node-fetch 
+     * @param data Payload to pass to node-fetch. Use TypedArrays such as Uint8Array for binary data such as arrow
      * @param fileFormat File format to use, e.g. 'json', 'csv', 'arrow', 'parquet', 'orc', 'xls' 
      * @param name Name of the file to use, e.g. 'my-file' 
      * @param createOpts JSON post body options to use in createFile()
@@ -179,6 +198,9 @@ export class File {
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * 
+     * See examples at top of file
+     * 
      * Upload curent {@link File} object to the server
      * 
      * By default, this will skip reuploading files that have already been uploaded.
@@ -200,12 +222,18 @@ export class File {
         if (!this._fileCreated) {
             throw new Error('Unexpected file upload response, check file._fileUploadResponse');
         }
+        if (!this._fileValidated) {
+            throw new Error('Unexpected file validation response, check file._fileValidateResponse');
+        }
         return this;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * 
+     * See examples at top of file
+     * 
      * Helper function to create the file on the server but not yet upload its data
      * 
      * By default, this will skip recreating files that have already been created.
@@ -230,6 +258,9 @@ export class File {
     }
 
     /**
+     * 
+     * See examples at top of file
+     * 
      * Helper function to upload the data to the server
      * 
      * By default, this will skip reuploading data that has already been uploaded.
@@ -245,14 +276,19 @@ export class File {
         this.fillMetadata(this._data, client);
         const results = await client.post(
             `api/v2/upload/files/${this._fileID}${ this.uploadUrlOpts ? `?${this.uploadUrlOpts}` : ''}`,
-            this._data
+            this._data,
+            this.fileFormat != 'json' ? {} : undefined
         );
         this._fileUploadResponse = results;
         this._fileUploaded = !!results.is_uploaded;
+        this._fileValidated = !!results.is_valid;
         return results;
     }
 
     /**
+     * 
+     * See examples at top of file
+     * 
      * Populate data for later uploading if it wasn't set during construction
      * 
      * Cannot run this function if the file has already been uploaded
@@ -275,6 +311,10 @@ export class File {
             throw new Error('No data to fill metadata; call setData() first or provide to File constructor');
         }
 
+        if (data instanceof Uint8Array) {
+            return;
+        }
+
         if (!data['agent_name']) {
             data['agent_name'] = client.agent;
         }
@@ -289,6 +329,9 @@ export class File {
 
 /**
  * Helper class for tracking intent when creating a {@link File} object for uploading
+ * 
+ * See examples at top of file
+ * 
  */
 export class EdgeFile extends File {
     constructor(data: any = undefined, fileFormat = 'json', name = 'my file', createOpts = {}, urlOpts = '') {
@@ -298,6 +341,8 @@ export class EdgeFile extends File {
 
 /**
  * Helper class for tracking intent when creating a {@link File} object for uploading
+ * 
+ * See examples at top of file
  */
 export class NodeFile extends File {
     constructor(data: any = undefined, fileFormat = 'json', name = 'my file', createOpts = {}, urlOpts = '') {

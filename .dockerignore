@@ -15,11 +15,14 @@ docs/
 
 docs-build/
 .github/
+projects/client-api/dist
+projects/client-api/docs
 projects/client-api/jsdocs/
 projects/client-api/www/
 projects/client-api-react/www/
-projects/client-api/dist
 projects/client-api-react/dist
+projects/js-upload-api/dist
+projects/js-upload-api/docs
 projects/node-api/dist
 projects/node-api/docs
 DEVELOP.md

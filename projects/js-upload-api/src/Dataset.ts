@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Client } from './Client.js';
 import { File, FileType, EdgeFile, NodeFile } from './File.js';
+import { Mode, ModeAction, Privacy } from './Privacy.js';
 
 /**
  * # Dataset examples
@@ -70,6 +71,24 @@ import { File, FileType, EdgeFile, NodeFile } from './File.js';
  * dataset.addFile(edgesFile);
  * await dataset.upload(client);
  * console.log(`Dataset ${dataset.datasetID} uploaded to ${dataset.datasetURL}`);
+ * ```
+ * 
+ * <br>
+ * 
+ * @example **Set privacy on uploaded dataset**
+ * ```javascript
+ * import { Dataset, Privacy } from '@graphistry/node-api';
+ * const dataset = new Dataset(
+ *   {
+ *       node_encodings: { bindings: { } },
+ *       edge_encodings: { bindings: { 'source': 's', 'destination': 'd' } },
+ *       metadata: {},
+ *       name: 'testdata',
+ *   }
+ * );
+ * dataset.addFile(edgesFile);
+ * await dataset.upload(client);
+ * await dataset.setPrivacy(client); // see additional options below
  * ```
  * 
  * <br>
@@ -197,6 +216,8 @@ export class Dataset {
 
     /**
      * 
+     * See examples at top of file
+     * 
      * Dataset definitions including required node_encodings, edge_encodings, metadata and name.
      * Optional definitions include edge_hypergraph_transform, and description, and various subfields.
      * URL settings may also be specified for additional styling.
@@ -249,6 +270,8 @@ export class Dataset {
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
+     * 
+     * See examples at top of file
      * 
      * Upload the dataset to the Graphistry server.
      * 
@@ -327,6 +350,9 @@ export class Dataset {
     }
 
     /**
+     *
+     * See examples at top of file
+     * 
      * Add an additional node or edge file to the existing ones.
      * 
      * @param file File object. Does not need to be uploaded yet.
@@ -366,5 +392,42 @@ export class Dataset {
             metadata['apiversion'] = '3';
         }
     }
+
+    /////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * 
+     * See examples at top of file
+     * 
+     * Set the privacy mode of the dataset. All but the client are optional.
+     * 
+     * @param client Client object
+     * @param mode Privacy mode. One of 'private', 'public', 'organization'
+     * @param modeAction Capability allowed when shared
+     * @param invitedUsers List of user IDs to share with
+     * @param notify Whether to notify users of the share
+     * @param message Message to include in the notification
+     * 
+     * 
+     * @returns Promise that resolves when the privacy is set
+     * @throws Error if the dataset has not been uploaded yet
+     * @throws Error if server call fails
+     */
+    public async privacy(
+        client: Client,
+        mode: Mode = 'private',
+        modeAction?: ModeAction,
+        invitedUsers: string[] = [],
+        notify = false,
+        message = '') {
+            if (!this._datasetID) {
+                throw new Error('Dataset must be uploaded before setting privacy');
+            }
+            const p = new Privacy(
+                this._datasetID, 'dataset',
+                mode, modeAction, invitedUsers, notify, message
+            );
+            return await p.upload(client);
+        }
     
 }

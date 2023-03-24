@@ -69,7 +69,7 @@ Terminal C
 
 ## Environment
 
-Enable buildkit for Docker and docker-compose, such as in your `.profile`:
+Enable buildkit for Docker and docker compose plugin, such as in your `.profile`:
 
 ```bash
 export DOCKER_BUILDKIT=1
@@ -156,6 +156,8 @@ Ex:
 lerna version X.Y.Z-alpha.2
 lerna publish #  if failed: lerna publish from-package
 ```
+
+As an even bigger hammer, to update even unchanged dependencies, try `lerna publish X.Y.Z --force-publish`
 
 4. Merge the PR in github
 

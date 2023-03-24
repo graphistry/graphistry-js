@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/node-api",
-  "version": "4.4.1",
+  "version": "4.5.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
@@ -64,6 +64,7 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "node-fetch": "^3.2.10"
+    "@graphistry/js-upload-api": "*",
+    "node-fetch": "^3.3.1"
   }
 }
