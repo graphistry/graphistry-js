@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/node-api-test",
-  "version": "4.5.0",
+  "version": "4.6.0-alpha.1",
   "description": "",
   "main": "src/index.js",
   "type": "module",
@@ -16,7 +16,7 @@
   "author": "Graphistry, Inc.",
   "license": "Apache-2.0",
   "dependencies": {
-    "@graphistry/node-api": "^4.5.0",
+    "@graphistry/node-api": "^4.6.0-alpha.1",
     "apache-arrow": "^11.0.0"
   }
 }
