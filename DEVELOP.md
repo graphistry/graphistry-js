@@ -115,6 +115,7 @@ You may want to run `docker rm graphistry-js-tmp` if a stale container
 ## Native
 
 ```bash
+apt get install jq
 npm install
 npm run bootstrap
 npm run build
