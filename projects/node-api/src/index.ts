@@ -1,6 +1,6 @@
 import { Client as ClientBase } from '@graphistry/js-upload-api';
 import { version as VERSION } from './version.js';
-import fetch, { Headers } from 'node-fetch';
+import fetch from 'node-fetch-commonjs';
 
 export {
     Dataset, File, EdgeFile, NodeFile,

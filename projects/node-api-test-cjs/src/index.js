@@ -1,5 +1,5 @@
-import { EdgeFile, NodeFile, Dataset, Client } from '@graphistry/node-api';
-import { tableFromArrays, tableToIPC } from 'apache-arrow';
+const { EdgeFile, NodeFile, Dataset, Client } = require('@graphistry/node-api');
+const { tableFromArrays, tableToIPC } = require('apache-arrow');
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +41,10 @@ const protocol = process.env.GRAPHISTRY_PROTOCOL || 'https';
 const host = process.env.GRAPHISTRY_HOST || 'hub.graphistry.com';
 
 ////////////////////////////////////////////////////////////////////////////////
+
+//------------------------------------------------------------------------
+async function go() {
+//------------------------------------------------------------------------
 
 if (false) {
   
@@ -257,3 +261,9 @@ if (false) {
     await dataset.privacy(client);
 
 }
+
+//------------------------------------------------------------------------
+}
+//------------------------------------------------------------------------
+
+go();

@@ -1,0 +1,22 @@
+{
+  "name": "@graphistry/node-api-test",
+  "version": "4.5.0",
+  "description": "",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "private": true,
+  "scripts": {
+    "build": "echo ok",
+    "lint": "echo ok",
+    "start": "NODE_OPTIONS=--enable-source-maps node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lock:fix": "npm i --package-lock-only",
+    "clean": "rm -rf node_modules"
+  },
+  "author": "Graphistry, Inc.",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@graphistry/node-api": "^4.5.0",
+    "apache-arrow": "^11.0.0"
+  }
+}

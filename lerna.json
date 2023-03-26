@@ -8,6 +8,7 @@
     "projects/cra-template",
     "projects/js-upload-api",
     "projects/node-api",
-    "projects/node-api-test"
+    "projects/node-api-test",
+    "projects/node-api-test-cjs"
   ]
 }

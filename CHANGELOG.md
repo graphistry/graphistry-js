@@ -6,6 +6,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## Development
 
 ### Added
+
+- **js-upload-api**: CommonJS support with output binaries at `dist/cjs`
+- **node-api**: CommonJS support with output binaries at `dist/cjs`
+
+## 4.5.0 - 2023-03-23
+
+### Added
 - **js-upload-api**: Apache Arrow upload support
 - **js-upload-api**: Privacy settings support
 - **js-upload-api**: `Client::setToken()` for passing in existing JWT tokens

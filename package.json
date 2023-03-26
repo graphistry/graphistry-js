@@ -29,6 +29,6 @@
   "homepage": "https://github.com/graphistry/graphistry-js#readme",
   "devDependencies": {
     "eslint": "7.32.0",
-    "lerna": "^6.5.1"
+    "lerna": "^6.5.1",
   }
 }
