@@ -25,8 +25,8 @@
   "scripts": {
     "build": "npm run clean:build && npm run build:package && npm run build:tsc && npm run docs:build",
     "build:package": "npm run build:package:esm && npm run build:package:cjs",
-    "build:package:cjs": "mkdir -p dist/cjs && npx jq '.type=\"commonjs\"' package.template.json > dist/cjs/package.json",
-    "build:package:esm": "mkdir -p dist && npx jq '.type=\"module\"' package.template.json > dist/package.json",
+    "build:package:cjs": "mkdir -p dist/cjs && jq '.type=\"commonjs\"' package.template.json > dist/cjs/package.json",
+    "build:package:esm": "mkdir -p dist && jq '.type=\"module\"' package.template.json > dist/package.json",
     "build:tsc": "npm run build:tsc:esm && npm run build:tsc:cjs",
     "build:tsc:esm": "npx tsc",
     "build:tsc:cjs": "npx tsc -p tsconfig.cjs.json",
@@ -68,7 +68,6 @@
     "@typescript-eslint/parser": "^5.23.0",
     "eslint": "^8.15.0",
     "nlfurniss-typedoc-plugin-sourcefile-url": "^2.0.0",
-    "node-jq": "^2.3.5",
     "rimraf": "^3.0.2",
     "ts-node": "^10.7.0",
     "typedoc": "^0.22.15",
