@@ -93,6 +93,9 @@ export class Client {
      * @param protocol The protocol to use for the server during uploads: 'http' or 'https'.
      * @param host The hostname of the server during uploads: defaults to 'hub.graphistry.com'
      * @param clientProtocolHostname Base path to use inside the browser and when sharing public URLs: defaults to '{protocol}://{host}'
+     * @param fetch The fetch implementation to use
+     * @param version The version of the client library
+     * @param agent The agent name to use when communicating with the server
      */
     constructor (
         username: string, password: string, org?: string,
