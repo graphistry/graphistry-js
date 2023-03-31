@@ -37,6 +37,8 @@ if (!user) { throw new Error('GRAPHISTRY_USER environment variable not set'); }
 const password = process.env.GRAPHISTRY_PASSWORD;
 if (!password) { throw new Error('GRAPHISTRY_PASSWORD environment variable not set'); }
 
+const org = process.env.GRAPHISTRY_ORG;
+
 const protocol = process.env.GRAPHISTRY_PROTOCOL || 'https';
 const host = process.env.GRAPHISTRY_HOST || 'hub.graphistry.com';
 
@@ -48,7 +50,7 @@ async function go() {
 
 if (false) {
   
-    const client = new Client(user, password, protocol, host);
+    const client = new Client(user, password, org, protocol, host);
 
     const edgesFile = new EdgeFile(edges);
     const nodesFile = new NodeFile(nodes);  // optional
@@ -67,7 +69,7 @@ if (false) {
 
 } else if (false) {
 
-    const client = new Client(user, password, protocol, host);
+    const client = new Client(user, password, org, protocol, host);
 
     const edgesFile = new EdgeFile(edges);
     const nodesFile = new NodeFile(nodes);  // optional
@@ -85,7 +87,7 @@ if (false) {
 
 } else if (false) {
 
-    const client = new Client(user, password, protocol, host);
+    const client = new Client(user, password, org, protocol, host);
 
     const edgesFile = new EdgeFile(
         edgesRows,
@@ -186,7 +188,7 @@ if (false) {
 
 } else if (false) {
 
-    const client = new Client(user, password, protocol, host);
+    const client = new Client(user, password, org, protocol, host);
     const edgesFile = new EdgeFile(edges);
     const nodesFile = new NodeFile(nodes);  // optional
 
@@ -210,7 +212,7 @@ if (false) {
     //convert edges to apache-arrow table
     const edgesArr = tableFromArrays(edges);
     const nodesArr = tableFromArrays(nodes);
-    const client = new Client(user, password, protocol, host);
+    const client = new Client(user, password, org, protocol, host);
 
     function arrToUint8Array(arr) {
         const ui8 = tableToIPC(arr, 'file');
@@ -237,7 +239,7 @@ if (false) {
     //convert edges to apache-arrow table
     const edgesArr = tableFromArrays(edges);
     const nodesArr = tableFromArrays(nodes);
-    const client = new Client(user, password, protocol, host);
+    const client = new Client(user, password, org, protocol, host);
 
     function arrToUint8Array(arr) {
         const ui8 = tableToIPC(arr, 'file');

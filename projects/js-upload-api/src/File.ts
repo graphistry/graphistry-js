@@ -249,7 +249,13 @@ export class File {
         }
         console.debug('Creating file');
 
-        const fileJsonResults = await client.post('api/v2/files/', {file_type: this.fileFormat, ...this.createOpts});
+        const fileJsonResults = await client.post(
+            'api/v2/files/',
+            {
+                file_type: this.fileFormat,
+                ...(client.org ? { org_name: client.org } : {}),
+                ...this.createOpts
+            });
         console.debug('File creation response:', fileJsonResults);
         this._fileCreateResponse = fileJsonResults;
         this._fileID = fileJsonResults.file_id;

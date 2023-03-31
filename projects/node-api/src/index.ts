@@ -22,6 +22,7 @@ export class Client extends ClientBase {
      * @constructor
      * @param {string} username - Graphistry server username
      * @param {string} password - Graphistry server password
+     * @param {string} [org] - Organization to use (optional)
      * @param {string} [protocol='https'] - 'http' or 'https' for client->server upload communication
      * @param {string} [host='hub.graphistry.com'] - Graphistry server hostname
      * @param {clientProtocolHostname} clientProtocolHostname - Override URL base path shown in browsers. By default uses protocol/host combo, e.g., https://hub.graphistry.com
@@ -35,15 +36,15 @@ export class Client extends ClientBase {
      * ```
     */
     constructor(
-        username: string, password: string,
+        username: string, password: string, org?: string,
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname?: string,
         version: string = VERSION
     ) {
         console.debug('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
         super(
-            username, password, protocol, host,
-            clientProtocolHostname,
+            username, password, org,
+            protocol, host, clientProtocolHostname,
             fetch,
             version,
             '@graphistry/node-api');

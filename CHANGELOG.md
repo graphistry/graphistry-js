@@ -9,6 +9,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - **js-upload-api**: CommonJS support with output binaries at `dist/cjs`
 - **node-api**: CommonJS support with output binaries at `dist/cjs`
+- **all**: Optional orgs login
+
+### Docs
+
+- **all**: Arrow uploads and login modes
 
 ## 4.5.0 - 2023-03-23
 
