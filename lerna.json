@@ -1,5 +1,5 @@
 {
-  "version": "4.5.0",
+  "version": "4.6.0-alpha.1",
   "packages": [
     "projects/client-api",
     "projects/client-api-react",
@@ -8,6 +8,7 @@
     "projects/cra-template",
     "projects/js-upload-api",
     "projects/node-api",
-    "projects/node-api-test"
+    "projects/node-api-test",
+    "projects/node-api-test-cjs"
   ]
 }

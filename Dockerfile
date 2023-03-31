@@ -1,5 +1,13 @@
 FROM node:16.13.0-slim as base
 WORKDIR /opt/graphistry-js
+
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+    && apt-get update \
+    && apt-get install -y jq \
+    && jq --version
+
 COPY lerna.json package.json package-lock.json ./
 RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm set cache /usr/src/app/.npm \
@@ -35,7 +43,9 @@ RUN --mount=type=cache,target=/usr/src/app/.npm\
 
 # Shared src
 COPY \
+    projects/js-upload-api/package.template.json \
     projects/js-upload-api/tsconfig.json \
+    projects/js-upload-api/tsconfig.cjs.json \
     /opt/graphistry-js/projects/js-upload-api/
 COPY \
     projects/js-upload-api/src \
@@ -43,6 +53,7 @@ COPY \
 RUN \
     echo "=== Building shared dep @graphistry/js-upload-api ===" \
     && cd /opt/graphistry-js/projects/js-upload-api \
+    && npm i --no-fund \
     && npm run build
 
 # #############################################################################
@@ -70,7 +81,9 @@ COPY projects/node-api/src /opt/graphistry-js/projects/node-api/src
 COPY \
     projects/node-api/.eslintignore \
     projects/node-api/.eslintrc.cjs \
+    projects/node-api/package.template.json \
     projects/node-api/tsconfig.json \
+    projects/node-api/tsconfig.cjs.json \
     /opt/graphistry-js/projects/node-api/
 RUN echo "=== Building node-api ===" \
     && ( cd projects/node-api && npm i) \

@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/js-upload-api",
-  "version": "4.5.0",
+  "version": "4.6.0-alpha.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
@@ -8,9 +8,14 @@
   "homepage": "https://github.com/graphistry/graphistry-js",
   "private": false,
   "description": "Graphistry upload client for reuse by node and browser clients",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
   "files": [
     "dist",
     "docs",
@@ -18,8 +23,13 @@
     "README.md"
   ],
   "scripts": {
-    "build": "npm run build:tsc && npm run docs:build",
-    "build:tsc": "npx tsc",
+    "build": "npm run clean:build && npm run build:package && npm run build:tsc && npm run docs:build",
+    "build:package": "npm run build:package:esm && npm run build:package:cjs",
+    "build:package:esm": "mkdir -p dist && jq '.type=\"module\"' package.template.json > dist/package.json",
+    "build:package:cjs": "mkdir -p dist/cjs && jq '.type=\"commonjs\"' package.template.json > dist/cjs/package.json",
+    "build:tsc": "npm run build:tsc:esm && npm run build:tsc:cjs",
+    "build:tsc:esm": "npx tsc",
+    "build:tsc:cjs": "npx tsc -p tsconfig.cjs.json",
     "watch": "npx tsc --watch",
     "docs:build": "npx typedoc --sort static-first --sort visibility --sort alphabetical --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' --out docs --cleanOutputDir false src/index.ts",
     "docs:watch": "npx typedoc --sort static-first --sort visibility --sort alphabetical --includeVersion --hideGenerator --name '@graphistry/node-api' --sourcefile-url-prefix 'https://github.com/graphistry/graphistry-js/blob/master/projects/node-api/src/' --out docs --cleanOutputDir false src/index.ts --watch",

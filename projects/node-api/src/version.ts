@@ -10,30 +10,12 @@ export const version = JSON.parse(
 ).version;
 */
 
-import path from 'path';
-import {fileURLToPath} from 'url';
-import {readFileSync} from 'fs';
-
 let resolvedVersion;
 try {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const packagePath = path.join(__dirname, 'package.json');
-    const packageFile = readFileSync(packagePath, 'utf8');
-    const packageJSON = JSON.parse(packageFile);
-    resolvedVersion = packageJSON.version;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    resolvedVersion = require(`@graphistry/node-api/package.json`).version ?? 'unknown';
 } catch (e) {
-    try {
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-        const packagePath = path.join(__dirname, '../', 'package.json');
-        const packageFile = readFileSync(packagePath, 'utf8');
-        const packageJSON = JSON.parse(packageFile);
-        resolvedVersion = packageJSON.version;    
-    } catch (e) {
-        console.warn('Could not resolve version from package.json', e);
-        resolvedVersion = 'unknown';
-    }
+    resolvedVersion = 'unknown';
 }
 
 /**
