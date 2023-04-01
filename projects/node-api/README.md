@@ -94,8 +94,17 @@ import { EdgeFile } from '@graphistry/node-api';
 //columnar data is fastest; column per attribute; reuse across datasets
 const edgesJSON = {'s': ['a1', 'b2'], 'd': ['b2', 'c3']};
 const edgesTable: Table = tableFromArrays(edgesJSON);
-const edgesUint8: Uint8Array = tableToIPC(edgesArr);
+const edgesUint8: Uint8Array = tableToIPC(edgesArr, 'file');
 const edgesFile = new EdgeFile(edgesUint8, 'arrow');
+```
+
+### Ex: Using an organization
+
+You can log into an organization instead of a personal account
+
+```javascript
+import { Client } from '@graphistry/node-api';
+const c = new Client('my_user', 'my_pass', 'my_org');
 ```
 
 ### Ex: Custom token
@@ -106,6 +115,20 @@ If you already have a JWT token, you can pass it in
 import { Client } from '@graphistry/node-api';
 const c = new Client();
 c.setToken('Bearer 123abc');
+```
+
+### Ex: Custom server
+
+You can switch which server to use for uploads and for downloads, which is useful for self-hosted servers and advanced enterprise network configurations
+
+```javascript
+import { Client } from '@graphistry/node-api';
+const c = new Client(
+    'my_user', 'my_pass', 'optional_my_org',
+    'https', //upload protcol
+    'hub.graphistry.com', //upload server
+    'https://hub.graphistry.com' //url to use in browsers
+)
 ```
 
 ### Using API Options
@@ -119,7 +142,7 @@ c.setToken('Bearer 123abc');
 
 
 ```javascript
-const client = new Client(user, password, protocol, host);
+const client = new Client(user, password, org, protocol, host);
 
 // Row-oriented data slower to upload but often convenient
 const edgesRows = [

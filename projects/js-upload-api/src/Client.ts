@@ -11,10 +11,18 @@
  * 
  * <br>
  *  
- * @example **Authenticate against Graphistry Hub**
+ * @example **Authenticate against Graphistry Hub for a personal account**
  * ```javascript
  * import { Client } from '@graphistry/node-api';
  * const client = new Client('my_username', 'my_password');
+ * ```
+ * 
+ * <br>
+ *  
+ * @example **Authenticate against an org in Graphistry Hub**
+ * ```javascript
+ * import { Client } from '@graphistry/node-api';
+ * const client = new Client('my_username', 'my_password', 'my_org');
  * ```
  * 
  * <br>
@@ -66,6 +74,7 @@ export class Client {
     public readonly clientProtocolHostname: string;
     public readonly agent: string;
     public readonly version?: string;
+    public readonly org?: string;
 
 
     private _getAuthTokenPromise?: Promise<string>;  // undefined if not configured
@@ -80,12 +89,16 @@ export class Client {
      * 
      * @param username The username to authenticate with.
      * @param password The password to authenticate with.
+     * @param org The organization to use (optional)
      * @param protocol The protocol to use for the server during uploads: 'http' or 'https'.
      * @param host The hostname of the server during uploads: defaults to 'hub.graphistry.com'
      * @param clientProtocolHostname Base path to use inside the browser and when sharing public URLs: defaults to '{protocol}://{host}'
+     * @param fetch The fetch implementation to use
+     * @param version The version of the client library
+     * @param agent The agent name to use when communicating with the server
      */
     constructor (
-        username: string, password: string,
+        username: string, password: string, org?: string,
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname?: string,
         fetch?: any,  // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -94,6 +107,7 @@ export class Client {
     ) {
         this.username = username;
         this._password = password;
+        this.org = org;
         this.protocol = protocol;
         this.host = host;
         this.fetch = fetch;
@@ -201,7 +215,11 @@ export class Client {
 
         const response = await this.postToApi(
             'api/v2/auth/token/generate',
-            { username: this.username, password: this._password },
+            {
+                username: this.username,
+                password: this._password,
+                ...(this.org ? {org_name: this.org} : {}),
+            },
             this.getBaseHeaders(),
         )
 

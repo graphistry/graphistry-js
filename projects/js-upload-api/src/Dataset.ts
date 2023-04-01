@@ -56,6 +56,20 @@ import { Mode, ModeAction, Privacy } from './Privacy.js';
  * 
  * <br>
  * 
+ * @example **Create a dataset using Arrow**
+ * ```javascript
+ * import { tableFromArrays, tableToIPC, Table } from 'apache-arrow';
+ * import { EdgeFile } from '@graphistry/node-api';
+ * 
+ * //columnar data is fastest; column per attribute; reuse across datasets
+ * const edgesJSON = {'s': ['a1', 'b2'], 'd': ['b2', 'c3']};
+ * const edgesTable: Table = tableFromArrays(edgesJSON);
+ * const edgesUint8: Uint8Array = tableToIPC(edgesArr, 'file');
+ * const edgesFile = new EdgeFile(edgesUint8, 'arrow');
+ * ```
+ * 
+ * <br>
+ * 
  * @example **Add files after the Dataset is instantiated but before it has been uploaded**
  * ```javascript
  * import { Dataset } from '@graphistry/node-api';
@@ -315,7 +329,11 @@ export class Dataset {
             node_files: this.nodeFiles.map((file) => file.fileID),
             edge_files: this.edgeFiles.map((file) => file.fileID),
         };
-        const bindings = { ...fileBindings, ...this.bindings };
+        const bindings = { 
+            ...(client.org ? { org_name: client.org } : {}),
+            ...fileBindings,
+            ...this.bindings
+        };
         await this.createDataset(client, bindings);
 
         return this;
