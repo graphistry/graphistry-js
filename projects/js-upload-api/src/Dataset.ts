@@ -303,8 +303,8 @@ export class Dataset {
             throw new Error('No client provided');
         }
 
-        if (!client.isServerConfigured()) {
-            throw new Error('Client is not configured');
+        if (!client.authTokenValid() && !client.isServerConfigured()) {
+            throw new Error('Client is not configured, set token or creds');
         }
         console.debug('Uploading dataset', {nodeFiles: this.nodeFiles, edgeFiles: this.edgeFiles});
 

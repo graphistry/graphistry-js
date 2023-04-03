@@ -234,15 +234,47 @@ export class Client {
         return tok;
     }
 
-    private authTokenValid(): boolean {
+    /**
+     * 
+     * @param username 
+     * @param password 
+     * @param org 
+     * @param protocol 
+     * @param host 
+     * @returns Promise for the authentication token
+     * 
+     * Helper to fetch a token for a given user
+     * 
+     */
+    public async fetchToken(
+        username: string, password: string, org?: string, protocol = 'https', host = 'hub.graphistry.com'
+    ): Promise<string> {
+        return (await this.postToApi(
+            'api/v2/auth/token/generate',
+            {
+                username: username,
+                password: password,
+                ...(org ? {org_name: org} : {}),
+            },
+            this.getBaseHeaders(),
+            `${protocol}://${host}/`
+        )).token;
+    }
+
+    /**
+     * 
+     * @returns Whether the current token is valid
+     * 
+     */
+    public authTokenValid(): boolean {
         const out = !!this._token;
         return out;
     }
 
-    private async postToApi(url: string, data: any, headers: any): Promise<any> {    // eslint-disable-line @typescript-eslint/no-explicit-any
+    private async postToApi(url: string, data: any, headers: any, baseUrl?: string): Promise<any> {    // eslint-disable-line @typescript-eslint/no-explicit-any
         const resolvedFetch = this.fetch;
         console.debug('postToApi', {url, data, headers});
-        const response = await resolvedFetch(this.getBaseUrl() + url, { // change this
+        const response = await resolvedFetch((baseUrl ?? this.getBaseUrl()) + url, { // change this
             method: 'POST',
             headers,
             body: 

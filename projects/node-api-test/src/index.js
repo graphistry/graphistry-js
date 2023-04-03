@@ -230,7 +230,7 @@ if (false) {
     console.info(`View dataset ${dataset.datasetID} at ${dataset.datasetURL}`);
     console.info(`Dataset using node file ${nodesFile.fileID}, edge file ${edgesFile.fileID}`);
 
-} else {
+} else if (false) {
 
     //convert edges to apache-arrow table
     const edgesArr = tableFromArrays(edges);
@@ -257,5 +257,42 @@ if (false) {
     console.info(`Dataset using node file ${nodesFile.fileID}, edge file ${edgesFile.fileID}`);
 
     await dataset.privacy(client);
+
+} else {
+
+    //use token & org
+
+    const edgesArr = tableFromArrays(edges);
+    const nodesArr = tableFromArrays(nodes);
+    const client1 = new Client();
+    const tok = await client1.fetchToken(user, password, org, protocol, host);
+    console.info('-------------------token------------------', tok);
+    const client = new Client(undefined, undefined, org, protocol, host);
+    client.setToken(tok);
+
+    function arrToUint8Array(arr) {
+        const ui8 = tableToIPC(arr, 'file');
+        return ui8;
+    }
+    const edgesFile = new EdgeFile(arrToUint8Array(edgesArr), 'arrow');
+    const nodesFile = new NodeFile(arrToUint8Array(nodesArr), 'arrow');  // optional
+    await Promise.all([edgesFile.upload(client), nodesFile.upload(client)]);
+
+    console.info('--------- Files uploaded --------------');
+
+    const dataset = new Dataset({
+        node_encodings: { bindings: { node: 'n' } },
+        edge_encodings: { bindings: { source: 's', destination: 'd' } },
+        metadata: {},
+        name: 'testdata',
+    }, edgesFile, nodesFile);
+    await dataset.upload(client);
+
+    console.info('--------- Dataset uploaded --------------');
+
+    console.info(`View dataset ${dataset.datasetID} at ${dataset.datasetURL}`);
+    console.info(`Dataset using node file ${nodesFile.fileID}, edge file ${edgesFile.fileID}`);
+
+    await dataset.privacy(client, 'private');
 
 }
