@@ -149,8 +149,8 @@ export class Privacy {
         if (!client) {
             throw new Error('No client provided');
         }
-        if (!client.isServerConfigured()) {
-            throw new Error('Client is not configured');
+        if (!client.authTokenValid() && !client.isServerConfigured()) {
+            throw new Error('Client is not configured, set token or creds');
         }
 
         const opts = {
