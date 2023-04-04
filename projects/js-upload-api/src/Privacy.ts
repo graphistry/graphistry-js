@@ -163,7 +163,7 @@ export class Privacy {
             message: this.message                    
         };
 
-        console.debug('Privacy.upload', opts, this);
+        console.trace('Privacy.upload', opts, this);
 
         //TODO get error code
         const resp = await client.post('api/v2/share/link/', opts);

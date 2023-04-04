@@ -142,47 +142,47 @@ export class Client {
      * @returns The response from the server. 
      */
     public async post(uri: string, payload: any, baseHeaders: any = undefined): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
-        console.debug('post', {uri, payload});
+        console.trace('post', {uri, payload});
         const headers = await this.getSecureHeaders(baseHeaders);
-        console.debug('post', {headers});
+        console.trace('post', {headers});
         const response = await this.postToApi(uri, payload, headers);
-        console.debug('post response', {uri, payload, response});
+        console.trace('post response', {uri, payload, response});
         return response;
     }
 
 
 
     public isServerConfigured(): boolean {
-        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
+        console.trace('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
         return (this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '';
     }
 
     public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string): boolean {
         if (this.username !== username) {
-            console.debug('username changed', {currentUsername: this.username, newUsername: username}, this);
+            console.trace('username changed', {currentUsername: this.username, newUsername: username}, this);
             return true;
         }
         if (this._password !== password) {
-            console.debug('password changed', {currentPassword: this._password, newPassword: password}, this);
+            console.trace('password changed', {currentPassword: this._password, newPassword: password}, this);
             return true;
         }
         if (this.protocol !== protocol) {
-            console.debug('protocol changed', {currentProtocol: this.protocol, newProtocol: protocol}, this);
+            console.trace('protocol changed', {currentProtocol: this.protocol, newProtocol: protocol}, this);
             return true;
         }
         if (this.host !== host) {
-            console.debug('host changed', {currentHost: this.host, newHost: host}, this);
+            console.trace('host changed', {currentHost: this.host, newHost: host}, this);
             return true;
         }
         if (this.clientProtocolHostname !== clientProtocolHostname) {
-            console.debug('clientProtocolHostname changed', {currentClientProtocolHostname: this.clientProtocolHostname, newClientProtocolHostname: clientProtocolHostname}, this);
+            console.trace('clientProtocolHostname changed', {currentClientProtocolHostname: this.clientProtocolHostname, newClientProtocolHostname: clientProtocolHostname}, this);
             return true;
         }
         return false;
     }
 
     public static isConfigurationValid(username: string, password: string, host: string): boolean {
-        console.debug('isConfigurationValid', {username: username, password: password, host: host});
+        console.trace('isConfigurationValid', {username: username, password: password, host: host});
         return (username || '') !== '' && (password || '') !== '' && (host || '') !== '';
     }
 
@@ -202,7 +202,7 @@ export class Client {
 
         //Throw exception if invalid username or password
         if (!this.isServerConfigured()) {
-            console.debug('current config', {username: this.username, _password: this._password, host: this.host});
+            console.trace('current config', {username: this.username, _password: this._password, host: this.host});
             throw new Error('Invalid username or password');
         }
 
@@ -211,7 +211,7 @@ export class Client {
             return await this._getAuthTokenPromise;
         }
 
-        console.debug('getAuthToken', {username: this.username, _password: this._password, host: this.host});
+        console.trace('getAuthToken', {username: this.username, _password: this._password, host: this.host});
 
         const response = await this.postToApi(
             'api/v2/auth/token/generate',
@@ -273,7 +273,7 @@ export class Client {
 
     private async postToApi(url: string, data: any, headers: any, baseUrl?: string): Promise<any> {    // eslint-disable-line @typescript-eslint/no-explicit-any
         const resolvedFetch = this.fetch;
-        console.debug('postToApi', {url, data, headers});
+        console.trace('postToApi', {url, data, headers});
         const response = await resolvedFetch((baseUrl ?? this.getBaseUrl()) + url, { // change this
             method: 'POST',
             headers,
@@ -282,7 +282,7 @@ export class Client {
                 ArrayBuffer.isView(data) && !(data instanceof DataView) ? data
                 : JSON.stringify(data),
         })
-        console.debug('postToApi', {url, data, headers, response});
+        console.trace('postToApi', {url, data, headers, response});
         return await response.json();
     }
 
@@ -296,9 +296,9 @@ export class Client {
     private async getSecureHeaders(baseHeaders: any = undefined): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
         const headers = baseHeaders || this.getBaseHeaders();
         const tok = await this.getAuthToken();
-        console.debug('getSecureHeaders', {headers, tok});
+        console.trace('getSecureHeaders', {headers, tok});
         headers.Authorization = `Bearer ${tok}`;
-        console.debug('getSecureHeaders', {headers});
+        console.trace('getSecureHeaders', {headers});
         return headers;
     }
 

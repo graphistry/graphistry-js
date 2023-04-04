@@ -45,7 +45,7 @@ export class Client extends ClientBase {
         clientProtocolHostname,
         version
     ) {
-        console.debug('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
+        console.trace('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
         super(
             username, password, org,
             protocol, host, clientProtocolHostname,
@@ -112,14 +112,14 @@ export function makeCaller(modelName, ...args) {
         console.debug('makeCaller switchMap', { g });
         //Wrap in Observable to insulate from PostMessageDataSource's rxjs version of Observable
         return (new Observable((subscriber) => {
-            console.debug('caller hit', modelName, args, { g });
+            console.trace('caller hit', modelName, args, { g });
             let runs = 0;
             const sub = g.models[modelName]
                 .call(...args)
                 .subscribe(
                     (x) => {
                         runs++;
-                        console.debug('caller tick', x, { runs });
+                        console.trace('caller tick', x, { runs });
                         subscriber.next(x);
                     },
                     (e) => {
@@ -128,16 +128,16 @@ export function makeCaller(modelName, ...args) {
                         subscriber.error(e);
                     },
                     () => {
-                        console.debug('caller complete', modelName, args, { runs });
+                        console.trace('caller complete', modelName, args, { runs });
                         subscriber.complete();
                     });
             return () => {
-                console.debug('caller unsub skip', modelName, args, { runs });
+                console.trace('caller unsub skip', modelName, args, { runs });
                 sub.unsubscribe();
             };
         }))
             .pipe(
-                tap(v => console.debug('caller got', modelName, args, v, { g })),
+                tap(v => console.trace('caller got', modelName, args, v, { g })),
                 map(v => g.updateStateWithResult(v)));
     });
 }
@@ -178,23 +178,23 @@ export function makeGetter(modelName, ...args) {
     return switchMap(g => {
         //Wrap in Observable to insulate from PostMessageDataSource's rxjs version of Observable
         return (new Observable((subscriber) => {
-            console.debug('getter hit', modelName, args);
+            console.trace('getter hit', modelName, args);
             const sub = g.models[modelName]
                 .get(...args)
                 .subscribe(
                     (x) => { subscriber.next(x); },
                     (e) => { subscriber.error(e); },
                     () => {
-                        console.debug('getter complete', modelName, args);
+                        console.trace('getter complete', modelName, args);
                         subscriber.complete();
                     });
             return () => {
-                console.debug('getter unsub', modelName, args);
+                console.trace('getter unsub', modelName, args);
                 sub.unsubscribe();
             };
         }))
             .pipe(
-                tap(v => console.debug('getter got', modelName, args, v)),
+                tap(v => console.trace('getter got', modelName, args, v)),
                 map(v => g.updateStateWithResult(v)));
     });
 }
@@ -240,20 +240,20 @@ export function makeSetterWithModel(modelName, valuesFromModel) {
         const out = g.models[modelName].set(...values);
         //Wrap in Observable to insulate from PostMessageDataSource's rxjs version of Observable
         return (new Observable((subscriber) => {
-            console.debug('starting makeSetterWithModel postMessage cmds', values);
+            console.trace('starting makeSetterWithModel postMessage cmds', values);
             const sub = out.subscribe(
                 ((v) => { subscriber.next(v); }),
                 ((e) => { subscriber.error({ msg: 'iframe setter fail', e, modelName, values }); }),
                 (() => { subscriber.complete(); }));
             return () => {
-                console.debug('finished makeSetterWithModel; unsubscribe postMessage', { sub, values });
+                console.trace('finished makeSetterWithModel; unsubscribe postMessage', { sub, values });
                 sub.unsubscribe();
             };
         }))
             .pipe(
-                tap((v) => { console.debug('setter resp pre', v); }),
+                tap((v) => { console.trace('setter resp pre', v); }),
                 map(({ json }) => g.updateStateWithResult(json.toJSON())),
-                tap((v) => { console.debug('setter resp post', v); }))
+                tap((v) => { console.trace('setter resp post', v); }))
     });
 }
 
@@ -1370,11 +1370,11 @@ export function selectionUpdates(g, {withColumns=false, pageSize=1000} = {}) {
     return g.selectionStream || (g.selectionStream = new BehaviorSubject('Initialize selectionUpdates stream')
         .pipe(
             tap(() => {
-                console.debug('postMessage subscription', '@client-api.selectionUpdates');
+                console.trace('postMessage subscription', '@client-api.selectionUpdates');
                 g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: selectionPath, options: { pageSize, withColumns } }, '*');
             }),
             finalize(() => {
-                console.debug('postMessage unsubscribe', '@client-api.selectionUpdates');
+                console.trace('postMessage unsubscribe', '@client-api.selectionUpdates');
                 g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: selectionPath }, '*');
             }),
             switchMap(() =>

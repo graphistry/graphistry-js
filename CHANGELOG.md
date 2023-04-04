@@ -3,8 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.6.2 - 2023-04-03
 
-## 4.6.1
+### Security
+
+- **all**: Downgraded PII logging to to trace-level
+
+## 4.6.1 - 2023-04-02
 
 ### Added
 **js-upload-api**: Public helper `fetchToken()`
@@ -12,7 +17,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Fix
 **js-upload-api**: Upload config checks now pass when a token is used instead of creds
 
-## 4.6.0
+## 4.6.0 - 2023-03-30
 
 ### Added
 
