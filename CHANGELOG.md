@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.6.5 - 2023-04-03
+
+### Infra
+
+**all**: package-lock.json
+
 ## 4.6.4 - 2023-04-03
 
 Republish due to NPM outage
