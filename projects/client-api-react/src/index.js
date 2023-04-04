@@ -178,7 +178,7 @@ const ETLUploader = (props) => {
             }?key=${apiKey
             }&apiversion=1${''
             }&agent=${encodeURIComponent(`'client-api-react'`)}`
-        console.debug('uploading', url, payload);
+        console.trace('uploading', url, payload);
         const sub = ajax({
             url,
             method: 'POST',
@@ -188,7 +188,7 @@ const ETLUploader = (props) => {
             .pipe(
                 tap(({ response }) => {
                     if (response && response.success) {
-                        console.debug('upload response', response);
+                        console.trace('upload response', response);
                         setLoading(!props.showSplashScreen)
                         return response;
                     } else {
@@ -212,7 +212,7 @@ const ETLUploader = (props) => {
             });
 
         return () => {
-            console.debug('unsubscribing upload', { url, payload, sub });
+            console.trace('unsubscribing upload', { url, payload, sub });
             sub.unsubscribe();
         }
 

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.6.3 - 2023-04-03
+
+### Security
+
+- **all**: Downgraded PII logging to to trace-level
+
 ## 4.6.2 - 2023-04-03
 
 ### Security
