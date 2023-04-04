@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.6.6 - 2023-04-03
+
+### Security
+
+- **js-upload-api**: Remove console.trace, console.debug to avoid PII leakage. Interim solution until safe isomorphic logging gets bundled.
+
 ## 4.6.5 - 2023-04-03
 
 ### Infra

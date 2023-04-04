@@ -267,7 +267,7 @@ export class Dataset {
         this.nodeFiles = nodeFiles instanceof NodeFile ? [nodeFiles] : nodeFiles;
         this.urlOpts = urlOpts;
 
-        console.debug('Dataset constructor', this, { bindings, edgeFiles, nodeFiles, urlOpts });
+        //console.debug('Dataset constructor', this, { bindings, edgeFiles, nodeFiles, urlOpts });
 
         for (const edgeFile of this.edgeFiles) {
             if (!edgeFile.fileFormat) {
@@ -306,14 +306,14 @@ export class Dataset {
         if (!client.authTokenValid() && !client.isServerConfigured()) {
             throw new Error('Client is not configured, set token or creds');
         }
-        console.debug('Uploading dataset', {nodeFiles: this.nodeFiles, edgeFiles: this.edgeFiles});
+        //console.debug('Uploading dataset', {nodeFiles: this.nodeFiles, edgeFiles: this.edgeFiles});
 
         //create+upload files as needed
         await Promise.all(
             this.nodeFiles.concat(this.edgeFiles).map(async (file) => {
-                console.debug('Uploading file', file);
+                //console.debug('Uploading file', file);
                 const response = await file.createFile(client);
-                console.debug(`Uploaded ${file.fileFormat} file`);
+                //console.debug(`Uploaded ${file.fileFormat} file`);
                 if (!response) {
                     throw new Error('File creation failed 1');
                 }
@@ -377,7 +377,7 @@ export class Dataset {
      * 
     **/
     public addFile(file: File): void {
-        console.debug('Adding file', file);
+        //console.debug('Adding file', file);
         if (file.type === FileType.Node) {
             this.nodeFiles.push(file);
         } else if (file.type === FileType.Edge) {

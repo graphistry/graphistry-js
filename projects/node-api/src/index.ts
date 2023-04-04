@@ -41,7 +41,7 @@ export class Client extends ClientBase {
         clientProtocolHostname?: string,
         version: string = VERSION
     ) {
-        console.trace('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
+        //console.trace('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
         super(
             username, password, org,
             protocol, host, clientProtocolHostname,
