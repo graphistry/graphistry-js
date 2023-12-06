@@ -69,7 +69,7 @@
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "ISC",
   "dependencies": {
-    "@graphistry/client-api": "^4.6.1",
+    "@graphistry/client-api": "^4.6.6",
     "crypto-browserify": "3.12.0",
     "prop-types": ">=15.6.0",
     "shallowequal": "1.1.0",
