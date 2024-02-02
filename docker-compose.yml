@@ -52,14 +52,11 @@ services:
     environment:
       - NODE_OPTIONS=--max_old_space_size=6144
       - NODE_ENV=development
+      - STORYBOOK_DISABLE_TELEMETRY=1
     command:
-      #- /bin/bash
-      #- -c
-      #- "find . | grep start-storybook"
-      - ./node_modules/.bin/start-storybook
-      - -p 6006
-      - --debug-webpack
-      #- --port=${STORYBOOK_PORT:-6006}
+      - npm
+      - run
+      - storybook
     volumes:
       # TODO does not seem to get picked up
       - ./projects/client-api/src:/opt/graphistry-js/projects/client-api/src:ro

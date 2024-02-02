@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## Dev
+
+### Infra
+
+- Update Storybook from 6 to 7
+
 
 ## 4.6.1
 
