@@ -743,6 +743,15 @@ export function togglePanel(panel, turnOn) {
 }
 chainList.togglePanel = togglePanel;
 
+export function toggleClustering(selected) {
+    const values = [
+        $value(`scene.simulating`, selected),
+        $value(`scene.controls[0].selected`, selected)
+    ];
+    return makeSetter('view', ...values);
+}
+chainList.toggleClustering = toggleClustering;
+
 /**
  * @function encodeDefaultIcons
  * @description Change default (user-unset) icons based on an attribute. Pass undefined for attribute, mapping to clear.
@@ -995,8 +1004,8 @@ chainList.toggleHistograms = toggleHistograms;
 
 /**
  * @function Graphistry.tickClustering
- * @description Run a number of steps of Graphistry's clustering algorithm
- * @param {number} ticks - The number of ticks to run
+ * @description Run a number of milliseconds of Graphistry's clustering algorithm
+ * @param {number} ticks - The number of milliseconds to run
  * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
  * @example
  * GraphistryJS(document.getElementById('viz'))
@@ -1007,31 +1016,16 @@ chainList.toggleHistograms = toggleHistograms;
  *     .pipe(tickClustering(10))
  *     .subscribe();
  */
-export function tickClustering(/*ticks = 1*/) {
-
-    throw new Error('Not implemented');
-    /*
-
-    console.debug('tickClustering', {ticks});
-
+export function tickClustering(ticks = 1000) {
     if (typeof ticks !== 'number') {
         return map(g => g);
     }
-    return switchMap(g => {
-        return (
-            timer(0, 40)
-            .pipe(
-                tap((v) => console.debug('tick', v, g)),
-                take(Math.abs(ticks) || 1),
-                tap((v) => console.debug('tick b', v, g)),
-                map(() => g),
-                makeCaller('view', 'tick', [{}]),
-                isEmpty(),
-                tap((v) => console.debug('tick result', v, g)),
-                takeLast(1)
-            ));
-    });
-    */
+    return switchMap(g =>
+        of(g).pipe(
+            toggleClustering(true),
+            delay(ticks),
+            toggleClustering(false),
+            takeLast(1)));
 }
 chainList.tickClustering = tickClustering;
 
@@ -1308,7 +1302,7 @@ const G_API_SETTINGS = {
  * | `linLog` | `boolean` |
  * | `lockedX` | `boolean` | 
  * | `lockedY` | `boolean` | 
- * | `lockedR` | `boolean` | 
+ * | `lockedR` | `boolean` |
  * @function updateSetting
  * @param {string} name - the name of the setting to change
  * @param {string} val - the value to set the setting to.
