@@ -5,6 +5,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+### Added
+
+- **client-api**: `toggleClustering(isOn)` to start/stop clustering
+
 ### Infra
 
 - Update Storybook from 6 to 7
@@ -12,6 +16,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Security
 
 - Update dependencies
+
+### Fix
+
+- **client-api**: `tickClustering(milliseconds)` now works, requires Graphistry server upgrade
 
 ## 4.6.1
 
