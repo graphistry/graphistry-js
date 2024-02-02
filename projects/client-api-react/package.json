@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api-react",
-  "version": "4.6.1",
+  "version": "5.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
@@ -57,8 +57,8 @@
     "build:docs": "rimraf docs && jsdoc -c jsdoc-conf.json -R ./README.md -d docs",
     "prebuild:docs": "rimraf docs",
     "lint": "eslint src",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook -o docs-build -s ./assets"
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o docs-build -s ./assets"
   },
   "filesESBuild": [
     "dist",
@@ -69,7 +69,7 @@
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "ISC",
   "dependencies": {
-    "@graphistry/client-api": "^4.6.1",
+    "@graphistry/client-api": "^5.0.0",
     "crypto-browserify": "3.12.0",
     "prop-types": ">=15.6.0",
     "shallowequal": "1.1.0",
@@ -105,14 +105,17 @@
     "@rollup/plugin-babel": "^5.3.1",
     "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
-    "@storybook/addon-actions": "^6.4.22",
-    "@storybook/addon-docs": "^6.4.22",
-    "@storybook/addon-essentials": "^6.4.22",
-    "@storybook/addon-links": "^6.4.22",
-    "@storybook/addon-storysource": "^6.4.22",
-    "@storybook/addons": "^6.4.22",
-    "@storybook/react": "^6.1.21",
-    "@storybook/theming": "^6.4.22",
+    "@storybook/addon-actions": "^7.6.12",
+    "@storybook/addon-docs": "^7.6.12",
+    "@storybook/addon-essentials": "^7.6.12",
+    "@storybook/addon-links": "^7.6.12",
+    "@storybook/addon-mdx-gfm": "^7.6.12",
+    "@storybook/addon-storysource": "^7.6.12",
+    "@storybook/addons": "^7.6.12",
+    "@storybook/blocks": "^7.6.12",
+    "@storybook/react": "^7.6.12",
+    "@storybook/react-webpack5": "^7.6.12",
+    "@storybook/theming": "^7.6.12",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^14.2.0",
@@ -131,7 +134,8 @@
     "rollup": "^2.72.1",
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-terser": "^7.0.2"
+    "rollup-plugin-terser": "^7.0.2",
+    "storybook": "^7.6.12"
   },
   "gitHead": "949ca04aa87b399e0185c64d7a6810780a841deb"
 }

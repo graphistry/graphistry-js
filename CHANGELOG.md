@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## Dev
+
+### Added
+
+- **client-api**: `toggleClustering(isOn)` to start/stop clustering
+
+### Infra
+
+- Update Storybook from 6 to 7
+
+### Security
+
+- Update dependencies
+
+### Fix
+
+- **client-api**: `tickClustering(milliseconds)` now works, requires Graphistry server upgrade
 
 ## 4.6.1
 
