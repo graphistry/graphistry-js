@@ -9,6 +9,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - Update Storybook from 6 to 7
 
+### Security
+
+- Update dependencies
 
 ## 4.6.1
 
