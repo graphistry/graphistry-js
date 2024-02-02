@@ -12,7 +12,7 @@ import {
   toggleToolbar,
   toggleHistograms,
   toggleTimebars,
-  togglePlay,
+  toggleClustering,
   toggleInspector,
   encodeAxis,
   selectionUpdates,
@@ -443,14 +443,50 @@ export const verticalLayoutAndAxis = {
   },
 };
 
+
+
+export const tick = {
+  render: (args) => {
+    const iframe = useRef(null);
+    const [messages, setMessages] = useState(['loading...']);
+    const [g, setG] = useState(null);
+    const [tickCount, setTickCount] = useState(0);
+
+    const milliseconds = 2000;
+
+    useEffect(() => {
+      //////// Instantiate GraphistryJS for an iframe
+      graphistryJS(iframe.current)
+        .pipe(tap((g) => setG(g)))
+        .subscribe(
+          (g) => setMessages((arr) => arr.concat([`graphistryJS instantiated`, String(g)])),
+          (err) => {
+            console.error('Error:', err);
+            setMessages((arr) => arr.concat([`Error: ${err}`]))
+          },
+          () => setMessages((arr) => arr.concat(['Completed'])));
     }, [iframe]);
 
-    return (
-        <iframe
-            {...defaultIframeProps}
-            ref={iframe}
-            src={lesMisNoPlayNoSplash}
-            {...args}
-        />
-    );
-}
+    useEffect(() => {
+      if (!g || !tickCount) {
+        console.debug('tick not ready', {g, tickCount})
+        return;
+      }
+
+      of(g)
+      .pipe(
+        tickClustering(milliseconds)
+        //toggleClustering(tickCount % 2 == 1), //or as a toggle
+
+      ).subscribe(
+        () => setMessages((arr) => arr.concat([`ticked`])),
+        (err) => setMessages((arr) => arr.concat([`Error: ${err}`])),
+        () => setMessages((arr) => arr.concat(['Completed'])))
+    }, [tickCount]);
+
+    return <>
+      <button onClick={() => { setTickCount(tickCount + 1); }}>Run {milliseconds/1000}s of ticks</button>    
+      <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />
+    </>;
+  },
+};
