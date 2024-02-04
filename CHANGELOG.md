@@ -5,6 +5,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+## 5.0.0 - 2023-02-02
+
 ### Added
 
 - **client-api**: `toggleClustering(isOn)` to start/stop clustering
