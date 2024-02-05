@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../assets/index.css';
 
 import { Graphistry } from '../index';
+
+import {
+  //graphistry
+  tickClustering,
+
+  //rxjs
+  of,
+
+  // Observable
+} from '@graphistry/client-api';
 
 export default {
   title: 'Graphistry: React style',
@@ -421,5 +431,48 @@ export const Filters = {
 };
 
 export const Ticks = {
-  render: (args) => <h2>Not implemented</h2>,
+  render: (args) => {
+
+    const milliseconds = 2000;
+
+    const [messages, setMessages] = useState(['Start viz to begin...']);
+    const [tickCount, setTickCount] = useState(0);
+    const [g, setG] = useState();
+
+    useEffect(() => {
+      if (!g) { return; }
+      if (!tickCount) {
+        setMessages((arr) => arr.concat([`Click button to toggle ${milliseconds/1000}s of clustering...`]));
+        return;
+      }
+      setMessages((arr) => arr.concat([`Running ${milliseconds/1000}s of ticks`]));
+    }, [g, tickCount]);
+
+    useEffect(() => {
+      if (!g || !tickCount) { return; }
+      of(g)
+      .pipe(
+        tickClustering(milliseconds)
+        //toggleClustering(tickCount % 2 == 1), //or as a toggle
+      ).subscribe(
+        () => setMessages((arr) => arr.concat([`ticked`])),
+        (err) => setMessages((arr) => arr.concat([`Error: ${err}`])),
+        () => setMessages((arr) => arr.concat(['Completed'])))
+
+    }, [g, tickCount]);
+
+    return (<>
+      <button onClick={() => { setTickCount(tickCount + 1); }}>Run {milliseconds/1000}s of ticks</button>    
+      <Graphistry
+        {...defaultSettings}
+        {...args}
+        play={0}
+        onClientAPIConnected={(g) => {
+          console.debug('@Tick api connected', {g});
+          setG(g);
+        }}
+      />
+      <pre>{messages.join('\n')}</pre>
+    </>);
+  },
 };

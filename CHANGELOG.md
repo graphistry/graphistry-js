@@ -13,6 +13,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - Storybook docs: Basepath determined by being Graphistry Github (=> Hub) else uses the serving basepath
 
+### Docs
+
+- Storybook: `@graphistry/client-api-react` dynamic clustering demo
+
 ## 5.0.0 - 2023-02-02
 
 ### Added
