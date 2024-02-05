@@ -17,10 +17,15 @@ export const PredefinedDataset = {
   render: (args) => <Graphistry {...args} dataset="Miserables" showSplashScreen={true} />,
 };
 
+const hostname = window.location.hostname;
+const useHub = hostname === "github.com" || hostname === "graphistry.github.io";
+const graphistryHost = useHub ? 'https://hub.graphistry.com' : `${window.location.protocol}//${window.location.hostname}`;
+
 const defaultSettings = {
   dataset: 'Miserables',
   play: 1,
   showSplashScreen: true,
+  graphistryHost
 };
 
 export const NoSplashScreen = {

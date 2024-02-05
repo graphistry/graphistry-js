@@ -9,6 +9,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - Disable Storybook telemetry
 
+### Fix
+
+- Storybook docs: Basepath determined by being Graphistry Github (=> Hub) else uses the serving basepath
 
 ## 5.0.0 - 2023-02-02
 
