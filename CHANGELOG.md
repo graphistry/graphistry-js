@@ -5,6 +5,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+### Security
+
+- Disable Storybook telemetry
+
+
 ## 5.0.0 - 2023-02-02
 
 ### Added

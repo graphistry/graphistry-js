@@ -58,7 +58,7 @@
     "prebuild:docs": "rimraf docs",
     "lint": "eslint src",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o docs-build -s ./assets"
+    "build-storybook": "storybook build --disable-telemetry -o docs-build -s ./assets"
   },
   "filesESBuild": [
     "dist",
