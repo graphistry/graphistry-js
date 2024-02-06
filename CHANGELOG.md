@@ -5,6 +5,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+## 5.0.1 - 2024-02-05
+
 ### Security
 
 - Disable Storybook telemetry
@@ -17,7 +19,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - Storybook: `@graphistry/client-api-react` dynamic clustering demo
 
-## 5.0.0 - 2023-02-02
+## 5.0.0 - 2024-02-02
 
 ### Added
 
