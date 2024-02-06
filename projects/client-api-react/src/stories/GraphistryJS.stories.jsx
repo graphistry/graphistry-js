@@ -36,8 +36,13 @@ import {
 } from '@graphistry/client-api';
 import { interval, takeWhile } from 'rxjs';
 
-//const basePath = 'https://hub.graphistry.com';
-const basePath = 'http://localhost';
+
+
+const hostname = window.location.hostname;
+const useHub = hostname === "github.com" || hostname === "graphistry.github.io";
+const basePath = useHub ? 'https://hub.graphistry.com' : `${window.location.protocol}//${window.location.hostname}`;
+
+//const basePath = 'http://localhost';
 const lesMisPath = `${basePath}/graph/graph.html?dataset=Miserables`;
 const lesMisConfigured = `${lesMisPath}&play=0`;
 const lesMisNoPlayNoSplash = `${lesMisPath}&play=0&splashAfter=false`;

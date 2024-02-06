@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api-react",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
@@ -58,7 +58,7 @@
     "prebuild:docs": "rimraf docs",
     "lint": "eslint src",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o docs-build -s ./assets"
+    "build-storybook": "storybook build --disable-telemetry -o docs-build -s ./assets"
   },
   "filesESBuild": [
     "dist",
@@ -69,7 +69,7 @@
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "ISC",
   "dependencies": {
-    "@graphistry/client-api": "^5.0.0",
+    "@graphistry/client-api": "^5.0.1",
     "crypto-browserify": "3.12.0",
     "prop-types": ">=15.6.0",
     "shallowequal": "1.1.0",
