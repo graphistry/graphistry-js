@@ -8,6 +8,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Added
 
 * **client-api**: Gracefully ignore null values passed to `togglePanel`, `addFilter`, `addExclusion`
+* **client-api**: Added `setTogglePanel`
 
 ### Fix
 
