@@ -12,26 +12,19 @@ import {
   toggleToolbar,
   toggleHistograms,
   toggleTimebars,
-  toggleClustering,
   toggleInspector,
   encodeAxis,
   selectionUpdates,
   tickClustering,
-
-  //falcor
-  makeCaller,
 
   //rxjs
   delay,
   filter,
   map,
   of,
-  from,
   scan,
   switchMap,
   tap,
-  take,
-  timer,
   // Observable
 } from '@graphistry/client-api';
 import { interval, takeWhile } from 'rxjs';
@@ -294,7 +287,10 @@ export const setFilters = {
       return () => (sub.unsubscribe ? sub.unsubscribe() : null);
     }, [iframe]);
 
-    return <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />;
+    return <>
+      <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />
+      <pre>{messages.join('\n')}</pre>
+      </>
   },
 };
 
@@ -322,7 +318,10 @@ export const togglePanelFilters = {
       return () => (sub.unsubscribe ? sub.unsubscribe() : null);
     }, [iframe]);
 
-    return <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />;
+    return <>
+      <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />
+      <pre>{messages.join('\n')}</pre>
+      </>;
   },
 };
 
@@ -353,7 +352,10 @@ export const HideChrome = {
       return () => (sub.unsubscribe ? sub.unsubscribe() : null);
     }, [iframe]);
 
-    return <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />;
+    return <>
+      <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />
+      <pre>{messages.join('\n')}</pre>
+      </>;
   },
 };
 
@@ -389,7 +391,10 @@ export const radialLayoutAndAxis = {
       return () => (sub.unsubscribe ? sub.unsubscribe() : null);
     }, [iframe]);
 
-    return <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />;
+    return <>
+      <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />
+      <pre>{messages.join('\n')}</pre>
+      </>;
   },
 };
 
@@ -444,7 +449,10 @@ export const verticalLayoutAndAxis = {
       return () => (sub.unsubscribe ? sub.unsubscribe() : null);
     }, [iframe]);
 
-    return <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />;
+    return <>
+      <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />
+      <pre>{messages.join('\n')}</pre>
+      </>;
   },
 };
 
@@ -492,6 +500,7 @@ export const tick = {
     return <>
       <button onClick={() => { setTickCount(tickCount + 1); }}>Run {milliseconds/1000}s of ticks</button>    
       <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />
+      <pre>{messages.join('\n')}</pre>
     </>;
   },
 };
