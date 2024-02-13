@@ -350,7 +350,7 @@ export const LayoutLockedRadius = {
 };
 
 export const RadialAxisAndLayout = {
-  render: (args) => (
+  render: () => (
     <Graphistry
       {...defaultSettings}
       lockedR={true}
@@ -368,7 +368,7 @@ export const RadialAxisAndLayout = {
 };
 
 export const VerticalAxisAndLayout = {
-  render: (args) => (
+  render: () => (
     <Graphistry
       {...defaultSettings}
       lockedY={true}
