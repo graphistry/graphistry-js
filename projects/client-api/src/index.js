@@ -708,6 +708,9 @@ chainList.resetPointSize = resetPointSize;
  *     .subscribe();
  */
 export function togglePanel(panel, turnOn) {
+    if (!panel) {
+        return map(g => g);
+    }
     if (Array.isArray(panel)) {
         turnOn = panel.length > 1 ? panel[1] : undefined;
         panel = panel[0];
@@ -1110,7 +1113,7 @@ chainList.toggleToolbar = toggleToolbar;
  *     .subscribe();
  */
 export function addFilter(expr) {
-    return makeCaller('view', 'filters.add', [expr]);
+    return expr ? makeCaller('view', 'filters.add', [expr]) : map(g => g)
 }
 chainList.addFilter = addFilter;
 
@@ -1154,7 +1157,7 @@ chainList.addFilters = addFilters;
  *     .subscribe();
  */
 export function addExclusion(expr) {
-    return makeCaller('view', 'exclusions.add', [expr]);
+    return expr ? makeCaller('view', 'exclusions.add', [expr]) : map(g => g)
 }
 chainList.addExclusion = addExclusion;
 
