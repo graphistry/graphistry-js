@@ -9,6 +9,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **client-api**: Gracefully ignore null values passed to `togglePanel`, `addFilter`, `addExclusion`
 
+### Fix
+
+* **client-api-react**: Fix `filters`, `filter`, `exclusions`, `exclusion` to run again
+
 ## 5.0.1 - 2024-02-05
 
 ### Security

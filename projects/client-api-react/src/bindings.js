@@ -44,7 +44,12 @@ const bindingsTable = {
 
     //togglePanel:            [ PropTypes.array,      undefined,                   undefined,      'togglePanel'],
     
-    ticks:                  [PropTypes.number,      undefined,                   undefined,        'tickClustering'],
+    ticks:                  [PropTypes.number,       undefined,                   undefined,      'tickClustering'],
+
+    filters:             [PropTypes.arrayOf(PropTypes.string), undefined,      undefined,      'addFilters'],
+    filter:              [PropTypes.string,       undefined,                   undefined,      'addFilter'],
+    exclusions:          [PropTypes.arrayOf(PropTypes.string), undefined,      undefined,      'addExclusions'],
+    exclusion:           [PropTypes.string,       undefined,                   undefined,      'addExclusion'],
 
     encodePointSize: [
         PropTypes.oneOfType([
@@ -118,10 +123,6 @@ const bindings =
 
 // TODO: infer this from chainList in client-api
 const calls = bindings.map(b => b.jsCommand).filter(Boolean).concat([
-    'addFilter',
-    'addFilters',
-    'addExclusion',
-    'addExclusions',
     'setSelectionExternal',
     'setHighlightExternal'
 ])
