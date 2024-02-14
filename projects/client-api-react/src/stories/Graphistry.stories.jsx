@@ -350,7 +350,7 @@ export const LayoutLockedRadius = {
 };
 
 export const RadialAxisAndLayout = {
-  render: (args) => (
+  render: () => (
     <Graphistry
       {...defaultSettings}
       lockedR={true}
@@ -368,7 +368,7 @@ export const RadialAxisAndLayout = {
 };
 
 export const VerticalAxisAndLayout = {
-  render: (args) => (
+  render: () => (
     <Graphistry
       {...defaultSettings}
       lockedY={true}
@@ -405,27 +405,33 @@ export const VerticalAxisAndLayout = {
 export const Filters = {
   render: (args) => {
     //Load filters 1s after client connected (workaround timing bug)
-    const [filter, setFilter] = useState();
-    const [exclusion, setExclusion] = useState();
+    const [filters, setFilters] = useState();
+    const [exclusions, setExclusions] = useState();
     const [panel, setPanel] = useState();
-
+    const [messages, setMessages] = useState(['Start viz to begin...']);
+   
     return (
-      <Graphistry
-        {...defaultSettings}
-        pruneOrphans={true}
-        {...args}
-        onClientAPIConnected={() => {
-          console.debug('Client connected, setting filters and exclusions after 3s');
-          setTimeout(() => {
-            setFilter(args.filters || ['point:community_infomap in (4, 5, 6)', 'point:degree > 1']);
-            setExclusion(args.exclusions || ['edge:id = 1']);
-            setPanel(['filters', false]);
-          }, 3000);
-        }}
-        togglePanel={panel}
-        exclusions={exclusion}
-        filters={filter}
+      <>
+      <button onClick={() => { 
+        setFilters(['point:community_infomap in (4, 5, 6)', 'point:degree > 1']);
+        setPanel(['filters', false]);
+        setMessages((arr) => arr.concat([`Added filters`]));
+       }}>add 2 filters</button>
+      <button onClick={() => { 
+        setExclusions(['edge:_title = 1']);
+        setPanel(['exclusions', false]);
+        setMessages((arr) => arr.concat([`Added exclusions`]));
+       }}>add 1 exclusion</button>
+        <Graphistry
+          {...defaultSettings}
+          pruneOrphans={true}
+          {...args}
+        setTogglePanel={panel}
+        exclusions={exclusions}
+        filters={filters}
       />
+        <pre>{messages.join('\n')}</pre>
+      </>
     );
   },
 };
