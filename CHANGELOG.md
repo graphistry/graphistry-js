@@ -5,6 +5,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+## 5.0.2 - 2024-02-13
+
 ### Added
 
 * **client-api**: Gracefully ignore null values passed to `togglePanel`, `addFilter`, `addExclusion`
