@@ -6,7 +6,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
 /**
  * # Client examples
  * 
- * Authenticate against a Graphistry server and manage communications with it.
+ * Authenticate against a Graphistry server using a username and password, and manage communications with it.
  * 
  * Different authentication modes may be desirable depending on the type of Graphistry server.
  * 
@@ -35,7 +35,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * @example **Authenticate against a private Graphistry server**
  * ```javascript
  * import { Client } from '@graphistry/node-api';
- * const client = new Client('my_username', 'my_password', 'http', 'my-ec2.aws.com:8080');
+ * const client = new Client('my_username', 'my_password', '', 'http', 'my-ec2.aws.com:8080');
  * ```
  * 
  * <br>
@@ -44,7 +44,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * ```javascript
  * import { Client } from '@graphistry/node-api';
  * const client = new Client(
- *  'my_username', 'my_password',
+ *  'my_username', 'my_password', '',
  *  'http', '10.20.0.1:8080',
  *  'https://www.my-site.com'
  * );
@@ -56,7 +56,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * ```javascript
  * import { Client } from '@graphistry/node-api';
  * const client = new Client(
- *  'my_username', 'my_password',
+ *  'my_username', 'my_password', '',
  *  'http', 'nginx',
  *  'https://www.my-site.com'
  * );
