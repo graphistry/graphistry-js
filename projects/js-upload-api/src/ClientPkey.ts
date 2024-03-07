@@ -1,7 +1,6 @@
 import { AbstractClient } from './AbstractClient.js';
 
-
-const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
+const AUTH_API_ENDPOINT = 'api/v2/auth/pkey/jwt/';
 
 /**
  * # Client examples
@@ -72,17 +71,17 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * ```
  */
 
-export class Client extends AbstractClient {
+export class ClientPkey extends AbstractClient {
 
-    public readonly username: string;
-    private _password: string;
+    public readonly personalKeyId: string;
+    private _personalKeySecret: string;
 
     /**
      * 
      * See examples at top of file
      * 
-     * @param username The username to authenticate with.
-     * @param password The password to authenticate with.
+     * @param personalKeyId The personal key id to authenticate with.
+     * @param personalKeySecret The personal key secret to authenticate with.
      * @param org The organization to use (optional)
      * @param protocol The protocol to use for the server during uploads: 'http' or 'https'.
      * @param host The hostname of the server during uploads: defaults to 'hub.graphistry.com'
@@ -92,7 +91,7 @@ export class Client extends AbstractClient {
      * @param agent The agent name to use when communicating with the server
      */
     constructor (
-        username: string, password: string, org?: string,
+        personalKeyId: string, personalKeySecret: string, org?: string,
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname?: string,
         fetch?: any,  // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -101,8 +100,8 @@ export class Client extends AbstractClient {
     ) {
         super(org, protocol, host, clientProtocolHostname, fetch, version, agent);
 
-        this.username = username;
-        this._password = password;
+        this.personalKeyId = personalKeyId;
+        this._personalKeySecret = personalKeySecret;
 
         if (this.isServerConfigured()) {
             this._getAuthTokenPromise = this.getAuthToken();
@@ -110,17 +109,17 @@ export class Client extends AbstractClient {
     }
 
     public isServerConfigured(): boolean {
-        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
-        return (this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '';
+        console.debug('isServerConfigured', {personalKeyId: this.personalKeyId, _personalKeySecret: this._personalKeySecret, host: this.host});
+        return (this.personalKeyId || '') !== '' && (this._personalKeySecret || '') !== '' && (this.host || '') !== '';
     }
 
-    public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string): boolean {
-        if (this.username !== username) {
-            console.debug('username changed', {currentUsername: this.username, newUsername: username}, this);
+    public checkStale(personalKeyId: string, personalKeySecret: string, protocol: string, host: string, clientProtocolHostname?: string): boolean {
+        if (this.personalKeyId !== personalKeyId) {
+            console.debug('personalKeyId changed', {currentPersonalKeyId: this.personalKeyId, newPersonalKeyId: personalKeyId}, this);
             return true;
         }
-        if (this._password !== password) {
-            console.debug('password changed', {currentPassword: this._password, newPassword: password}, this);
+        if (this._personalKeySecret !== personalKeySecret) {
+            console.debug('personalKeySecret changed', {currentPersonalKeySecret: this._personalKeySecret, newPersonalKeySecret: personalKeySecret}, this);
             return true;
         }
         if (this.protocol !== protocol) {
@@ -152,10 +151,10 @@ export class Client extends AbstractClient {
             return this._token || '';  // workaround ts not recognizing that _token is set
         }
 
-        //Throw exception if invalid username or password
+        //Throw exception if invalid personalKeyId or personalKeySecret
         if (!this.isServerConfigured()) {
-            console.debug('current config', {username: this.username, _password: this._password, host: this.host});
-            throw new Error('Invalid username or password');
+            console.debug('current config', {personalKeyId: this.personalKeyId, _personalKeySecret: this._personalKeySecret, host: this.host});
+            throw new Error('Invalid personalKeyId or personalKeySecret');
         }
 
         if (!force && this._getAuthTokenPromise) {
@@ -163,23 +162,20 @@ export class Client extends AbstractClient {
             return await this._getAuthTokenPromise;
         }
 
-        console.debug('getAuthToken', {username: this.username, _password: this._password, host: this.host});
+        console.debug('getAuthToken', {personalKeyId: this.personalKeyId, personalKeySecret: this._personalKeySecret, host: this.host});
 
-        const response = await this.postToApi(
+        const response = await this.getToApi(
             AUTH_API_ENDPOINT,
             {
-                username: this.username,
-                password: this._password,
-                ...(this.org ? {org_name: this.org} : {}),
+                "Authorization": `PersonalKey ${this.personalKeyId}:${this._personalKeySecret}`,
             },
-            this.getBaseHeaders(),
         )
 
         const tok : string = response.token;
         this._token = tok;
 
         if (!this.authTokenValid()) {
-            console.error('auth token failure', {response, username: this.username, host: this.host});
+            console.error('auth token failure', {response, personalKeyId: this.personalKeyId, host: this.host});
             throw new Error({'error': 'Auth token failure', ...(response||{})});
         }
 
@@ -188,7 +184,7 @@ export class Client extends AbstractClient {
 
     /**
      * 
-     * @param username 
+     * @param personalKeyId 
      * @param password 
      * @param org 
      * @param protocol 
@@ -199,16 +195,13 @@ export class Client extends AbstractClient {
      * 
      */
     public async fetchToken(
-        username: string, password: string, org?: string, protocol = 'https', host = 'hub.graphistry.com'
+        personalKeyId: string, personalKeySecret: string, org?: string, protocol = 'https', host = 'hub.graphistry.com'
     ): Promise<string> {
-        return (await this.postToApi(
+        return (await this.getToApi(
             AUTH_API_ENDPOINT,
             {
-                username: username,
-                password: password,
-                ...(org ? {org_name: org} : {}),
+                "Authorization": `PersonalKey ${personalKeyId}:${personalKeySecret}`,
             },
-            this.getBaseHeaders(),
             `${protocol}://${host}/`
         )).token;
     }
