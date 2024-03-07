@@ -1,4 +1,5 @@
 import { Client } from './Client.js';
+import { ClientPkey } from './ClientPkey.js';
 
 
 /**
@@ -144,7 +145,7 @@ export class Privacy {
      * @throws Error if the upload fails
      * 
      */
-    public async upload(client: Client): Promise<Privacy> {
+    public async upload(client: Client | ClientPkey): Promise<Privacy> {
 
         if (!client) {
             throw new Error('No client provided');
