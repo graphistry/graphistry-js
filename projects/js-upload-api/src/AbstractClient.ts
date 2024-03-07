@@ -18,7 +18,7 @@ export abstract class AbstractClient {
      * @param protocol The protocol to use for the server during uploads: 'http' or 'https'.
      * @param host The hostname of the server during uploads: defaults to 'hub.graphistry.com'
      * @param clientProtocolHostname Base path to use inside the browser and when sharing public URLs: defaults to '{protocol}://{host}'
-     * @param fetch The fetch implementation to use
+     * @param fetch The fetch implementation to use: defaults to JavaScript fetch function
      * @param version The version of the client library
      * @param agent The agent name to use when communicating with the server
      */
@@ -58,9 +58,8 @@ export abstract class AbstractClient {
      * @returns Whether the current token is valid
      * 
      */
-    public authTokenValid(): boolean {
-        const out = !!this._token;
-        return out;
+    public authTokenValid() {
+        return Boolean(this._token);
     }
 
     /**
@@ -71,7 +70,7 @@ export abstract class AbstractClient {
      * @param baseHeaders Optionally override base header object to mix with auth header for the upload.
      * @returns The response from the server. 
      */
-    public async post(uri: string, payload: any, baseHeaders: any = undefined): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    public async post(uri: string, payload: any, baseHeaders: any = undefined) {
         console.debug('post', {uri, payload});
         const headers = await this.getSecureHeaders(baseHeaders);
         console.debug('post', {headers});
@@ -80,9 +79,9 @@ export abstract class AbstractClient {
         return response;
     }
 
-    public static isConfigurationValid(username: string, password: string, host: string): boolean {
-        console.debug('isConfigurationValid', {username: username, password: password, host: host});
-        return (username || '') !== '' && (password || '') !== '' && (host || '') !== '';
+    public static isConfigurationValid(userId: string, secret: string, host: string) {
+        console.debug('isConfigurationValid', {userId, secret, host: host});
+        return (userId || '') !== '' && (secret || '') !== '' && (host || '') !== '';
     }
 
     protected async getToApi(url: string, headers: any, baseUrl?: string) {
@@ -96,7 +95,7 @@ export abstract class AbstractClient {
         return await response.json();
     }
 
-    protected async postToApi(url: string, data: any, headers: any, baseUrl?: string): Promise<any> {    // eslint-disable-line @typescript-eslint/no-explicit-any
+    protected async postToApi(url: string, data: any, headers: any, baseUrl?: string) {
         const resolvedFetch = this.fetch;
         console.debug('postToApi', {url, data, headers});
         const response = await resolvedFetch((baseUrl ?? this.getBaseUrl()) + url, { // change this
@@ -111,18 +110,18 @@ export abstract class AbstractClient {
         return await response.json();
     }
 
-    protected getBaseHeaders(): any {    // eslint-disable-line @typescript-eslint/no-explicit-any
+    protected getBaseHeaders() {
         return ({
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         });
     }
 
-    protected getBaseUrl(): string {
+    protected getBaseUrl() {
         return `${this.protocol}://${this.host}/`;
     }
 
-    private async getSecureHeaders(baseHeaders: any = undefined): Promise<any> {  // eslint-disable-line @typescript-eslint/no-explicit-any
+    private async getSecureHeaders(baseHeaders?: any) {
         const headers = baseHeaders || this.getBaseHeaders();
         const tok = await this.getAuthToken();
         console.debug('getSecureHeaders', {headers, tok});
@@ -133,7 +132,9 @@ export abstract class AbstractClient {
 
     public abstract isServerConfigured(): boolean;
 
-    public abstract checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string): boolean;
+    public abstract checkStale(
+        username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string
+    ): boolean;
 
     /**
      * Get the authentication token for the current user.

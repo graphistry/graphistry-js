@@ -1,5 +1,6 @@
 import { AbstractClient } from './AbstractClient.js';
 
+
 const AUTH_API_ENDPOINT = 'api/v2/auth/pkey/jwt/';
 
 /**
@@ -94,7 +95,7 @@ export class ClientPkey extends AbstractClient {
         personalKeyId: string, personalKeySecret: string, org?: string,
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname?: string,
-        fetch?: any,  // eslint-disable-line @typescript-eslint/no-explicit-any
+        fetch?: any,
         version?: string,
         agent = '@graphistry/js-upload-api',
     ) {

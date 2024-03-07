@@ -109,12 +109,12 @@ export class Client extends AbstractClient {
         }
     }
 
-    public isServerConfigured(): boolean {
+    public isServerConfigured() {
         console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
         return (this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '';
     }
 
-    public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string): boolean {
+    public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string) {
         if (this.username !== username) {
             console.debug('username changed', {currentUsername: this.username, newUsername: username}, this);
             return true;
@@ -147,7 +147,7 @@ export class Client extends AbstractClient {
      * @returns The authentication token
      * 
      */
-    protected async getAuthToken(force = false): Promise<string> {
+    protected async getAuthToken(force = false) {
         if (!force && this.authTokenValid()) {
             return this._token || '';  // workaround ts not recognizing that _token is set
         }
