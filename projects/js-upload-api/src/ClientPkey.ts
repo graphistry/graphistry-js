@@ -185,7 +185,7 @@ export class ClientPkey extends AbstractClient {
     /**
      * 
      * @param personalKeyId 
-     * @param password 
+     * @param personalKeySecret 
      * @param org 
      * @param protocol 
      * @param host 

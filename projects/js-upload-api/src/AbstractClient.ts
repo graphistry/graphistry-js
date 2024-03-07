@@ -148,8 +148,8 @@ export abstract class AbstractClient {
 
     /**
      * 
-     * @param username 
-     * @param password 
+     * @param userId
+     * @param secret 
      * @param org 
      * @param protocol 
      * @param host 
@@ -159,6 +159,6 @@ export abstract class AbstractClient {
      * 
      */
     public abstract fetchToken(
-        username: string, password: string, org?: string, protocol?: string, host?: string
+        userId: string, secret: string, org?: string, protocol?: string, host?: string
     ): Promise<string>
 }
