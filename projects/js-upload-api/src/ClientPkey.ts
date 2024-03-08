@@ -44,7 +44,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/pkey/jwt/';
  * ```javascript
  * import { Client } from '@graphistry/node-api';
  * const client = new Client(
- *  'my_username', 'my_password', '',
+ *  'my_personal_key_id', 'my_personal_key_secret', '',
  *  'http', '10.20.0.1:8080',
  *  'https://www.my-site.com'
  * );
@@ -56,7 +56,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/pkey/jwt/';
  * ```javascript
  * import { Client } from '@graphistry/node-api';
  * const client = new Client(
- *  'my_username', 'my_password', '',
+ *  'my_personal_key_id', 'my_personal_key_secret', '',
  *  'http', 'nginx',
  *  'https://www.my-site.com'
  * );
