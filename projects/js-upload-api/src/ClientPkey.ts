@@ -109,12 +109,12 @@ export class ClientPkey extends AbstractClient {
         }
     }
 
-    public isServerConfigured(): boolean {
+    public isServerConfigured() {
         console.debug('isServerConfigured', {personalKeyId: this.personalKeyId, _personalKeySecret: this._personalKeySecret, host: this.host});
         return (this.personalKeyId || '') !== '' && (this._personalKeySecret || '') !== '' && (this.host || '') !== '';
     }
 
-    public checkStale(personalKeyId: string, personalKeySecret: string, protocol: string, host: string, clientProtocolHostname?: string): boolean {
+    public checkStale(personalKeyId: string, personalKeySecret: string, protocol: string, host: string, clientProtocolHostname?: string) {
         if (this.personalKeyId !== personalKeyId) {
             console.debug('personalKeyId changed', {currentPersonalKeyId: this.personalKeyId, newPersonalKeyId: personalKeyId}, this);
             return true;
@@ -147,7 +147,7 @@ export class ClientPkey extends AbstractClient {
      * @returns The authentication token
      * 
      */
-    protected async getAuthToken(force = false): Promise<string> {
+    protected async getAuthToken(force = false) {
         if (!force && this.authTokenValid()) {
             return this._token || '';  // workaround ts not recognizing that _token is set
         }
