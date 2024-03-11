@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AbstractClient } from './AbstractClient.js';
+import { Client } from './Client.js';
+import { ClientPkey } from './ClientPkey.js';
 import { File, FileType, EdgeFile, NodeFile } from './File.js';
 import { Mode, ModeAction, Privacy } from './Privacy.js';
 
@@ -297,7 +298,7 @@ export class Dataset {
      * @param client Client object
      * @returns Promise that resolves when the dataset is uploaded
      */
-    public async upload(client: AbstractClient): Promise<Dataset> {
+    public async upload(client: Client | ClientPkey): Promise<Dataset> {
 
         if (!client) {
             throw new Error('No client provided');
@@ -341,7 +342,7 @@ export class Dataset {
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    private async createDataset(client: AbstractClient, bindings: Record<string, unknown>): Promise<string> {
+    private async createDataset(client: Client | ClientPkey, bindings: Record<string, unknown>): Promise<string> {
         this.fillMetadata(bindings, client);
         const dataJsonResults = await client.post('api/v2/upload/datasets/', bindings);
         this._createDatasetResponse = dataJsonResults;
@@ -389,7 +390,7 @@ export class Dataset {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    private fillMetadata(data: any, client: AbstractClient): void{
+    private fillMetadata(data: any, client: Client | ClientPkey): void{
         if (!data) {
             throw new Error('No data to fill metadata; call setData() first or provide to File constructor');
         }
@@ -432,7 +433,7 @@ export class Dataset {
      * @throws Error if server call fails
      */
     public async privacy(
-        client: AbstractClient,
+        client: Client | ClientPkey,
         mode: Mode = 'private',
         modeAction?: ModeAction,
         invitedUsers: string[] = [],
