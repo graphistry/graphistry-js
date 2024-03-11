@@ -196,7 +196,7 @@ export class ClientPkey extends AbstractClient {
      * 
      */
     public async fetchToken(
-        personalKeyId: string, personalKeySecret: string, org?: string, protocol = 'https', host = 'hub.graphistry.com'
+        personalKeyId: string, personalKeySecret: string, _org?: string, protocol = 'https', host = 'hub.graphistry.com'
     ): Promise<string> {
         return (await this.getToApi(
             AUTH_API_ENDPOINT,
