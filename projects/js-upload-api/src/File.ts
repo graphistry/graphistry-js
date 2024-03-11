@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Client } from './Client.js';
-import { ClientPkey } from './ClientPkey.js';
+import { ClientType } from './types.js';
 
 
 /**
@@ -210,7 +209,7 @@ export class File {
      * @param force If true, will force upload even if file has already been uploaded
      * @returns Promise that resolves to the uploaded File object when it completes uploading
      */
-    public async upload(client : Client | ClientPkey, force = false): Promise<File> {
+    public async upload(client : ClientType, force = false): Promise<File> {
 
         if (!client) { throw new Error('No client provided'); }
 
@@ -243,7 +242,7 @@ export class File {
      * @param force If true, will force creation of a new ID even if file has already been uploaded 
      * @returns 
      */
-    public async createFile(client : Client | ClientPkey, force = false): Promise<any | boolean> {
+    public async createFile(client : ClientType, force = false): Promise<any | boolean> {
         if (!force && this._fileCreated) {
             console.debug('File already created, skipping');
             return this._fileCreated;
@@ -276,7 +275,7 @@ export class File {
      * @param force If true, will force upload even if file has already been uploaded
      * @returns 
      */
-    public async uploadData(client : Client | ClientPkey, force = false): Promise<any | boolean> {
+    public async uploadData(client : ClientType, force = false): Promise<any | boolean> {
         if (!force && this._fileUploaded) {
             return this._fileUploaded;
         }
@@ -313,7 +312,7 @@ export class File {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    private fillMetadata(data: any, client: Client | ClientPkey): void {
+    private fillMetadata(data: any, client: ClientType): void {
         if (!data) {
             throw new Error('No data to fill metadata; call setData() first or provide to File constructor');
         }
