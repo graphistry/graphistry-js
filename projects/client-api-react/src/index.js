@@ -9,9 +9,10 @@ import * as gAPI from '@graphistry/client-api';
 import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings, panelNames, calls } from './bindings.js';
-import { Client as ClientBase, selectionUpdates, subscribeLabels } from '@graphistry/client-api';
+import { Client as ClientBase, ClientPkey as ClientPkeyBase, selectionUpdates, subscribeLabels } from '@graphistry/client-api';
 
 export const Client = ClientBase;
+export const ClientPkey = ClientPkeyBase;
 
 //https://blog.logrocket.com/how-to-get-previous-props-state-with-react-hooks/
 function usePrevious(value) {
