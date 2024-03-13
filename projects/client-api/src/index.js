@@ -45,7 +45,7 @@ export class Client extends ClientBase {
         clientProtocolHostname,
         version
     ) {
-        console.debug('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
+        // console.debug('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
         super(
             username, password, org,
             protocol, host, clientProtocolHostname,
@@ -83,7 +83,7 @@ export class ClientPkey extends ClientPkeyBase {
         clientProtocolHostname,
         version
     ) {
-        console.debug('new client', { personalKeyId }, { personalKeySecret }, { protocol }, { host }, { clientProtocolHostname }, { version });
+        // console.debug('new client', { personalKeyId }, { personalKeySecret }, { protocol }, { host }, { clientProtocolHostname }, { version });
         super(
             personalKeyId, personalKeySecret, org,
             protocol, host, clientProtocolHostname,
