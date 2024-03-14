@@ -48,7 +48,7 @@ const dataset = new Dataset({
     name: 'testdata',
 }, edgesFile, nodesFile);
 
-await dataset.upload();
+await dataset.upload(client);
 console.info(`View at ${dataset.datasetID} at ${dataset.datasetURL}`);
 ```
 
