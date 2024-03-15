@@ -5,6 +5,19 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+## 5.1.0 - 2024-03-15
+
+### Added
+
+* **client-api**: Add API-key-based `ClientPKey` upload client
+* **client-api-react**: Add API-key-based `ClientPKey` upload client
+* **node-api**: Add API-key-based `ClientPKey` upload client
+* **js-upload-api**: Add API-key-based `ClientPKey` upload client
+
+### Refactor
+
+* Factor out base class `AbstractClient` and add type export of `ClientType`
+
 ## 5.0.2 - 2024-02-13
 
 ### Added
