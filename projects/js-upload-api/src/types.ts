@@ -1,5 +1,5 @@
 import { Client } from "./Client.js";
-import { ClientPKey } from "./ClientPkey.js";
+import { ClientPKey } from "./ClientPKey.js";
 
 /**
  * @internal
