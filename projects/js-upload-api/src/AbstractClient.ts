@@ -74,7 +74,7 @@ export abstract class AbstractClient {
         console.debug('post', {uri, payload});
         const headers = await this.getSecureHeaders(baseHeaders);
         console.debug('post', {headers});
-        const response = await this.postToApi(uri, payload, headers);
+        const response = await (await this.postToApi(uri, payload, headers)).json();
         console.debug('post response', {uri, payload, response});
         return response;
     }
@@ -92,7 +92,7 @@ export abstract class AbstractClient {
             headers,
         });
         console.debug('getToApi', {url, headers});
-        return await response.json();
+        return response;
     }
 
     protected async postToApi(url: string, data: any, headers: any, baseUrl?: string) {
@@ -107,7 +107,7 @@ export abstract class AbstractClient {
                 : JSON.stringify(data),
         })
         console.debug('postToApi', {url, data, headers, response});
-        return await response.json();
+        return response;
     }
 
     protected getBaseHeaders() {

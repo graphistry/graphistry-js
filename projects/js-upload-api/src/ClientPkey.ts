@@ -138,6 +138,10 @@ export class ClientPkey extends AbstractClient {
         return false;
     }
 
+    private getPkeyString(id: string, secret: string) {
+        return `PersonalKey ${id}:${secret}`;
+    }
+
     /**
      * Get the authentication token for the current user.
      * By default, reuses current token if available.
@@ -165,12 +169,29 @@ export class ClientPkey extends AbstractClient {
 
         console.debug('getAuthToken', {personalKeyId: this.personalKeyId, personalKeySecret: this._personalKeySecret, host: this.host});
 
-        const response = await this.getToApi(
+        let response = await this.postToApi(
             AUTH_API_ENDPOINT,
             {
-                "Authorization": `PersonalKey ${this.personalKeyId}:${this._personalKeySecret}`,
+                ...(this.org ? {org_name: this.org} : {}),
             },
-        )
+            {
+                "Authorization": this.getPkeyString(this.personalKeyId, this._personalKeySecret),
+                ...this.getBaseHeaders(),
+            }
+        );
+        // fallback to personal-only GET pkey auth if 405 (Method Not Allowed)
+        if(response.status === 405) {
+            if(this.org) {
+                console.warn('Host does not support org auth via pkey, use username/password auth instead');
+            }
+            response = await this.getToApi(
+                AUTH_API_ENDPOINT,
+                {
+                    "Authorization": this.getPkeyString(this.personalKeyId, this._personalKeySecret),
+                }
+            );
+        }
+        response = await response.json();
 
         const tok : string = response.token;
         this._token = tok;
@@ -196,14 +217,34 @@ export class ClientPkey extends AbstractClient {
      * 
      */
     public async fetchToken(
-        personalKeyId: string, personalKeySecret: string, _org?: string, protocol = 'https', host = 'hub.graphistry.com'
+        personalKeyId: string, personalKeySecret: string, org?: string, protocol = 'https', host = 'hub.graphistry.com'
     ): Promise<string> {
-        return (await this.getToApi(
+        let response = await this.postToApi(
             AUTH_API_ENDPOINT,
             {
-                "Authorization": `PersonalKey ${personalKeyId}:${personalKeySecret}`,
+                ...(org ? {org_name: org} : {}),
+            },
+            {
+                "Authorization": this.getPkeyString(personalKeyId, personalKeySecret),
+                ...this.getBaseHeaders(),
             },
             `${protocol}://${host}/`
-        )).token;
+        );
+        // fallback to personal-only GET pkey auth if 405 (Method Not Allowed)
+        if(response.status === 405) {
+            if(org) {
+                console.warn('Host does not support org auth via pkey, use username/password auth instead');
+            }
+            response = await this.getToApi(
+                AUTH_API_ENDPOINT,
+                {
+                    "Authorization": this.getPkeyString(personalKeyId, personalKeySecret),
+                },
+                `${protocol}://${host}/`
+            );
+        }
+        response = await response.json();
+
+        return response.token;
     }
 }

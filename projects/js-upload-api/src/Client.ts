@@ -165,7 +165,7 @@ export class Client extends AbstractClient {
 
         console.debug('getAuthToken', {username: this.username, _password: this._password, host: this.host});
 
-        const response = await this.postToApi(
+        let response = await this.postToApi(
             AUTH_API_ENDPOINT,
             {
                 username: this.username,
@@ -173,7 +173,8 @@ export class Client extends AbstractClient {
                 ...(this.org ? {org_name: this.org} : {}),
             },
             this.getBaseHeaders(),
-        )
+        );
+        response = await response.json();
 
         const tok : string = response.token;
         this._token = tok;
@@ -201,7 +202,7 @@ export class Client extends AbstractClient {
     public async fetchToken(
         username: string, password: string, org?: string, protocol = 'https', host = 'hub.graphistry.com'
     ): Promise<string> {
-        return (await this.postToApi(
+        let response = await this.postToApi(
             AUTH_API_ENDPOINT,
             {
                 username: username,
@@ -210,6 +211,8 @@ export class Client extends AbstractClient {
             },
             this.getBaseHeaders(),
             `${protocol}://${host}/`
-        )).token;
+        );
+        response = await response.json();
+        return response.token;
     }
 }
