@@ -3,7 +3,7 @@ import shallowEqual from 'shallowequal';
 import { Model } from '@graphistry/falcor-model-rxjs';
 import { PostMessageDataSource } from '@graphistry/falcor-socket-datasource';
 import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
-import { Client as ClientBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
+import { Client as ClientBase, ClientPKey as ClientPKeyBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
 
 
 const CLIENT_SUBSCRIPTION_API_VERSION = 1;
@@ -16,7 +16,7 @@ export const NodeFile = NodeFileBase;
 
 //FIXME not generating jsdoc
 /**
- * Class wrapping @graphistry/js-upload-api::Client for client->server File and Dataset uploads.
+ * Class wrapping @graphistry/js-upload-api::Client for client->server File and Dataset uploads using username and password authentication.
  * @global
  * @extends ClientBase
  */
@@ -45,9 +45,47 @@ export class Client extends ClientBase {
         clientProtocolHostname,
         version
     ) {
-        console.debug('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
+        // console.debug('new client', { username }, { password }, { protocol }, { host }, { clientProtocolHostname }, { version });
         super(
             username, password, org,
+            protocol, host, clientProtocolHostname,
+            window.fetch.bind(window), version, '@graphistry/client-api');
+    }
+}
+
+/**
+ * Class wrapping @graphistry/js-upload-api::ClientPKey for client->server File and Dataset uploads using personal key authentication.
+ * @global
+ * @extends ClientPKeyBase
+ */
+export class ClientPKey extends ClientPKeyBase {
+    /**
+     * Create a Client
+     * @constructor
+     * @param {string} personalKeyId - Graphistry server personal key ID
+     * @param {string} personalKeySecret - Graphistry server personal key secret
+     * @param {string} org - Graphistry organization (optional)
+     * @param {string} [protocol='https'] - 'http' or 'https' for client->server upload communication
+     * @param {string} [host='hub.graphistry.com'] - Graphistry server hostname
+     * @param {clientProtocolHostname} clientProtocolHostname - Override URL base path shown in browsers. By default uses protocol/host combo, e.g., https://hub.graphistry.com
+     * 
+     * For more examples, see @graphistry/node-api and @graphistry/js-upload-api docs
+     * 
+     * @example **Authenticate against Graphistry Hub**
+     * ```javascript
+     * import { Client } from '@graphistry/client-api';
+     * const client = new Client('my_personal_key_id', 'my_personal_key_secret');
+     * ```
+    */
+    constructor(
+        personalKeyId, personalKeySecret, org = undefined,
+        protocol = 'https', host = 'hub.graphistry.com',
+        clientProtocolHostname,
+        version
+    ) {
+        // console.debug('new client', { personalKeyId }, { personalKeySecret }, { protocol }, { host }, { clientProtocolHostname }, { version });
+        super(
+            personalKeyId, personalKeySecret, org,
             protocol, host, clientProtocolHostname,
             window.fetch.bind(window), version, '@graphistry/client-api');
     }

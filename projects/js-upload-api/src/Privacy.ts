@@ -1,4 +1,4 @@
-import { Client } from './Client.js';
+import { ClientType } from './types.js';
 
 
 /**
@@ -144,7 +144,7 @@ export class Privacy {
      * @throws Error if the upload fails
      * 
      */
-    public async upload(client: Client): Promise<Privacy> {
+    public async upload(client: ClientType): Promise<Privacy> {
 
         if (!client) {
             throw new Error('No client provided');

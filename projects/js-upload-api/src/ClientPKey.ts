@@ -1,12 +1,12 @@
 import { AbstractClient } from './AbstractClient.js';
 
 
-const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
+const AUTH_API_ENDPOINT = 'api/v2/auth/pkey/jwt/';
 
 /**
  * # Client examples
  * 
- * Authenticate against a Graphistry server using a username and password, and manage communications with it.
+ * Authenticate against a Graphistry server using a personal key id and secret, and manage communications with it.
  * 
  * Different authentication modes may be desirable depending on the type of Graphistry server.
  * 
@@ -19,7 +19,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * @example **Authenticate against Graphistry Hub for a personal account**
  * ```javascript
  * import { Client } from '@graphistry/node-api';
- * const client = new Client('my_username', 'my_password');
+ * const client = new Client('my_personal_key_id', 'my_personal_key_secret');
  * ```
  * 
  * <br>
@@ -27,7 +27,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * @example **Authenticate against an org in Graphistry Hub**
  * ```javascript
  * import { Client } from '@graphistry/node-api';
- * const client = new Client('my_username', 'my_password', 'my_org');
+ * const client = new Client('my_personal_key_id', 'my_personal_key_secret', 'my_org');
  * ```
  * 
  * <br>
@@ -35,7 +35,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * @example **Authenticate against a private Graphistry server**
  * ```javascript
  * import { Client } from '@graphistry/node-api';
- * const client = new Client('my_username', 'my_password', '', 'http', 'my-ec2.aws.com:8080');
+ * const client = new Client('my_personal_key_id', 'my_personal_key_secret', '', 'http', 'my-ec2.aws.com:8080');
  * ```
  * 
  * <br>
@@ -44,7 +44,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * ```javascript
  * import { Client } from '@graphistry/node-api';
  * const client = new Client(
- *  'my_username', 'my_password', '',
+ *  'my_personal_key_id', 'my_personal_key_secret', '',
  *  'http', '10.20.0.1:8080',
  *  'https://www.my-site.com'
  * );
@@ -56,7 +56,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * ```javascript
  * import { Client } from '@graphistry/node-api';
  * const client = new Client(
- *  'my_username', 'my_password', '',
+ *  'my_personal_key_id', 'my_personal_key_secret', '',
  *  'http', 'nginx',
  *  'https://www.my-site.com'
  * );
@@ -72,17 +72,17 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/token/generate';
  * ```
  */
 
-export class Client extends AbstractClient {
+export class ClientPKey extends AbstractClient {
 
-    public readonly username: string;
-    private _password: string;
+    public readonly personalKeyId: string;
+    private _personalKeySecret: string;
 
     /**
      * 
      * See examples at top of file
      * 
-     * @param username The username to authenticate with.
-     * @param password The password to authenticate with.
+     * @param personalKeyId The personal key id to authenticate with.
+     * @param personalKeySecret The personal key secret to authenticate with.
      * @param org The organization to use (optional)
      * @param protocol The protocol to use for the server during uploads: 'http' or 'https'.
      * @param host The hostname of the server during uploads: defaults to 'hub.graphistry.com'
@@ -92,17 +92,17 @@ export class Client extends AbstractClient {
      * @param agent The agent name to use when communicating with the server
      */
     constructor (
-        username: string, password: string, org?: string,
+        personalKeyId: string, personalKeySecret: string, org?: string,
         protocol = 'https', host = 'hub.graphistry.com',
         clientProtocolHostname?: string,
-        fetch?: any,  // eslint-disable-line @typescript-eslint/no-explicit-any
+        fetch?: any,
         version?: string,
         agent = '@graphistry/js-upload-api',
     ) {
         super(org, protocol, host, clientProtocolHostname, fetch, version, agent);
 
-        this.username = username;
-        this._password = password;
+        this.personalKeyId = personalKeyId;
+        this._personalKeySecret = personalKeySecret;
 
         if (this.isServerConfigured()) {
             this._getAuthTokenPromise = this.getAuthToken();
@@ -110,17 +110,17 @@ export class Client extends AbstractClient {
     }
 
     public isServerConfigured() {
-        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
-        return (this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '';
+        console.debug('isServerConfigured', {personalKeyId: this.personalKeyId, _personalKeySecret: this._personalKeySecret, host: this.host});
+        return (this.personalKeyId || '') !== '' && (this._personalKeySecret || '') !== '' && (this.host || '') !== '';
     }
 
-    public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string) {
-        if (this.username !== username) {
-            console.debug('username changed', {currentUsername: this.username, newUsername: username}, this);
+    public checkStale(personalKeyId: string, personalKeySecret: string, protocol: string, host: string, clientProtocolHostname?: string) {
+        if (this.personalKeyId !== personalKeyId) {
+            console.debug('personalKeyId changed', {currentPersonalKeyId: this.personalKeyId, newPersonalKeyId: personalKeyId}, this);
             return true;
         }
-        if (this._password !== password) {
-            console.debug('password changed', {currentPassword: this._password, newPassword: password}, this);
+        if (this._personalKeySecret !== personalKeySecret) {
+            console.debug('personalKeySecret changed', {currentPersonalKeySecret: this._personalKeySecret, newPersonalKeySecret: personalKeySecret}, this);
             return true;
         }
         if (this.protocol !== protocol) {
@@ -138,6 +138,10 @@ export class Client extends AbstractClient {
         return false;
     }
 
+    private getPKeyString(id: string, secret: string) {
+        return `PersonalKey ${id}:${secret}`;
+    }
+
     /**
      * Get the authentication token for the current user.
      * By default, reuses current token if available.
@@ -152,10 +156,10 @@ export class Client extends AbstractClient {
             return this._token || '';  // workaround ts not recognizing that _token is set
         }
 
-        //Throw exception if invalid username or password
+        //Throw exception if invalid personalKeyId or personalKeySecret
         if (!this.isServerConfigured()) {
-            console.debug('current config', {username: this.username, _password: this._password, host: this.host});
-            throw new Error('Invalid username or password');
+            console.debug('current config', {personalKeyId: this.personalKeyId, _personalKeySecret: this._personalKeySecret, host: this.host});
+            throw new Error('Invalid personalKeyId or personalKeySecret');
         }
 
         if (!force && this._getAuthTokenPromise) {
@@ -163,24 +167,37 @@ export class Client extends AbstractClient {
             return await this._getAuthTokenPromise;
         }
 
-        console.debug('getAuthToken', {username: this.username, _password: this._password, host: this.host});
+        console.debug('getAuthToken', {personalKeyId: this.personalKeyId, personalKeySecret: this._personalKeySecret, host: this.host});
 
         let response = await this.postToApi(
             AUTH_API_ENDPOINT,
             {
-                username: this.username,
-                password: this._password,
                 ...(this.org ? {org_name: this.org} : {}),
             },
-            this.getBaseHeaders(),
+            {
+                "Authorization": this.getPKeyString(this.personalKeyId, this._personalKeySecret),
+                ...this.getBaseHeaders(),
+            }
         );
+        // fallback to personal-only GET pkey auth if 405 (Method Not Allowed)
+        if(response.status === 405) {
+            if(this.org) {
+                console.warn('Host does not support org auth via PKey, use username/password auth instead');
+            }
+            response = await this.getToApi(
+                AUTH_API_ENDPOINT,
+                {
+                    "Authorization": this.getPKeyString(this.personalKeyId, this._personalKeySecret),
+                }
+            );
+        }
         response = await response.json();
 
         const tok : string = response.token;
         this._token = tok;
 
         if (!this.authTokenValid()) {
-            console.error('auth token failure', {response, username: this.username, host: this.host});
+            console.error('auth token failure', {response, personalKeyId: this.personalKeyId, host: this.host});
             throw new Error({'error': 'Auth token failure', ...(response||{})});
         }
 
@@ -189,8 +206,8 @@ export class Client extends AbstractClient {
 
     /**
      * 
-     * @param username 
-     * @param password 
+     * @param personalKeyId 
+     * @param personalKeySecret 
      * @param org 
      * @param protocol 
      * @param host 
@@ -200,19 +217,34 @@ export class Client extends AbstractClient {
      * 
      */
     public async fetchToken(
-        username: string, password: string, org?: string, protocol = 'https', host = 'hub.graphistry.com'
+        personalKeyId: string, personalKeySecret: string, org?: string, protocol = 'https', host = 'hub.graphistry.com'
     ): Promise<string> {
         let response = await this.postToApi(
             AUTH_API_ENDPOINT,
             {
-                username: username,
-                password: password,
                 ...(org ? {org_name: org} : {}),
             },
-            this.getBaseHeaders(),
+            {
+                "Authorization": this.getPKeyString(personalKeyId, personalKeySecret),
+                ...this.getBaseHeaders(),
+            },
             `${protocol}://${host}/`
         );
+        // fallback to personal-only GET pkey auth if 405 (Method Not Allowed)
+        if(response.status === 405) {
+            if(org) {
+                console.warn('Host does not support org auth via PKey, use username/password auth instead');
+            }
+            response = await this.getToApi(
+                AUTH_API_ENDPOINT,
+                {
+                    "Authorization": this.getPKeyString(personalKeyId, personalKeySecret),
+                },
+                `${protocol}://${host}/`
+            );
+        }
         response = await response.json();
+
         return response.token;
     }
 }
