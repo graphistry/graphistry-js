@@ -72,7 +72,7 @@ const AUTH_API_ENDPOINT = 'api/v2/auth/pkey/jwt/';
  * ```
  */
 
-export class ClientPkey extends AbstractClient {
+export class ClientPKey extends AbstractClient {
 
     public readonly personalKeyId: string;
     private _personalKeySecret: string;
@@ -138,7 +138,7 @@ export class ClientPkey extends AbstractClient {
         return false;
     }
 
-    private getPkeyString(id: string, secret: string) {
+    private getPKeyString(id: string, secret: string) {
         return `PersonalKey ${id}:${secret}`;
     }
 
@@ -175,19 +175,19 @@ export class ClientPkey extends AbstractClient {
                 ...(this.org ? {org_name: this.org} : {}),
             },
             {
-                "Authorization": this.getPkeyString(this.personalKeyId, this._personalKeySecret),
+                "Authorization": this.getPKeyString(this.personalKeyId, this._personalKeySecret),
                 ...this.getBaseHeaders(),
             }
         );
         // fallback to personal-only GET pkey auth if 405 (Method Not Allowed)
         if(response.status === 405) {
             if(this.org) {
-                console.warn('Host does not support org auth via pkey, use username/password auth instead');
+                console.warn('Host does not support org auth via PKey, use username/password auth instead');
             }
             response = await this.getToApi(
                 AUTH_API_ENDPOINT,
                 {
-                    "Authorization": this.getPkeyString(this.personalKeyId, this._personalKeySecret),
+                    "Authorization": this.getPKeyString(this.personalKeyId, this._personalKeySecret),
                 }
             );
         }
@@ -225,7 +225,7 @@ export class ClientPkey extends AbstractClient {
                 ...(org ? {org_name: org} : {}),
             },
             {
-                "Authorization": this.getPkeyString(personalKeyId, personalKeySecret),
+                "Authorization": this.getPKeyString(personalKeyId, personalKeySecret),
                 ...this.getBaseHeaders(),
             },
             `${protocol}://${host}/`
@@ -233,12 +233,12 @@ export class ClientPkey extends AbstractClient {
         // fallback to personal-only GET pkey auth if 405 (Method Not Allowed)
         if(response.status === 405) {
             if(org) {
-                console.warn('Host does not support org auth via pkey, use username/password auth instead');
+                console.warn('Host does not support org auth via PKey, use username/password auth instead');
             }
             response = await this.getToApi(
                 AUTH_API_ENDPOINT,
                 {
-                    "Authorization": this.getPkeyString(personalKeyId, personalKeySecret),
+                    "Authorization": this.getPKeyString(personalKeyId, personalKeySecret),
                 },
                 `${protocol}://${host}/`
             );

@@ -3,7 +3,7 @@ import shallowEqual from 'shallowequal';
 import { Model } from '@graphistry/falcor-model-rxjs';
 import { PostMessageDataSource } from '@graphistry/falcor-socket-datasource';
 import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
-import { Client as ClientBase, ClientPkey as ClientPkeyBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
+import { Client as ClientBase, ClientPKey as ClientPKeyBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
 
 
 const CLIENT_SUBSCRIPTION_API_VERSION = 1;
@@ -54,11 +54,11 @@ export class Client extends ClientBase {
 }
 
 /**
- * Class wrapping @graphistry/js-upload-api::ClientPkey for client->server File and Dataset uploads using personal key authentication.
+ * Class wrapping @graphistry/js-upload-api::ClientPKey for client->server File and Dataset uploads using personal key authentication.
  * @global
- * @extends ClientPkeyBase
+ * @extends ClientPKeyBase
  */
-export class ClientPkey extends ClientPkeyBase {
+export class ClientPKey extends ClientPKeyBase {
     /**
      * Create a Client
      * @constructor

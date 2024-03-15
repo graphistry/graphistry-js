@@ -1,5 +1,5 @@
 import { Client } from "./Client.js";
-import { ClientPkey } from "./ClientPkey.js";
+import { ClientPKey } from "./ClientPkey.js";
 
 /**
  * @internal
@@ -11,4 +11,4 @@ import { ClientPkey } from "./ClientPkey.js";
  * A type including clients with all available authentication methods
  * 
  */
-export type ClientType = Client | ClientPkey;
+export type ClientType = Client | ClientPKey;

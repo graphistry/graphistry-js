@@ -1,4 +1,4 @@
-import { Client as ClientBase, ClientPkey as ClientPkeyBase } from '@graphistry/js-upload-api';
+import { Client as ClientBase, ClientPKey as ClientPKeyBase } from '@graphistry/js-upload-api';
 import { version as VERSION } from './version.js';
 import fetch from 'node-fetch-commonjs';
 
@@ -52,11 +52,11 @@ export class Client extends ClientBase {
 }
 
 /**
- * Class wrapping @graphistry/js-upload-api::ClientPkey for client->server File and Dataset uploads using personal key authentication.
+ * Class wrapping @graphistry/js-upload-api::ClientPKey for client->server File and Dataset uploads using personal key authentication.
  * @global
- * @extends ClientPkeyBase
+ * @extends ClientPKeyBase
  */
-export class ClientPkey extends ClientPkeyBase {
+export class ClientPKey extends ClientPKeyBase {
     /**
      * Create a Client
      * @constructor
