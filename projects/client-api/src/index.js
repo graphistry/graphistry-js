@@ -8,19 +8,42 @@ import { Client as ClientBase, ClientPKey as ClientPKeyBase, Dataset as DatasetB
 
 const CLIENT_SUBSCRIPTION_API_VERSION = 1;
 
-//export const Client = ClientBase;
-export const Dataset = DatasetBase;
-export const File = FileBase;
-export const EdgeFile = EdgeFileBase;
-export const NodeFile = NodeFileBase;
+// Warning: must export variable seperately from declaration as workaround for JSDoc parsing error
 
-//FIXME not generating jsdoc
+/**
+ * Class from @graphistry/js-upload-api::Dataset for combining files into a single visualizable graph.
+ * @global
+ */
+const Dataset = DatasetBase;
+export { Dataset };
+
+/**
+ * Class from @graphistry/js-upload-api::File for uploading data and then reusing as part of Dataset graph visualizations.
+ * @global
+ */
+const File = FileBase;
+export { File };
+
+/**
+ * Helper class from @graphistry/js-upload-api::EdgeFile for tracking intent when creating a File object for uploading.
+ * @global
+ */
+const EdgeFile = EdgeFileBase;
+export { EdgeFile };
+
+/**
+ * Helper class from @graphistry/js-upload-api::NodeFile for tracking intent when creating a File object for uploading.
+ * @global
+ */
+const NodeFile = NodeFileBase;
+export { NodeFile };
+
 /**
  * Class wrapping @graphistry/js-upload-api::Client for client->server File and Dataset uploads using username and password authentication.
  * @global
  * @extends ClientBase
  */
-export class Client extends ClientBase {
+class Client extends ClientBase {
     /**
      * Create a Client
      * @constructor
@@ -52,13 +75,14 @@ export class Client extends ClientBase {
             window.fetch.bind(window), version, '@graphistry/client-api');
     }
 }
+export { Client };
 
 /**
  * Class wrapping @graphistry/js-upload-api::ClientPKey for client->server File and Dataset uploads using personal key authentication.
  * @global
  * @extends ClientPKeyBase
  */
-export class ClientPKey extends ClientPKeyBase {
+class ClientPKey extends ClientPKeyBase {
     /**
      * Create a Client
      * @constructor
@@ -90,6 +114,7 @@ export class ClientPKey extends ClientPKeyBase {
             window.fetch.bind(window), version, '@graphistry/client-api');
     }
 }
+export { ClientPKey };
 
 import {
     ajax,

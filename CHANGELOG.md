@@ -5,6 +5,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+### Fix
+
+* **client-api**: Add missing classes to documentation
+
 ## 5.1.0 - 2024-03-15
 
 ### Added
