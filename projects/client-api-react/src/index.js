@@ -171,7 +171,6 @@ const ETLUploader = (props) => {
         setLoadingMessage('Uploading graph');
 
         const type = 'edgelist';
-        console.debug('we should not be here');
         const name = uuidv4();
         console.debug('clientapi react uuid4', { name });
         const payload = { type, name, graph: edges, labels: nodes, bindings };
@@ -564,6 +563,7 @@ const Graphistry = forwardRef((props, ref) => {
     const url = `${graphistryHost || ''}/graph/graph.html${''
         }?play=${playNormalized
         }&info=${showInfo
+        }&menu=${showMenu
         }&splashAfter=${showSplashScreen
         }&dataset=${encodeURIComponent(dataset)
         }${optionalParams}`;
