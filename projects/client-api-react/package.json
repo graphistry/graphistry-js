@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api-react",
-  "version": "5.1.2",
+  "version": "5.1.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
