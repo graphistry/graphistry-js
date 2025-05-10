@@ -9,6 +9,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **client-api**: Add missing classes to documentation
 
+## 5.1.2 - 2025-05-10
+
+### Fix
+
+* **client-api**: Add missing menu URL parameter to iframe generation
+
 ## 5.1.0 - 2024-03-15
 
 ### Added
