@@ -86,7 +86,8 @@ COPY \
     projects/node-api/tsconfig.cjs.json \
     /opt/graphistry-js/projects/node-api/
 RUN echo "=== Building node-api ===" \
-    && ( cd projects/node-api && npm i) \
+    && ( cd projects/node-api) \
+    && ( npm install) \
     && ( cd projects/js-upload-api && npm link) \
     && ( cd projects/node-api && npm link '@graphistry/js-upload-api') \
     && ./node_modules/lerna/dist/cli.js run build --scope="@graphistry/node-api" \
