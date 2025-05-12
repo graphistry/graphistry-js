@@ -27,12 +27,12 @@ jobs:
       DOCKER_BUILDKIT: 1
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@v3
         with:
           persist-credentials: false
       - name: Build
         run: |
-          docker-compose build
+          docker compose build
 
       - name: Storybook 🔧
         run: ./tools/storybook.sh
@@ -52,12 +52,12 @@ jobs:
       DOCKER_BUILDKIT: 1
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@v3
         with:
           persist-credentials: false
       - name: Build
         run: |
-          docker-compose build
+          docker compose build
 
       - name: Storybook 🔧
         run: ./tools/storybook.sh
