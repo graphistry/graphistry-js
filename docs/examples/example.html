@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphistry Example</title>
+    <style>
+        #viz {
+            width: 100%;
+            height: 350px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <iframe id="viz" 
+            scrolling="no" 
+            allowfullscreen="true" 
+            src="https://hub.graphistry.com/graph/graph.html?dataset=Miserables&splashAfter=true">
+    </iframe>
+    <div id="selection-output" style="margin-top: 10px; border: 1px solid #ccc; padding: 10px;">
+        {}
+    </div>
+    <script src="../dist/GraphistryJS.min.js"></script>
+    <script>
+        console.log('GraphistryJS Example');
+        const iframe = document.getElementById('viz');
+        const outputDiv = document.getElementById('selection-output');
+
+        iframe.onload = function() {
+            GraphistryJS(iframe)
+                .do((g) => {
+                    console.warn('Subscribing to selection updates', g);
+                    g.selectionUpdates(g).subscribe({
+                        next: (selection) => {
+                            console.log('Selection:', selection);
+                            outputDiv.textContent = JSON.stringify(selection, null, 2);
+                        },
+                        error: (err) => console.error('Error in selection updates:', err),
+                        complete: () => console.log('Selection updates completed')
+                    });
+                })
+                .toPromise();
+        };
+    </script>
+</body>
+</html>
