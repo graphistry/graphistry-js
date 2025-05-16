@@ -5,15 +5,24 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+## 5.1.3 - 2025-05-16
+
 ### Fix
 
-* **client-api**: Add missing classes to documentation
+* **client-api-react**: Fixed issues with ESM and UMD builds to ensure they work correctly when imported directly in a browser
+* **client-api-react**: Updated `react` and `react-dom` dev dependency version to match peer dependency version
 
 ## 5.1.2 - 2025-05-10
 
 ### Fix
 
 * **client-api**: Add missing menu URL parameter to iframe generation
+
+## 5.1.1 - 2024-03-22
+
+### Fix
+
+* **client-api**: Add missing classes to documentation
 
 ## 5.1.0 - 2024-03-15
 
