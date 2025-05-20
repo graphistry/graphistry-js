@@ -482,3 +482,8 @@ export const Ticks = {
     </>);
   },
 };
+
+export const HideDefaultLogo = (args) => <Graphistry {...defaultSettings}
+    showLogo={false}
+    {...args}
+/>;

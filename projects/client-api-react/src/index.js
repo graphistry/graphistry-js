@@ -103,6 +103,8 @@ const propTypes = {
     onSelectionUpdate: PropTypes.func,
     onLabelsUpdate: PropTypes.func,
     selectionUpdateOptions: PropTypes.object,
+
+    showLogo: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -122,7 +124,8 @@ const defaultProps = {
     showSplashScreen: false,
     showLoadingIndicator: true,
     loadingMessage: 'Herding stray GPUs',
-    tolerateLoadErrors: true
+    tolerateLoadErrors: true,
+    showLogo: true,
 };
 
 // Post upon fresh data
@@ -566,6 +569,7 @@ const Graphistry = forwardRef((props, ref) => {
         }&menu=${showMenu
         }&splashAfter=${showSplashScreen
         }&dataset=${encodeURIComponent(dataset)
+        }&logo=${props.showLogo
         }${optionalParams}`;
 
     //Initial frame load and settings
