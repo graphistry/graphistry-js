@@ -104,7 +104,7 @@ const propTypes = {
     onLabelsUpdate: PropTypes.func,
     selectionUpdateOptions: PropTypes.object,
 
-    showLogo: PropTypes.bool,
+    queryParamExtra: PropTypes.object,
 };
 
 const defaultProps = {
@@ -125,7 +125,6 @@ const defaultProps = {
     showLoadingIndicator: true,
     loadingMessage: 'Herding stray GPUs',
     tolerateLoadErrors: true,
-    showLogo: true,
 };
 
 // Post upon fresh data
@@ -563,14 +562,20 @@ const Graphistry = forwardRef((props, ref) => {
         (session ? `&session=${session}` : ``) +
         (workbook ? `&workbook=${workbook}` : ``);
 
+    let extraParams = '';
+    if (props.queryParamExtra) {
+        for (const [key, value] of Object.entries(props.queryParamExtra)) {
+            extraParams += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+        }
+    }
+
     const url = `${graphistryHost || ''}/graph/graph.html${''
         }?play=${playNormalized
         }&info=${showInfo
         }&menu=${showMenu
         }&splashAfter=${showSplashScreen
         }&dataset=${encodeURIComponent(dataset)
-        }&logo=${props.showLogo
-        }${optionalParams}`;
+        }${optionalParams}${extraParams}`;
 
     //Initial frame load and settings
     const iframeRef = generateIframeRef({
