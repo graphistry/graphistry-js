@@ -110,29 +110,28 @@ export class Client extends AbstractClient {
     }
 
     public isServerConfigured() {
-        console.debug('isServerConfigured', {username: this.username, _password: this._password, host: this.host});
         return (this.username || '') !== '' && (this._password || '') !== '' && (this.host || '') !== '';
     }
 
     public checkStale(username: string, password: string, protocol: string, host: string, clientProtocolHostname?: string) {
+        // username changed
         if (this.username !== username) {
-            console.debug('username changed', {currentUsername: this.username, newUsername: username}, this);
             return true;
         }
+        // password changed
         if (this._password !== password) {
-            console.debug('password changed', {currentPassword: this._password, newPassword: password}, this);
             return true;
         }
+        // protocol changed
         if (this.protocol !== protocol) {
-            console.debug('protocol changed', {currentProtocol: this.protocol, newProtocol: protocol}, this);
             return true;
         }
+        // host changed
         if (this.host !== host) {
-            console.debug('host changed', {currentHost: this.host, newHost: host}, this);
             return true;
         }
+        // clientProtocolHostname changed
         if (this.clientProtocolHostname !== clientProtocolHostname) {
-            console.debug('clientProtocolHostname changed', {currentClientProtocolHostname: this.clientProtocolHostname, newClientProtocolHostname: clientProtocolHostname}, this);
             return true;
         }
         return false;
@@ -154,16 +153,13 @@ export class Client extends AbstractClient {
 
         //Throw exception if invalid username or password
         if (!this.isServerConfigured()) {
-            console.debug('current config', {username: this.username, _password: this._password, host: this.host});
             throw new Error('Invalid username or password');
         }
 
         if (!force && this._getAuthTokenPromise) {
-            console.debug('reusing outstanding auth promise');
+            // reusing outstanding auth promise
             return await this._getAuthTokenPromise;
         }
-
-        console.debug('getAuthToken', {username: this.username, _password: this._password, host: this.host});
 
         let response = await this.postToApi(
             AUTH_API_ENDPOINT,
