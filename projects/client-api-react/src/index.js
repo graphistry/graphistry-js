@@ -103,6 +103,8 @@ const propTypes = {
     onSelectionUpdate: PropTypes.func,
     onLabelsUpdate: PropTypes.func,
     selectionUpdateOptions: PropTypes.object,
+
+    queryParamExtra: PropTypes.object
 };
 
 const defaultProps = {
@@ -560,13 +562,20 @@ const Graphistry = forwardRef((props, ref) => {
         (session ? `&session=${session}` : ``) +
         (workbook ? `&workbook=${workbook}` : ``);
 
+    let extraParams = '';
+    if (props.queryParamExtra) {
+        for (const [key, value] of Object.entries(props.queryParamExtra)) {
+            extraParams += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+        }
+    }
+
     const url = `${graphistryHost || ''}/graph/graph.html${''
         }?play=${playNormalized
         }&info=${showInfo
         }&menu=${showMenu
         }&splashAfter=${showSplashScreen
         }&dataset=${encodeURIComponent(dataset)
-        }${optionalParams}`;
+        }${optionalParams}${extraParams}`;
 
     //Initial frame load and settings
     const iframeRef = generateIframeRef({
