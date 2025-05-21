@@ -11,6 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **client-api-react**: Fixed issues with ESM and UMD builds to ensure they work correctly when imported directly in a browser
 * **client-api-react**: Updated `react` and `react-dom` dev dependency version to match peer dependency version
+* **client-api-react**: Add `queryParamExtra` property to add arbitrary query parameters to Graphistry iframe
 
 ## 5.1.2 - 2025-05-10
 
