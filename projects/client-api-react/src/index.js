@@ -104,7 +104,7 @@ const propTypes = {
     onLabelsUpdate: PropTypes.func,
     selectionUpdateOptions: PropTypes.object,
 
-    queryParamExtra: PropTypes.object,
+    queryParamExtra: PropTypes.object
 };
 
 const defaultProps = {
@@ -124,7 +124,7 @@ const defaultProps = {
     showSplashScreen: false,
     showLoadingIndicator: true,
     loadingMessage: 'Herding stray GPUs',
-    tolerateLoadErrors: true,
+    tolerateLoadErrors: true
 };
 
 // Post upon fresh data
