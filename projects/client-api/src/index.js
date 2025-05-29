@@ -121,6 +121,7 @@ import {
     catchError,
     concatMap,
     delay,
+    distinctUntilChanged,
     filter,
     first,
     forkJoin,
@@ -1442,6 +1443,15 @@ export function selectionUpdates(g, {withColumns=false, pageSize=1000} = {}) {
                     map(o => o.data),
                     filter(o => o && o.type === 'graphistry-sub-update' && o.path === selectionPath),
                     map(o => o.data),
+                    distinctUntilChanged(
+                        (
+                            { point: prevPoint, edge: prevEdge },
+                            { point: currPoint, edge: currEdge }
+                        ) => prevPoint.length === currPoint.length
+                            && prevEdge.length === currEdge.length
+                            && prevPoint.every((val, index) => val === currPoint[index])
+                            && prevEdge.every((val, index) => val === currEdge[index])
+                    ),
                     tap(({ edge, point, labels }) => {
                         g.models.model.setCache({
                             json: {
