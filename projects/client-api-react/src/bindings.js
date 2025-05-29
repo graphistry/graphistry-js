@@ -7,17 +7,19 @@ const panelNames = ['filters', 'exclusions', 'scene', 'labels', 'layout'];
 // react prop name :: [ react type, default name, maybe alt JS updateSetting prop, maybe alt JS method ]
 const bindingsTable = {
 	
-    backgroundColor:        [ PropTypes.string,      'defaultBackgroundColor',    'background',   undefined],    
+    backgroundColor:        [ PropTypes.string,      'defaultBackgroundColor',    'background',   undefined],
     labelOpacity:           [ PropTypes.number,      'defaultLabelOpacity',       undefined,      undefined],
     labelColor:             [ PropTypes.string,      'defaultLabelColor',         undefined,      undefined],
     labelBackground:        [ PropTypes.string,      'defaultLabelBackground',    undefined,      undefined],
     pointSize:				[ PropTypes.number,      'defaultPointSize',          undefined,      undefined],
+    pointStrokeWidth:		[ PropTypes.number,      'defaultPointStrokeWidth',   undefined,      undefined],
     neighborhoodHighlight:  [ PropTypes.string,      'defaultNeighborhoodHighlight', undefined,   undefined],
     neighborhoodHighlightHops:  [ PropTypes.number,      'defaultNeighborhoodHighlightHops', undefined, undefined],
     edgeCurvature:          [ PropTypes.number,      'defaultEdgeCurvature',      undefined,      undefined],
     edgeOpacity:			[ PropTypes.number,      'defaultEdgeOpacity',        undefined,      undefined],
     pointOpacity:			[ PropTypes.number,      'defaultPointOpacity',       undefined,      undefined],
     showArrows:				[ PropTypes.bool,        'defaultShowArrows',         undefined,      undefined],
+    showCollections:		[ PropTypes.bool,        'defaultShowCollections',    undefined,      undefined],
     showLabels:				[ PropTypes.bool,        'defaultShowLabels',         'labelEnabled', undefined],
     showToolbar:			[ PropTypes.bool,        'defaultShowToolbar',        undefined,      undefined],
     showInspector:			[ PropTypes.bool,        'defaultShowInspector',      undefined,      'toggleInspector'],
