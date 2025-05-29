@@ -5,6 +5,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+### Added
+
+* **client-api-react**: Add `pointStrokeWidth` and `showCollections` bindings
+
 ### Security
 
 - Strip logs from client API authentication code
