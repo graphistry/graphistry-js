@@ -82,8 +82,6 @@ const propTypes = {
     allowFullScreen: PropTypes.bool,
     backgroundColor: PropTypes.string,
 
-    queryParamExtra: PropTypes.object,
-
     nodes: PropTypes.arrayOf(PropTypes.object),
     edges: PropTypes.arrayOf(PropTypes.object),
     bindings: PropTypes.shape({
