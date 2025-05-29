@@ -20,6 +20,7 @@ import { ajax } from 'rxjs/ajax';
 import {
     concatMap,
     delay,
+    distinctUntilChanged,
     filter,
     first,
     isEmpty,
@@ -45,6 +46,7 @@ export {
     catchError,
     concatMap,
     delay,
+    distinctUntilChanged,
     filter,
     first,
     forkJoin,

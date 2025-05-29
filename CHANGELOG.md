@@ -9,6 +9,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * **client-api-react**: Add `pointStrokeWidth` and `showCollections` bindings
 
+### Security
+
+- Strip logs from client API authentication code
+
+### Fix
+
+* **client-api**: Fixed selectionUpdates by filtering out messages with the same selection, preventing unnecessary callbacks from hover events
+
 ## 5.1.3 - 2025-05-16
 
 ### Fix

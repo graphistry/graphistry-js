@@ -110,29 +110,28 @@ export class ClientPKey extends AbstractClient {
     }
 
     public isServerConfigured() {
-        console.debug('isServerConfigured', {personalKeyId: this.personalKeyId, _personalKeySecret: this._personalKeySecret, host: this.host});
         return (this.personalKeyId || '') !== '' && (this._personalKeySecret || '') !== '' && (this.host || '') !== '';
     }
 
     public checkStale(personalKeyId: string, personalKeySecret: string, protocol: string, host: string, clientProtocolHostname?: string) {
+        // personalKeyId changed
         if (this.personalKeyId !== personalKeyId) {
-            console.debug('personalKeyId changed', {currentPersonalKeyId: this.personalKeyId, newPersonalKeyId: personalKeyId}, this);
             return true;
         }
+        // personalKeySecret changed
         if (this._personalKeySecret !== personalKeySecret) {
-            console.debug('personalKeySecret changed', {currentPersonalKeySecret: this._personalKeySecret, newPersonalKeySecret: personalKeySecret}, this);
             return true;
         }
+        // protocol changed
         if (this.protocol !== protocol) {
-            console.debug('protocol changed', {currentProtocol: this.protocol, newProtocol: protocol}, this);
             return true;
         }
+        // host changed
         if (this.host !== host) {
-            console.debug('host changed', {currentHost: this.host, newHost: host}, this);
             return true;
         }
+        // clientProtocolHostname changed
         if (this.clientProtocolHostname !== clientProtocolHostname) {
-            console.debug('clientProtocolHostname changed', {currentClientProtocolHostname: this.clientProtocolHostname, newClientProtocolHostname: clientProtocolHostname}, this);
             return true;
         }
         return false;
@@ -158,16 +157,13 @@ export class ClientPKey extends AbstractClient {
 
         //Throw exception if invalid personalKeyId or personalKeySecret
         if (!this.isServerConfigured()) {
-            console.debug('current config', {personalKeyId: this.personalKeyId, _personalKeySecret: this._personalKeySecret, host: this.host});
             throw new Error('Invalid personalKeyId or personalKeySecret');
         }
 
         if (!force && this._getAuthTokenPromise) {
-            console.debug('reusing outstanding auth promise');
+            // reusing outstanding auth promise
             return await this._getAuthTokenPromise;
         }
-
-        console.debug('getAuthToken', {personalKeyId: this.personalKeyId, personalKeySecret: this._personalKeySecret, host: this.host});
 
         let response = await this.postToApi(
             AUTH_API_ENDPOINT,
