@@ -5,6 +5,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+### Added
+
+* **client-api-react**: Add `pointStrokeWidth` and `showCollections` bindings
+
 ## 5.1.3 - 2025-05-16
 
 ### Fix
