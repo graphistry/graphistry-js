@@ -5,6 +5,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
+### Security
+
+- Strip logs from client API authentication code
+
 ## 5.1.3 - 2025-05-16
 
 ### Fix
