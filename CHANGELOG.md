@@ -8,6 +8,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Added
 
 * **client-api-react**: Add `pointStrokeWidth` and `showCollections` bindings
+* **client-api**: Add `resetFilters` and `resetExclusions` calls
 
 ### Security
 
