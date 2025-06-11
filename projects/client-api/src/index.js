@@ -133,6 +133,7 @@ import {
     mergeAll,
     Observable,
     of,
+    pairwise,
     pipe,
     ReplaySubject,
     BehaviorSubject,
@@ -1670,6 +1671,48 @@ export function subscribeLabels({ onChange, onExit, onError, g }) {
         .subscribe({ error: onError });
 }
 
+/**
+ * Subscribe to graph simulation completion event
+ * @function subscribeLabels
+ * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable} or depricated, cache an object.
+ * @return {Subscription} A {@link Subscription} that can be used to react to the play updates
+ * @example
+ * GraphistryJS(document.getElementById('viz'))
+ *     .pipe(
+ *          map(playUpdates),
+ *          tap(() => console.log('Play completed')),
+ *     })
+ *     .subscribe();
+ */
+export function playUpdates(g) {
+    if (!(g.subscriptionAPIVersion >= 1)) {
+        return throwError(() => new Error('playUpdates is not available the currently embedded graphistry viz.'));
+    }
+
+    const selectionPath = ".labels";
+    return (new BehaviorSubject('Initialize playUpdates stream')
+        .pipe(
+            tap(() => {
+                console.debug('postMessage subscription', '@client-api.playUpdate');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: selectionPath }, '*');
+            }),
+            finalize(() => {
+                console.debug('postMessage unsubscribe', '@client-api.playUpdate');
+                g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: selectionPath }, '*');
+            }),
+            switchMap(() =>
+                fromEvent(window, 'message').pipe(
+                    map(o => o.data),
+                    filter(o => o && o.type === 'graphistry-sub-update' && o.path === selectionPath),
+                    map(o => o.data),
+                    pairwise(),
+                    filter(([{ simulating: prevSim }, { simulating: currSim }]) => prevSim && !currSim),
+                    shareReplay({ bufferSize: 1, refCount: true })
+                ),
+            )
+        ));
+}
+
 class GraphistryState {
 
     constructor(subscriptionAPIVersion, iFrame, models, result) {
@@ -1768,7 +1811,7 @@ function addCallbacks(obs, target) {
     target.labelUpdates = labelUpdates;// lift(obs, labelUpdates);
     target.subscribeLabels = subscribeLabels;//lift(obs, subscribeLabels);
     target.selectionUpdates = selectionUpdates; // lift(obs, selectionUpdates);
-    target.subscribeLabels
+    target.playUpdates = playUpdates;
     return target;
 }
 
