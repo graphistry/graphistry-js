@@ -8,7 +8,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Added
 
 * **client-api-react**: Add `pointStrokeWidth` and `showCollections` bindings
-* **client-api**: Add `resetFilters` and `resetExclusions` calls
+* **client-api**: Add `resetFilters` and `resetExclusions` calls, requires minimum Graphistry version 2.42.18
 
 ### Security
 
