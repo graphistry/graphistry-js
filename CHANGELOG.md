@@ -8,6 +8,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Added
 
 * **client-api-react**: Add `pointStrokeWidth` and `showCollections` bindings
+* **client-api**: Add `playUpdates` observer which creates event when graph simulation completes
+* **client-api-react**: Add `onPlayComplete` callback property
 
 ### Security
 
