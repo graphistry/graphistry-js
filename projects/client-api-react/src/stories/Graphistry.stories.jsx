@@ -97,6 +97,24 @@ export const OnLabelUpdate = {
   },
 };
 
+export const OnPlayUpdate = {
+  render: (args) => {
+    const [numPlayComplete, setNumPlayComplete] = useState(0);
+
+    const onLabelsUpdate = () => {
+      console.log('onLabelsUpdate');
+      setNumPlayComplete(numPlayComplete++);
+    };
+
+    return (
+      <div>
+        {`Number of play completed: ${numPlayComplete}`}
+        <Graphistry {...defaultSettings} {...args} onLabelsUpdate={onLabelsUpdate} />
+      </div>
+    );
+  },
+};
+
 export const NoClusteringOnLoad = {
   render: (args) => <Graphistry {...defaultSettings} {...args} play={0} />,
 };
