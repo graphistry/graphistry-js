@@ -126,7 +126,9 @@ const bindings =
 // TODO: infer this from chainList in client-api
 const calls = bindings.map(b => b.jsCommand).filter(Boolean).concat([
     'setSelectionExternal',
-    'setHighlightExternal'
+    'setHighlightExternal',
+    'resetFilters',
+    'resetExclusions'
 ])
 
 export { bindings, panelNames, calls };

@@ -1210,6 +1210,20 @@ export function addFilters(expr) {
 chainList.addFilters = addFilters;
 
 /**
+ * Reset all filters in a visualization
+ * @function resetFilters
+ * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+ * @example
+ * GraphistryJS(document.getElementById('viz'))
+ *     .pipe(resetFilters())
+ *     .subscribe();
+ */
+export function resetFilters() {
+    return makeCaller('view', 'filters.reset', []);
+}
+chainList.resetFilters = resetFilters;
+
+/**
  * Add an exclusion to the visualization with the given expression
  * @function addExclusion
  * @param {string} expr - An expression using the same language as our in-tool
@@ -1252,6 +1266,20 @@ export function addExclusions(expr) {
     });
 }
 chainList.addExclusions = addExclusions;
+
+/**
+ * Reset all exclusions in a visualization
+ * @function resetExclusions
+ * @return {@link GraphistryState} A {@link GraphistryState} {@link Observable} that emits the result of the operation
+ * @example
+ * GraphistryJS(document.getElementById('viz'))
+ *     .pipe(resetExclusions())
+ *     .subscribe();
+ */
+export function resetExclusions() {
+    return makeCaller('view', 'exclusions.reset', []);
+}
+chainList.resetExclusions = resetExclusions;
 
 /**
  * UNSTABLE: Set the selection.
