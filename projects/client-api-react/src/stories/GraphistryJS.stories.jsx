@@ -8,6 +8,8 @@ import {
   updateSetting,
   addFilters,
   addExclusions,
+  resetFilters,
+  resetExclusions,
   togglePanel,
   toggleToolbar,
   toggleHistograms,
@@ -279,6 +281,46 @@ export const setFilters = {
             ),
             addExclusions(args.exclusions || ['edge:id = 1']),
             togglePanel('filters', false)
+          )
+          .subscribe(() => null),
+        (err) => setMessages((arr) => arr.concat([`Error: ${err}`])),
+        () => setMessages((arr) => arr.concat(['Completed'])));
+      ////////
+      return () => (sub.unsubscribe ? sub.unsubscribe() : null);
+    }, [iframe]);
+
+    return <>
+      <iframe {...defaultIframeProps} ref={iframe} src={lesMisNoPlayNoSplash} {...args} />
+      <pre>{messages.join('\n')}</pre>
+      </>
+  },
+};
+
+export const ResetFilters = {
+  render: (args) => {
+    const iframe = useRef(null);
+    const [messages, setMessages] = useState(['loading...']);
+
+    useEffect(() => {
+      //////// Instantiate GraphistryJS for an iframe
+      const sub =
+        (graphistryJS(iframe.current)
+          .pipe(
+            tap(() =>
+              setMessages((arr) => arr.concat([`graphistryJS instantiated; pausing 3s...`]))
+            ),
+            delay(3000),
+            tap(() => setMessages((arr) => arr.concat([`adding filters`]))),
+            addFilters(
+              args.filters || ['point:community_infomap in (4, 5, 6)', 'point:degree > 1']
+            ),
+            addExclusions(args.exclusions || ['edge:id = 1']),
+            togglePanel('filters', false),
+            tap(() => setMessages((arr) => arr.concat([`pausing before removing filters`]))),
+            delay(3000),
+            tap(() => setMessages((arr) => arr.concat([`removing filters`]))),
+            resetFilters(),
+            resetExclusions()
           )
           .subscribe(() => null),
         (err) => setMessages((arr) => arr.concat([`Error: ${err}`])),
