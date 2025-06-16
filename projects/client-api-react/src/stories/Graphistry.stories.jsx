@@ -101,15 +101,15 @@ export const OnPlayUpdate = {
   render: (args) => {
     const [numPlayComplete, setNumPlayComplete] = useState(0);
 
-    const onLabelsUpdate = () => {
+    const onPlayUpdate = () => {
       console.log('onLabelsUpdate');
-      setNumPlayComplete(numPlayComplete++);
+      setNumPlayComplete(numPlayComplete + 1);
     };
 
     return (
       <div>
         {`Number of play completed: ${numPlayComplete}`}
-        <Graphistry {...defaultSettings} {...args} onLabelsUpdate={onLabelsUpdate} />
+        <Graphistry {...defaultSettings} {...args} onPlayUpdate={onPlayUpdate} />
       </div>
     );
   },

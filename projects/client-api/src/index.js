@@ -1511,7 +1511,7 @@ export function subscribeSelections({ onChange, g }) {
  * The inner {@link Observable} for a label will complete if the label is removed from the screen.
  * </p><p>
  * @function labelUpdates
- * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable} or depricated, cache an object.
+ * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable} or deprecated, cache an object.
  * @return {Observable<Observable<LabelEvent>>} An {@link Observable} of inner {Observables}, where each
  * inner {@link Observable} represents the lifetime of a label in the visualization.
  * @example
@@ -1673,8 +1673,8 @@ export function subscribeLabels({ onChange, onExit, onError, g }) {
 
 /**
  * Subscribe to graph simulation completion event
- * @function subscribeLabels
- * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable} or depricated, cache an object.
+ * @function playUpdates
+ * @param {@link GraphistryState} [g] A {@link GraphistryState} {@link Observable}
  * @return {Subscription} A {@link Subscription} that can be used to react to the play updates
  * @example
  * GraphistryJS(document.getElementById('viz'))
