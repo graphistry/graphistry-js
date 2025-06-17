@@ -7,8 +7,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Added
 
-* **client-api-react**: Add `pointStrokeWidth` and `showCollections` bindings
 * **client-api**: Add `resetFilters` and `resetExclusions` calls, requires minimum Graphistry version 2.42.18
+* **client-api**: Add `playUpdates` observer which creates event when graph simulation completes
+* **client-api-react**: Add `onPlayComplete` callback property
+
+## 5.1.4 - 2025-05-29
+
+### Added
+
+* **client-api-react**: Add `pointStrokeWidth` and `showCollections` bindings
 
 ### Security
 
