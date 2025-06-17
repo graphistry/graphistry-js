@@ -9,7 +9,7 @@ import * as gAPI from '@graphistry/client-api';
 import { ajax, catchError, first, forkJoin, map, of, switchMap, tap } from '@graphistry/client-api';  // avoid explicit rxjs dep
 import { bg } from './bg';
 import { bindings, panelNames, calls } from './bindings.js';
-import { Client as ClientBase, ClientPKey as ClientPKeyBase, selectionUpdates, subscribeLabels } from '@graphistry/client-api';
+import { Client as ClientBase, ClientPKey as ClientPKeyBase, selectionUpdates, subscribeLabels, playUpdates } from '@graphistry/client-api';
 
 export const Client = ClientBase;
 export const ClientPKey = ClientPKeyBase;
@@ -102,6 +102,7 @@ const propTypes = {
     onUpdateObservableG: PropTypes.func,
     onSelectionUpdate: PropTypes.func,
     onLabelsUpdate: PropTypes.func,
+    onPlayComplete: PropTypes.func,
     selectionUpdateOptions: PropTypes.object,
 
     queryParamExtra: PropTypes.object
@@ -465,6 +466,7 @@ const Graphistry = forwardRef((props, ref) => {
         onUpdateObservableG,
         onSelectionUpdate,
         onLabelsUpdate,
+        onPlayComplete,
         selectionUpdateOptions
     } = props;
 
@@ -555,6 +557,20 @@ const Graphistry = forwardRef((props, ref) => {
             };
         }
     }, [g, onLabelsUpdate])
+
+    useEffect(() => {
+        if (g && onPlayComplete) {
+            const sub = playUpdates(g)
+                .subscribe(
+                    (v) => onPlayComplete(undefined, v),
+                    (error) => onPlayComplete(error)
+                );
+
+            return () => {
+                sub && sub.unsubscribe();
+            };
+        }
+    }, [g, onPlayComplete])
 
     const playNormalized = typeof play === 'boolean' ? play : (play | 0) * 1000;
     const optionalParams = (type ? `&type=${type}` : ``) +
