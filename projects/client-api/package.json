@@ -1,6 +1,6 @@
 {
   "name": "@graphistry/client-api",
-  "version": "5.1.4",
+  "version": "5.1.5",
   "description": "Client-side API for interacting with a Graphistry embedded visualization.",
   "jsnext:main": "dist/index.js",
   "config": {
@@ -85,7 +85,7 @@
     "@graphistry/falcor-json-graph": "^2.9.10",
     "@graphistry/falcor-model-rxjs": "2.11.0",
     "@graphistry/falcor-socket-datasource": "2.11.3",
-    "@graphistry/js-upload-api": "^5.1.4",
+    "@graphistry/js-upload-api": "^5.1.5",
     "shallowequal": "1.1.0"
   },
   "peerDependencies": {
