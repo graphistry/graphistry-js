@@ -1204,8 +1204,15 @@ export function addFilters(expr) {
     }
 
     return switchMap(g => {
-        return forkJoin(expr.map(e => of(g).pipe(addFilter(e))))
-            .pipe(map((results) => g.updateStateWithResult(results)));
+        const observables = expr.length > 0
+            ? expr.map(e => of(g).pipe(addFilter(e)))
+            : [of(null)];
+
+        return forkJoin(observables)
+            .pipe(map((results) => {
+                const finalResults = expr.length > 0 ? results : [];
+                return g.updateStateWithResult(finalResults);
+            }));
     });
 }
 chainList.addFilters = addFilters;
@@ -1262,8 +1269,15 @@ export function addExclusions(expr) {
     }
 
     return switchMap(g => {
-        return forkJoin(expr.map(e => of(g).pipe(addExclusion(e))))
-            .pipe(map((results) => g.updateStateWithResult(results)));
+        const observables = expr.length > 0
+            ? expr.map(e => of(g).pipe(addExclusion(e)))
+            : [of(null)];
+
+        return forkJoin(observables)
+            .pipe(map((results) => {
+                const finalResults = expr.length > 0 ? results : [];
+                return g.updateStateWithResult(finalResults);
+            }));
     });
 }
 chainList.addExclusions = addExclusions;

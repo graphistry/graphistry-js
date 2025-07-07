@@ -13,6 +13,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Fix
 
+* **client-api**: Fix handling of addFilters and addExclusions calls with empty arg to prevent either function from stalling client-api initialization.
 * **client-api-react**: Fix updating props or using ref functions ocasionally causing repeated function calls.
 
 ## 5.1.4 - 2025-05-29
