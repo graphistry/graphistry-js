@@ -11,6 +11,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **client-api**: Add `playUpdates` observer which creates event when graph simulation completes
 * **client-api-react**: Add `onPlayComplete` callback property
 
+### Fix
+
+* **client-api-react**: Fix updating props or using ref functions ocasionally causing repeated function calls.
+
 ## 5.1.4 - 2025-05-29
 
 ### Added

@@ -360,18 +360,16 @@ function handleUpdates({ g, isFirstRun, axesMap, props }) {
 }
 
 
-// Regenerate on url change
 function generateIframeRef({
     setLoading, setLoadingMessage, setG, setGSub, setGObs, setGErr, setFirstRun,
-    url, dataset, props,
+    dataset, props,
     axesMap,
-    iframeStyle, iframeClassName, iframeProps, allowFullScreen,
     tolerateLoadErrors
 }) {
 
-    console.debug('@generateIframeRef', { url, dataset, props, axesMap, iframeStyle, iframeClassName, iframeProps, allowFullScreen, tolerateLoadErrors });
+    console.debug('@generateIframeRef', { dataset, props, axesMap, tolerateLoadErrors });
 
-    return useCallback(iframe => {
+    return iframe => {
         if (iframe && dataset) {
             console.debug('@generateIframeRef callback', { iframe, dataset });
             let loaded = false;
@@ -445,10 +443,7 @@ function generateIframeRef({
             console.debug('no iframe', typeof (iframe), { iframe, dataset });
             return () => { };
         }
-    }, [
-        url,
-        iframeStyle, iframeClassName, iframeProps, allowFullScreen
-    ]);
+    };
 }
 
 // iframe refreshes on key arg changes: via <iframe key={f(url)}
@@ -531,7 +526,19 @@ const Graphistry = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (g && onSelectionUpdate) {
+            let isFirst = true;
+
             const sub = selectionUpdates(g, selectionUpdateOptions)
+                // use first selection update as signal that data is synced
+                // trigger ref init
+                .pipe(
+                    tap(() => {
+                        if (isFirst) {
+                            setHasInitRef(true);
+                            isFirst = false;
+                        }
+                    })
+                )
                 .subscribe(
                     (v) => onSelectionUpdate(undefined, v),
                     (error) => onSelectionUpdate(error)
@@ -594,13 +601,15 @@ const Graphistry = forwardRef((props, ref) => {
         }${optionalParams}${extraParams}`;
 
     //Initial frame load and settings
-    const iframeRef = generateIframeRef({
+    const [hasInitRef, setHasInitRef] = useState(false);
+    const iframeRef = useCallback(generateIframeRef({
         setLoading, setLoadingMessage, setG, setGSub, setGObs, setGErr, setFirstRun,
-        url, dataset, props,
+        dataset, props,
         axesMap,
-        iframeStyle, iframeClassName, iframeProps, allowFullScreen,
         tolerateLoadErrors
-    });
+    }), [
+        hasInitRef
+    ]);
 
     const children = [
         <ETLUploader
