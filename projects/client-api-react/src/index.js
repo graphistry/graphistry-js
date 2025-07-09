@@ -369,7 +369,7 @@ function generateIframeRef({
 
     console.debug('@generateIframeRef', { dataset, props, axesMap, tolerateLoadErrors });
 
-    return iframe => {
+    return useCallback(iframe => {
         if (iframe && dataset) {
             console.debug('@generateIframeRef callback', { iframe, dataset });
             let loaded = false;
@@ -443,7 +443,7 @@ function generateIframeRef({
             console.debug('no iframe', typeof (iframe), { iframe, dataset });
             return () => { };
         }
-    };
+    }, []);
 }
 
 // iframe refreshes on key arg changes: via <iframe key={f(url)}
@@ -526,19 +526,7 @@ const Graphistry = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (g && onSelectionUpdate) {
-            let isFirst = true;
-
             const sub = selectionUpdates(g, selectionUpdateOptions)
-                // use first selection update as signal that data is synced
-                // trigger ref init
-                .pipe(
-                    tap(() => {
-                        if (isFirst) {
-                            setHasInitRef(true);
-                            isFirst = false;
-                        }
-                    })
-                )
                 .subscribe(
                     (v) => onSelectionUpdate(undefined, v),
                     (error) => onSelectionUpdate(error)
@@ -601,15 +589,12 @@ const Graphistry = forwardRef((props, ref) => {
         }${optionalParams}${extraParams}`;
 
     //Initial frame load and settings
-    const [hasInitRef, setHasInitRef] = useState(false);
-    const iframeRef = useCallback(generateIframeRef({
+    const iframeRef = generateIframeRef({
         setLoading, setLoadingMessage, setG, setGSub, setGObs, setGErr, setFirstRun,
         dataset, props,
         axesMap,
         tolerateLoadErrors
-    }), [
-        hasInitRef
-    ]);
+    });
 
     const children = [
         <ETLUploader
