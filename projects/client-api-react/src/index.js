@@ -104,7 +104,8 @@ const propTypes = {
     onLabelsUpdate: PropTypes.func,
     selectionUpdateOptions: PropTypes.object,
 
-    queryParamExtra: PropTypes.object
+    queryParamExtra: PropTypes.object,
+    client: PropTypes.object
 };
 
 const defaultProps = {
@@ -465,12 +466,15 @@ const Graphistry = forwardRef((props, ref) => {
         onUpdateObservableG,
         onSelectionUpdate,
         onLabelsUpdate,
-        selectionUpdateOptions
+        selectionUpdateOptions,
+        client
     } = props;
 
     const [loading, setLoading] = useState(!!props.loading);
     const [dataset, setDataset] = useState(props.dataset);
     const [loadingMessage, setLoadingMessage] = useState(props.loadingMessage || '');
+
+    const authToken = client && client._token && client.authTokenValid() ? client._token : null;
 
     const [g, setG] = useState(null);
     const [gObs, setGObs] = useState(null);
@@ -567,6 +571,10 @@ const Graphistry = forwardRef((props, ref) => {
         for (const [key, value] of Object.entries(props.queryParamExtra)) {
             extraParams += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
         }
+    }
+
+    if (authToken) {
+        extraParams += `&authToken=${encodeURIComponent(authToken)}`;
     }
 
     const url = `${graphistryHost || ''}/graph/graph.html${''
