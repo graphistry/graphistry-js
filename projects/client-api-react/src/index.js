@@ -443,10 +443,7 @@ function generateIframeRef({
             console.debug('no iframe', typeof (iframe), { iframe, url });
             return () => { };
         }
-    }, [
-        url,
-        tolerateLoadErrors
-    ]);
+    }, [ url ]);
 }
 
 // iframe refreshes on key arg changes: via <iframe key={f(url)}
