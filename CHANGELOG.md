@@ -5,16 +5,20 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## Dev
 
-### Added
-
-* **client-api**: Add `resetFilters` and `resetExclusions` calls, requires minimum Graphistry version 2.42.18
-* **client-api**: Add `playUpdates` observer which creates event when graph simulation completes
-* **client-api-react**: Add `onPlayComplete` callback property
+## 5.1.6 - 2025-07-09
 
 ### Fix
 
 * **client-api**: Fix handling of addFilters and addExclusions calls with empty arg to prevent either function from stalling client-api initialization.
 * **client-api-react**: Fix updating props or using ref functions ocasionally causing repeated function calls.
+
+## 5.1.5 - 2025-06-18
+
+### Added
+
+* **client-api**: Add `resetFilters` and `resetExclusions` calls, requires minimum Graphistry version 2.42.18
+* **client-api**: Add `playUpdates` observer which creates event when graph simulation completes
+* **client-api-react**: Add `onPlayComplete` callback property
 
 ## 5.1.4 - 2025-05-29
 
