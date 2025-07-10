@@ -360,24 +360,22 @@ function handleUpdates({ g, isFirstRun, axesMap, props }) {
 }
 
 
-// Regenerate on url change
 function generateIframeRef({
     setLoading, setLoadingMessage, setG, setGSub, setGObs, setGErr, setFirstRun,
-    url, dataset, props,
+    url, props,
     axesMap,
-    iframeStyle, iframeClassName, iframeProps, allowFullScreen,
     tolerateLoadErrors
 }) {
 
-    console.debug('@generateIframeRef', { url, dataset, props, axesMap, iframeStyle, iframeClassName, iframeProps, allowFullScreen, tolerateLoadErrors });
+    console.debug('@generateIframeRef', { url, props, axesMap, tolerateLoadErrors });
 
     return useCallback(iframe => {
-        if (iframe && dataset) {
-            console.debug('@generateIframeRef callback', { iframe, dataset });
+        if (iframe && url) {
+            console.debug('@generateIframeRef callback', { iframe, url });
             let loaded = false;
             setLoading(true);
             setLoadingMessage('Fetching session');
-            console.debug('new iframe', typeof (iframe), { iframe, dataset, propsDataset: props.dataset });
+            console.debug('new iframe', typeof (iframe), { iframe, url, propsDataset: props.dataset });
             const source = graphistryJS(iframe);
             const obs = source.pipe(
                     tap(g => { console.debug('new graphistryJS', g); }),
@@ -442,13 +440,10 @@ function generateIframeRef({
                 setGObs(null);
             }
         } else {
-            console.debug('no iframe', typeof (iframe), { iframe, dataset });
+            console.debug('no iframe', typeof (iframe), { iframe, url });
             return () => { };
         }
-    }, [
-        url,
-        iframeStyle, iframeClassName, iframeProps, allowFullScreen
-    ]);
+    }, [ url ]);
 }
 
 // iframe refreshes on key arg changes: via <iframe key={f(url)}
@@ -596,9 +591,8 @@ const Graphistry = forwardRef((props, ref) => {
     //Initial frame load and settings
     const iframeRef = generateIframeRef({
         setLoading, setLoadingMessage, setG, setGSub, setGObs, setGErr, setFirstRun,
-        url, dataset, props,
+        url, props,
         axesMap,
-        iframeStyle, iframeClassName, iframeProps, allowFullScreen,
         tolerateLoadErrors
     });
 

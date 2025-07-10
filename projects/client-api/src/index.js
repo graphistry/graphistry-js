@@ -1204,8 +1204,15 @@ export function addFilters(expr) {
     }
 
     return switchMap(g => {
-        return forkJoin(expr.map(e => of(g).pipe(addFilter(e))))
-            .pipe(map((results) => g.updateStateWithResult(results)));
+        const observables = expr.length > 0
+            ? expr.map(e => of(g).pipe(addFilter(e)))
+            : [of(null)];
+
+        return forkJoin(observables)
+            .pipe(map((results) => {
+                const finalResults = expr.length > 0 ? results : [];
+                return g.updateStateWithResult(finalResults);
+            }));
     });
 }
 chainList.addFilters = addFilters;
@@ -1262,8 +1269,15 @@ export function addExclusions(expr) {
     }
 
     return switchMap(g => {
-        return forkJoin(expr.map(e => of(g).pipe(addExclusion(e))))
-            .pipe(map((results) => g.updateStateWithResult(results)));
+        const observables = expr.length > 0
+            ? expr.map(e => of(g).pipe(addExclusion(e)))
+            : [of(null)];
+
+        return forkJoin(observables)
+            .pipe(map((results) => {
+                const finalResults = expr.length > 0 ? results : [];
+                return g.updateStateWithResult(finalResults);
+            }));
     });
 }
 chainList.addExclusions = addExclusions;
@@ -1456,16 +1470,18 @@ export function selectionUpdates(g, {withColumns=false, pageSize=1000} = {}) {
         return throwError(() => new Error('selectionUpdates is not available the currently embedded graphistry viz.'));
     }
 
+    const { contentWindow } = g.iFrame;
+
     const selectionPath = ".selection.labels";
     return g.selectionStream || (g.selectionStream = new BehaviorSubject('Initialize selectionUpdates stream')
         .pipe(
             tap(() => {
                 console.debug('postMessage subscription', '@client-api.selectionUpdates');
-                g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: selectionPath, options: { pageSize, withColumns } }, '*');
+                contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: selectionPath, options: { pageSize, withColumns } }, '*');
             }),
             finalize(() => {
                 console.debug('postMessage unsubscribe', '@client-api.selectionUpdates');
-                g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: selectionPath }, '*');
+                contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: selectionPath }, '*');
             }),
             switchMap(() =>
                 fromEvent(window, 'message').pipe(
@@ -1582,14 +1598,16 @@ export function labelUpdates(g={}) {
                 shareReplay({ bufferSize: 1, refCount: true }),
             );
     } else {
+        const { contentWindow } = g.iFrame;
+
         src = new BehaviorSubject('value').pipe(
-            tap((v) => {
+            tap(() => {
                 console.debug('postMessage subscription', '@client-api.labelUpdates');
-                g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: LABELS_PATH }, '*');
+                contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: LABELS_PATH }, '*');
             }),
             finalize(() => {
                 console.debug('postMessage subscription', '@client-api.labelUpdates');
-                g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: LABELS_PATH }, '*');
+                contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: LABELS_PATH }, '*');
             }),
             switchMap(() =>
                 fromEvent(window, 'message').pipe(
@@ -1717,16 +1735,18 @@ export function playUpdates(g) {
         return throwError(() => new Error('playUpdates is not available the currently embedded graphistry viz.'));
     }
 
+    const { contentWindow } = g.iFrame;
+
     const selectionPath = ".labels";
     return (new BehaviorSubject('Initialize playUpdates stream')
         .pipe(
             tap(() => {
                 console.debug('postMessage subscription', '@client-api.playUpdate');
-                g.iFrame.contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: selectionPath }, '*');
+                contentWindow.postMessage({ type: 'graphistry-subscribe', agent: 'graphistryjs', path: selectionPath }, '*');
             }),
             finalize(() => {
                 console.debug('postMessage unsubscribe', '@client-api.playUpdate');
-                g.iFrame.contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: selectionPath }, '*');
+                contentWindow.postMessage({ type: 'graphistry-unsubscribe', agent: 'graphistryjs', path: selectionPath }, '*');
             }),
             switchMap(() =>
                 fromEvent(window, 'message').pipe(
