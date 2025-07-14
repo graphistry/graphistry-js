@@ -366,7 +366,8 @@ function generateIframeRef({
     url, dataset, props,
     axesMap,
     iframeStyle, iframeClassName, iframeProps, allowFullScreen,
-    tolerateLoadErrors
+    tolerateLoadErrors,
+    authToken
 }) {
 
     console.debug('@generateIframeRef', { url, dataset, props, axesMap, iframeStyle, iframeClassName, iframeProps, allowFullScreen, tolerateLoadErrors });
@@ -417,6 +418,15 @@ function generateIframeRef({
                     ),
                     tap((g) => {
                         console.debug('new iframe all init updates handled, if any', g);
+                        // for sending authToken to the iframe
+                        if (authToken && iframe && iframe.contentWindow) {
+                            console.debug('Sending auth token to iframe via postMessage');
+                            iframe.contentWindow.postMessage({
+                                type: 'auth',
+                                authToken: authToken
+                            }, '*');
+                        }
+                        
                         setFirstRun(false);
                         if (props.onClientAPIConnected) {
                             console.debug('has onClientAPIConnected(), calling', props.onClientAPIConnected);
@@ -573,10 +583,6 @@ const Graphistry = forwardRef((props, ref) => {
         }
     }
 
-    if (authToken) {
-        extraParams += `&authToken=${encodeURIComponent(authToken)}`;
-    }
-
     const url = `${graphistryHost || ''}/graph/graph.html${''
         }?play=${playNormalized
         }&info=${showInfo
@@ -591,7 +597,8 @@ const Graphistry = forwardRef((props, ref) => {
         url, dataset, props,
         axesMap,
         iframeStyle, iframeClassName, iframeProps, allowFullScreen,
-        tolerateLoadErrors
+        tolerateLoadErrors,
+        authToken
     });
 
     const children = [
