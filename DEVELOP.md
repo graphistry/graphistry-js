@@ -155,7 +155,7 @@ Ex:
 
 ```bash
 lerna version X.Y.Z-alpha.2
-lerna publish #  if failed: lerna publish from-package
+lerna publish from-package
 ```
 
 As an even bigger hammer, to update even unchanged dependencies, try `lerna publish X.Y.Z --force-publish`
