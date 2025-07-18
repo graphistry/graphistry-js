@@ -82,6 +82,38 @@ import { Graphistry } from '@graphistry/client-api-react';` // + variants for di
 
 See [@graphistry/client-api-react project](projects/client-api-react/README.md), [interactive storybook docs](https://graphistry.github.io/graphistry-js/), and [Create React App project sample](projects/cra-test/README.md)
 
+### Authentication with Client API
+
+For secure authentication, create a `Client` instance and pass it to your components:
+
+```javascript
+import { Client, Dataset, EdgeFile, NodeFile } from '@graphistry/client-api';
+import { Graphistry } from '@graphistry/client-api-react';
+
+// Create authenticated client
+const client = new Client(
+  'my_username', 
+  'my_password', 
+  '', // org (optional)
+  'https', // protocol  
+  'hub.graphistry.com' // host
+);
+
+// Use with React component
+return (
+  <Graphistry
+    client={client}
+    dataset="Miserables"
+    // other props...
+  />
+);
+```
+
+This approach provides:
+- JWT-based authentication (vs deprecated API keys)
+- Automatic token management and refresh
+- Secure server-to-server communication
+
 <br><br>
 
 ## @graphistry/node-api
@@ -140,9 +172,11 @@ To support server-acceleration and fast interactions, Graphistry decouples uploa
 
 - You can configure your Graphistry server to run as http, https, or both
 - Uploads require authentication
+  - **Recommended**: The `Client` class provides modern JWT-based authentication for both browser and Node.js environments
   - The `node-api` client already uses the new JWT-based protocol ("API 3")
-  - Deprecated: The clientside JavaScript convenience APIs still use the deprecrated "API 1" protocol (key-based), which lacks JWT-based authentication and authorization
+  - **Deprecated**: The clientside JavaScript convenience APIs still use the deprecated "API 1" protocol (key-based), which lacks JWT-based authentication and authorization
     - We recommend clients instead use `fetch` or other HTTP callers to directly invoke the REST API: See how the `node-api` performs it
     - The client JavaScript APIs will updated to the new JWT method alongside recent CORS and SSO updates; contact staff if you desire assistance
+  - **Deprecated**: Legacy API key authentication is still supported but will be phased out
 - Sessions are based on unguessable web keys: sharing a secret ID means sharing read access
 - Datasets are immutable and thus their integrity is safe for sharing, while session state (e.g., filters) are writable: share a copy when in doubt
