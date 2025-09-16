@@ -418,13 +418,24 @@ function generateIframeRef({
                     ),
                     tap((g) => {
                         console.debug('new iframe all init updates handled, if any', g);
-                        // for sending authToken to the iframe
-                        if (authToken && iframe && iframe.contentWindow) {
-                            console.debug('Sending auth token to iframe via postMessage');
-                            iframe.contentWindow.postMessage({
-                                type: 'auth',
-                                authToken: authToken
-                            }, '*');
+                        
+                        // store JWT token for iframe auth
+                        if (authToken && client.authTokenValid()) {
+                            try {
+                                localStorage.setItem('graphistry_auth_token', authToken);
+                                console.info('Stored JWT token for iframe authentication');
+                                
+                                if (iframe && iframe.contentWindow) {
+                                    const targetOrigin = new URL(props.graphistryHost).origin;
+                                    iframe.contentWindow.postMessage({
+                                        type: 'auth-token-available',
+                                        agent: 'graphistryjs',
+                                        token: authToken
+                                    }, targetOrigin);
+                                }
+                            } catch (error) {
+                                console.warn('Failed to store auth token:', error);
+                            }
                         }
                         
                         setFirstRun(false);
@@ -484,7 +495,7 @@ const Graphistry = forwardRef((props, ref) => {
     const [dataset, setDataset] = useState(props.dataset);
     const [loadingMessage, setLoadingMessage] = useState(props.loadingMessage || '');
 
-    const authToken = client && client._token && client.authTokenValid() ? client._token : null;
+    const authToken = props.client && props.client.authTokenValid() ? props.client._token : null;
 
     const [g, setG] = useState(null);
     const [gObs, setGObs] = useState(null);
@@ -537,9 +548,10 @@ const Graphistry = forwardRef((props, ref) => {
 
         return {
             g,
+            client,
             ...exportedCalls
         };
-    }, [g]);
+    }, [g, client, dataset]);
 
     useEffect(() => {
         if (g && onSelectionUpdate) {
