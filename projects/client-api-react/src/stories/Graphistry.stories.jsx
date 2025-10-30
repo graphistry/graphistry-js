@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../../assets/index.css';
 
-import { Graphistry } from '../index';
+import { Graphistry, Client } from '../index';
 
 import {
   //graphistry
@@ -482,3 +482,149 @@ export const Ticks = {
     </>);
   },
 };
+
+// test for auth, can remove later
+export const ClientVerificationTest = () => {
+  const graphistryRef = useRef();
+  const [verificationLog, setVerificationLog] = useState([]);
+  const [client, setClient] = useState(null);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [org, setOrg] = useState('');
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const addLog = (message, type = 'info') => {
+    const timestamp = new Date().toLocaleTimeString();
+    setVerificationLog(prev => [...prev, `[${timestamp}] ${type.toUpperCase()}: ${message}`]);
+    console.log(`[AUTH TEST] ${message}`);
+  };
+
+  const createTestClient = async () => {
+    if (!username || !password) {
+      addLog('❌ Need username/password to create client', 'error');
+      return;
+    }
+
+    try {
+      setIsConnecting(true);
+      addLog('Creating Client instance...', 'info');
+
+      const testClient = new Client(username, password, org, 'https', 'hub.graphistry.com');
+      addLog('✅ Client instance created', 'success');
+
+      addLog('Waiting for authentication...', 'info');
+      await testClient._getAuthTokenPromise;
+
+      addLog('✅ Client authenticated successfully', 'success');
+      addLog(`Token received: ${testClient._token.substring(0, 20)}...`, 'info');
+      setClient(testClient);
+
+    } catch (err) {
+      addLog(`❌ Client creation failed: ${err.message}`, 'error');
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', height: '600px' }}>
+      {/* control */}
+      <div style={{ width: '350px', padding: '10px', borderRight: '1px solid #ddd', overflowY: 'auto' }}>
+        <h3>JWT Auth Test</h3>
+
+        {/* auth */}
+        <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', border: '1px solid #e9ecef' }}>
+          <h4 style={{ marginTop: 0 }}>Create Client</h4>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            style={{ width: '100%', marginBottom: '5px', padding: '5px', boxSizing: 'border-box' }}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: '100%', marginBottom: '5px', padding: '5px', boxSizing: 'border-box' }}
+          />
+          <input
+            type="text"
+            placeholder="Org (optional)"
+            value={org}
+            onChange={(e) => setOrg(e.target.value)}
+            style={{ width: '100%', marginBottom: '10px', padding: '5px', boxSizing: 'border-box' }}
+          />
+          <button
+            onClick={createTestClient}
+            disabled={isConnecting || !username || !password}
+            style={{
+              width: '100%',
+              padding: '8px',
+              backgroundColor: client ? '#28a745' : '#007bff',
+              color: 'white',
+              border: 'none',
+              cursor: (isConnecting || !username || !password) ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isConnecting ? 'Authenticating...' : client ? '✅ Authenticated' : 'Authenticate'}
+          </button>
+        </div>
+
+        {/* log */}
+        <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #e9ecef', flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: '5px', borderBottom: '1px solid #e9ecef', backgroundColor: '#e9ecef', fontWeight: 'bold', fontSize: '12px' }}>
+            Auth Log
+            <button
+              onClick={() => setVerificationLog([])}
+              style={{ float: 'right', fontSize: '10px', padding: '2px 6px', cursor: 'pointer' }}
+            >
+              Clear
+            </button>
+          </div>
+          <div style={{ padding: '5px', fontSize: '10px', fontFamily: 'monospace', flex: 1, overflowY: 'auto' }}>
+            {verificationLog.length === 0 ? (
+              <div style={{ color: '#666' }}>Enter credentials and click "Authenticate"</div>
+            ) : (
+              verificationLog.map((log, index) => (
+                <div
+                  key={index}
+                  style={{
+                    marginBottom: '2px',
+                    color: log.includes('SUCCESS') ? '#155724' : log.includes('ERROR') ? '#721c24' : log.includes('WARNING') ? '#856404' : '#495057'
+                  }}
+                >
+                  {log}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* viz */}
+      <div style={{ flex: 1 }}>
+        <Graphistry
+          ref={graphistryRef}
+          client={client}
+          dataset="Miserables"
+          graphistryHost="https://hub.graphistry.com"
+          onClientAPIConnected={(g) => {
+            addLog('🔗 Graphistry iframe connected', 'success');
+
+            // check if token was stored
+            const storedToken = localStorage.getItem('graphistry_auth_token');
+            if (storedToken) {
+              addLog('✅ JWT token stored in localStorage', 'success');
+              addLog('✅ Token sent to iframe via postMessage', 'success');
+            } else {
+              addLog('⚠️  No JWT token in localStorage', 'warning');
+            }
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
