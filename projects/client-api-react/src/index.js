@@ -366,8 +366,7 @@ function generateIframeRef({
     url, dataset, props,
     axesMap,
     iframeStyle, iframeClassName, iframeProps, allowFullScreen,
-    tolerateLoadErrors,
-    authToken
+    tolerateLoadErrors
 }) {
 
     console.debug('@generateIframeRef', { url, dataset, props, axesMap, iframeStyle, iframeClassName, iframeProps, allowFullScreen, tolerateLoadErrors });
@@ -418,26 +417,6 @@ function generateIframeRef({
                     ),
                     tap((g) => {
                         console.debug('new iframe all init updates handled, if any', g);
-                        
-                        // store JWT token for iframe auth
-                        if (authToken && client.authTokenValid()) {
-                            try {
-                                localStorage.setItem('graphistry_auth_token', authToken);
-                                console.info('Stored JWT token for iframe authentication');
-                                
-                                if (iframe && iframe.contentWindow) {
-                                    const targetOrigin = new URL(props.graphistryHost).origin;
-                                    iframe.contentWindow.postMessage({
-                                        type: 'auth-token-available',
-                                        agent: 'graphistryjs',
-                                        token: authToken
-                                    }, targetOrigin);
-                                }
-                            } catch (error) {
-                                console.warn('Failed to store auth token:', error);
-                            }
-                        }
-                        
                         setFirstRun(false);
                         if (props.onClientAPIConnected) {
                             console.debug('has onClientAPIConnected(), calling', props.onClientAPIConnected);
@@ -504,6 +483,7 @@ const Graphistry = forwardRef((props, ref) => {
     const prevSub = usePrevious(gSub);
 
     const [axesMap] = useState(new WeakMap());
+    const iframeElementRef = useRef(null);
 
     const [isFirstRun, setFirstRun] = useState(true);
     handleUpdates({ g, isFirstRun, axesMap, props });
@@ -582,6 +562,28 @@ const Graphistry = forwardRef((props, ref) => {
         }
     }, [g, onLabelsUpdate])
 
+    // jwt token storage + postMessage to iframe
+    useEffect(() => {
+        if (authToken && iframeElementRef.current) {
+            try {
+                localStorage.setItem('graphistry_auth_token', authToken);
+                console.info('Stored JWT token for iframe authentication');
+
+                const iframe = iframeElementRef.current;
+                if (iframe.contentWindow) {
+                    const targetOrigin = new URL(graphistryHost).origin;
+                    iframe.contentWindow.postMessage({
+                        type: 'auth-token-available',
+                        agent: 'graphistryjs',
+                        token: authToken
+                    }, targetOrigin);
+                }
+            } catch (error) {
+                console.warn('Failed to store or send auth token:', error);
+            }
+        }
+    }, [authToken, graphistryHost]);
+
     const playNormalized = typeof play === 'boolean' ? play : (play | 0) * 1000;
     const optionalParams = (type ? `&type=${type}` : ``) +
         (controls ? `&controls=${controls}` : ``) +
@@ -609,9 +611,13 @@ const Graphistry = forwardRef((props, ref) => {
         url, dataset, props,
         axesMap,
         iframeStyle, iframeClassName, iframeProps, allowFullScreen,
-        tolerateLoadErrors,
-        authToken
+        tolerateLoadErrors
     });
+
+    const combinedIframeRef = useCallback((iframeElement) => {
+        iframeRef(iframeElement);
+        iframeElementRef.current = iframeElement;
+    }, [iframeRef]);
 
     const children = [
         <ETLUploader
@@ -645,7 +651,7 @@ const Graphistry = forwardRef((props, ref) => {
         children.push(
             <iframe
                 key={`g_iframe_${url}_${props.key}`}
-                ref={iframeRef}
+                ref={combinedIframeRef}
                 scrolling='no'
                 style={iframeStyle}
                 className={iframeClassName}
