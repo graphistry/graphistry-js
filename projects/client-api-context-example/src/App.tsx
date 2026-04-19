@@ -3,7 +3,7 @@
 // Hit this app against a running Graphistry server. Override defaults via
 // URL query string: ?host=my-graphistry.local&dataset=Miserables
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   GraphistryProvider,
   GraphistryScene,
@@ -18,12 +18,35 @@ const qs = new URLSearchParams(window.location.search);
 const HOST = qs.get('host') ?? 'hub.graphistry.com';
 const DATASET = qs.get('dataset') ?? 'Miserables';
 
+function StatusDot({ tone }: { tone: 'ready' | 'pending' | 'error' }) {
+  const cls = {
+    ready:   'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]',
+    pending: 'bg-amber-400 animate-pulse',
+    error:   'bg-red-500',
+  }[tone];
+  return <span className={`inline-block size-2 rounded-full ${cls}`} aria-hidden />;
+}
+
+function Section({ title, children, right }: { title: string; children: ReactNode; right?: ReactNode }) {
+  return (
+    <section className="rounded-lg border border-neutral-800 bg-neutral-900/60 overflow-hidden">
+      <header className="flex items-center justify-between px-4 py-2.5 border-b border-neutral-800 bg-neutral-900/80">
+        <h3 className="text-xs uppercase tracking-[0.14em] text-neutral-400 font-medium">{title}</h3>
+        {right}
+      </header>
+      <div className="p-4 text-sm text-neutral-200">{children}</div>
+    </section>
+  );
+}
+
 function ConnectionStatus() {
   const g = useGraphistry();
+  const tone = g.ready ? 'ready' : 'pending';
   return (
-    <div style={styles.statusRow}>
-      <span>
-        RPC: {g.ready ? 'ready' : 'waiting'} · iframe v{g.subscriptionAPIVersion ?? '—'}
+    <div className="flex items-center gap-2 text-xs text-neutral-400">
+      <StatusDot tone={tone} />
+      <span className="font-mono">
+        rpc.{g.ready ? 'ready' : 'waiting'} · iframe.v{g.subscriptionAPIVersion ?? '—'}
       </span>
     </div>
   );
@@ -31,66 +54,141 @@ function ConnectionStatus() {
 
 function SelectionInspector() {
   const sel = useSelection();
-  if (sel.error) return <div style={styles.error}>Selection error: {sel.error.message}</div>;
-  if (!sel.ready) return <div>Selection: waiting for first update…</div>;
-  return (
-    <div>
-      <div>{sel.points.length} points · {sel.edges.length} edges selected</div>
-      {sel.pointLabels.slice(0, 3).map((l) => (
-        <div key={l.globalIndex} style={styles.labelRow}>
-          #{l.globalIndex} {l.title}
+
+  const right = (
+    <span className="text-xs text-neutral-500 font-mono">
+      {sel.points.length}P · {sel.edges.length}E
+    </span>
+  );
+
+  if (sel.error) {
+    return (
+      <Section title="Selection" right={<StatusDot tone="error" />}>
+        <div className="rounded-md border border-red-900/60 bg-red-950/40 p-3 text-red-300 text-xs font-mono">
+          {sel.error.message}
         </div>
-      ))}
-    </div>
+      </Section>
+    );
+  }
+
+  if (!sel.ready) {
+    return (
+      <Section title="Selection" right={<StatusDot tone="pending" />}>
+        <div className="text-neutral-500 text-xs">Waiting for first update…</div>
+      </Section>
+    );
+  }
+
+  return (
+    <Section title="Selection" right={right}>
+      {sel.points.length + sel.edges.length === 0 ? (
+        <div className="text-neutral-500 text-xs">Nothing selected. Click a node in the graph.</div>
+      ) : (
+        <ul className="space-y-1 max-h-60 overflow-y-auto">
+          {sel.pointLabels.slice(0, 20).map((l) => (
+            <li key={`p-${l.globalIndex}`} className="flex items-baseline gap-3 font-mono text-xs">
+              <span className="text-neutral-500 tabular-nums">#{l.globalIndex}</span>
+              <span className="text-neutral-200 truncate">{l.title}</span>
+            </li>
+          ))}
+          {sel.edgeLabels.slice(0, 20).map((l) => (
+            <li key={`e-${l.globalIndex}`} className="flex items-baseline gap-3 font-mono text-xs">
+              <span className="text-sky-500 tabular-nums">→{l.globalIndex}</span>
+              <span className="text-neutral-300 truncate">{l.title}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Section>
   );
 }
 
 function FilterBar() {
   const filters = useFilters();
   const [expr, setExpr] = useState('point:degree > 1');
+  const [busy, setBusy] = useState(false);
   const [lastError, setLastError] = useState<string | null>(null);
 
-  const onAdd = async () => {
+  const run = async (action: () => Promise<unknown>) => {
+    setBusy(true);
     setLastError(null);
     try {
-      await filters.add(expr);
+      await action();
     } catch (err) {
       if (err instanceof GraphistryControlledError) {
         setLastError(`controlled: ${err.message}`);
       } else if (err instanceof GraphistryRpcError) {
-        setLastError(`rpc(${err.kind}): ${err.message}`);
+        setLastError(`rpc.${err.kind}: ${err.message}`);
       } else {
         setLastError(String(err));
       }
+    } finally {
+      setBusy(false);
     }
   };
 
-  const onReset = async () => {
-    setLastError(null);
-    try {
-      await filters.reset();
-    } catch (err) {
-      setLastError(String(err));
-    }
-  };
+  const right = (
+    <span className="text-xs text-neutral-500 font-mono">{filters.filters.length} active</span>
+  );
 
   return (
-    <div style={styles.filterBar}>
-      <input
-        value={expr}
-        onChange={(e) => setExpr(e.target.value)}
-        style={styles.input}
-        placeholder="filter expression"
-      />
-      <button onClick={onAdd}>Add filter</button>
-      <button onClick={onReset}>Reset</button>
-      <div style={styles.filterList}>
-        <strong>Active filters ({filters.filters.length}):</strong>
-        {filters.filters.map((f, i) => (
-          <div key={f.id ?? i}>· {f.query ?? f.name ?? `filter ${i}`}</div>
-        ))}
+    <Section title="Filters" right={right}>
+      <div className="flex gap-2">
+        <input
+          value={expr}
+          onChange={(e) => setExpr(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') run(() => filters.add(expr)); }}
+          className="flex-1 min-w-0 rounded-md bg-neutral-950 border border-neutral-800 px-3 py-1.5 text-xs font-mono text-neutral-200 placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500"
+          placeholder="filter expression"
+          spellCheck={false}
+        />
+        <button
+          disabled={busy}
+          onClick={() => run(() => filters.add(expr))}
+          className="rounded-md bg-sky-600 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 text-xs font-medium text-white transition-colors"
+        >
+          Add
+        </button>
+        <button
+          disabled={busy}
+          onClick={() => run(() => filters.reset())}
+          className="rounded-md border border-neutral-800 hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed px-3 py-1.5 text-xs font-medium text-neutral-300 transition-colors"
+        >
+          Reset
+        </button>
       </div>
-      {lastError && <div style={styles.error}>{lastError}</div>}
+
+      {filters.filters.length > 0 && (
+        <ul className="mt-3 space-y-1">
+          {filters.filters.map((f, i) => (
+            <li key={f.id ?? i} className="flex items-center gap-2 rounded-md bg-neutral-950/60 border border-neutral-800 px-2.5 py-1.5">
+              <span className={`size-1.5 rounded-full ${f.enabled === false ? 'bg-neutral-600' : 'bg-emerald-500'}`} />
+              <code className="flex-1 min-w-0 truncate text-xs font-mono text-neutral-300">
+                {f.query ?? f.name ?? `filter ${i}`}
+              </code>
+              {f.dataType && (
+                <span className="text-[10px] uppercase tracking-wider text-neutral-500">{f.dataType}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {lastError && (
+        <div className="mt-3 rounded-md border border-red-900/60 bg-red-950/40 p-2.5 text-xs font-mono text-red-300">
+          {lastError}
+        </div>
+      )}
+    </Section>
+  );
+}
+
+function ConnectionFooter() {
+  return (
+    <div className="mt-auto pt-4 border-t border-neutral-800 text-[11px] text-neutral-500 font-mono space-y-0.5">
+      <div>host <span className="text-neutral-400">{HOST}</span></div>
+      <div>dataset <span className="text-neutral-400">{DATASET}</span></div>
+      <div className="text-neutral-600">override with ?host=…&dataset=…</div>
     </div>
   );
 }
@@ -98,39 +196,29 @@ function FilterBar() {
 export function App() {
   return (
     <GraphistryProvider host={HOST} dataset={DATASET}>
-      <div style={styles.layout}>
-        <div style={styles.sceneCol}>
-          <GraphistryScene />
-        </div>
-        <div style={styles.sideCol}>
-          <h2>client-api-context smoke test</h2>
-          <ConnectionStatus />
-          <section>
-            <h3>Selection</h3>
+      <div className="flex h-full w-full bg-neutral-950 text-neutral-200">
+        <main className="relative flex-1 min-w-0">
+          <GraphistryScene className="absolute inset-0 size-full" />
+        </main>
+
+        <aside className="flex flex-col w-[420px] flex-shrink-0 border-l border-neutral-800 bg-neutral-950">
+          <header className="flex items-center justify-between px-5 py-3 border-b border-neutral-800">
+            <div>
+              <h1 className="text-sm font-semibold text-neutral-100 tracking-tight">
+                client-api-context
+              </h1>
+              <p className="text-[11px] text-neutral-500">React hooks over Graphistry</p>
+            </div>
+            <ConnectionStatus />
+          </header>
+
+          <div className="flex-1 flex flex-col gap-4 p-5 overflow-y-auto">
             <SelectionInspector />
-          </section>
-          <section>
-            <h3>Filters</h3>
             <FilterBar />
-          </section>
-          <section style={styles.hint}>
-            host: <code>{HOST}</code> · dataset: <code>{DATASET}</code>
-          </section>
-        </div>
+            <ConnectionFooter />
+          </div>
+        </aside>
       </div>
     </GraphistryProvider>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  layout: { display: 'grid', gridTemplateColumns: '1fr 360px', height: '100vh' },
-  sceneCol: { height: '100vh' },
-  sideCol: { padding: 16, overflowY: 'auto', fontFamily: 'system-ui, sans-serif', fontSize: 14 },
-  statusRow: { fontFamily: 'monospace', fontSize: 12, color: '#666' },
-  labelRow: { fontFamily: 'monospace', fontSize: 12 },
-  filterBar: { display: 'flex', flexDirection: 'column', gap: 8 },
-  input: { padding: 6, fontFamily: 'monospace', fontSize: 12 },
-  filterList: { fontSize: 12, marginTop: 8 },
-  error: { color: '#b00', fontSize: 12, marginTop: 8 },
-  hint: { marginTop: 'auto', fontSize: 11, color: '#888' },
-};

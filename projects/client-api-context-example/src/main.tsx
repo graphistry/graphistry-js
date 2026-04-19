@@ -1,6 +1,7 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import './index.css';
 
 const container = document.getElementById('root');
 if (!container) {
@@ -8,7 +9,7 @@ if (!container) {
 }
 
 createRoot(container).render(
-  <React.StrictMode>
+  <StrictMode>
     <App />
-  </React.StrictMode>,
+  </StrictMode>,
 );

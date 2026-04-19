@@ -10,14 +10,17 @@
   },
   "dependencies": {
     "@graphistry/client-api-context": "file:../client-api-context",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "@vitejs/plugin-react": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "tailwindcss": "^4.0.0",
     "typescript": "^5.3.0",
-    "vite": "^5.0.0"
+    "vite": "^8.0.0",
+    "vite-plugin-console-forward": "^0.2.0"
   }
 }
