@@ -21,15 +21,17 @@ const DATASET = qs.get('dataset') ?? '539faecb680043a5ad8be679cab43117';
 
 // iframe URL params that strip Graphistry's built-in chrome so only our
 // floating React panels remain visible:
-//   type=arrow   — required by the dataset format
-//   play=5000    — auto-start layout, skipping the splash screen
-//   menu=false   — hides the top toolbar (also hides its popover panels)
-//   info=false   — hides the session info bar
-// See apps/core/viz/src/containers/view.js — `menu` and `info` default
-// to true; falsey values collapse toolbarHeight to 0.
+//   type=arrow         — required by the dataset format
+//   splashAfter=false  — skips the splash screen entirely
+//                        (see apps/core/viz/server/splash.js:13)
+//   menu=false         — hides the top toolbar (and its popover panels)
+//   info=false         — hides the session info bar
+//                        (see apps/core/viz/src/containers/view.js — both
+//                         default to true; falsey values collapse
+//                         toolbarHeight to 0)
 const SCENE_PARAMS = {
   type: 'arrow',
-  play: 5000,
+  splashAfter: false,
   menu: false,
   info: false,
 };
