@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@graphistry/client-api-context": "^5.1.6",
+    "@graphistry/client-api-context": "file:../client-api-context",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"
   },
