@@ -2,6 +2,17 @@
 
 @theme {
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ---- Dashboard palette (surfaces, chrome) ---- */
+  --color-dashboard-dark: #0B0C14;
+  --color-dashboard-surface: #161B2E;
+  --color-dashboard-header: #242B42;
+  --color-dashboard-border: #323B54;
+
+  /* ---- Brand palette (accents) ---- */
+  --color-brand-teal: #4FD1C5;
+  --color-brand-purple: #6B5AED;
+  --color-brand-green: #48BB78;
 }
 
 html, body, #root {
@@ -11,6 +22,6 @@ html, body, #root {
 body {
   margin: 0;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  background: #0b0c0f;
-  color: #e7e9ee;
+  background: var(--color-dashboard-dark);
+  color: #F8FAFC;
 }
