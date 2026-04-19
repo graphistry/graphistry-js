@@ -27,6 +27,7 @@ import {
   projectSelection,
   projectLabels,
   projectFilters,
+  FRAGMENT_FILTERS,
   type RpcClient,
   type SelectionSnapshot,
   type LabelsSnapshot,
@@ -131,9 +132,11 @@ export function GraphistryProvider(props: GraphistryProviderProps) {
       onFirstListener: () => manager.acquire(PATH_FILTERS),
       onLastListener: () => manager.release(PATH_FILTERS),
     });
+    // v1 hand-enriched paths: no pathSets — iframe uses its custom fragment + publishedPathUpdatedSubject.
     manager.register(PATH_SELECTION_LABELS, selection, projectSelection);
     manager.register(PATH_LABELS, labels, projectLabels);
-    manager.register(PATH_FILTERS, filters, projectFilters);
+    // v2 generic path: pathSets sent to iframe, which opens model.get(...) internally.
+    manager.register(PATH_FILTERS, filters, projectFilters, FRAGMENT_FILTERS);
     subs.current = manager;
     storesRef.current = { selection, labels, filters };
   }

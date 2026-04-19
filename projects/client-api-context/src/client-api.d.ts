@@ -53,12 +53,18 @@ declare module '@graphistry/client-api' {
   }
 
   // ---------- Subscription manager ----------
+  export type FalcorKey = string | number;
+  export type FalcorRange = { from?: number; to?: number; length?: number };
+  export type FalcorPathEl = FalcorKey | readonly FalcorKey[] | FalcorRange;
+  export type FalcorPathSet = readonly FalcorPathEl[];
+
   export class SubscriptionManager {
     iframe: HTMLIFrameElement | null;
     register<T>(
       path: string,
       store: ExternalStore<T>,
-      project: (raw: unknown) => T
+      project: (raw: unknown) => T,
+      pathSets?: ReadonlyArray<FalcorPathSet>
     ): void;
     acquire(path: string): void;
     release(path: string): void;
@@ -119,6 +125,9 @@ declare module '@graphistry/client-api' {
   export function projectSelection(raw: unknown): SelectionSnapshot;
   export function projectLabels(raw: unknown): LabelsSnapshot;
   export function projectFilters(raw: unknown): FiltersSnapshot;
+
+  // ---------- Canonical pathSets for generic subscribe ----------
+  export const FRAGMENT_FILTERS: ReadonlyArray<FalcorPathSet>;
 
   // ---------- Path constants ----------
   export const PATH_SELECTION_LABELS: '.selection.labels';

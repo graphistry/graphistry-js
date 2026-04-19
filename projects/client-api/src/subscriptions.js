@@ -24,12 +24,15 @@ export class SubscriptionManager {
     /**
      * Register a subscribe path with its store + projection.
      * Call before any acquire() so updates routed for this path land correctly.
-     * @param {string} path
+     * @param {string} path — client-chosen identifier, echoed back in sub-updates.
      * @param {{update: (v: any) => void, setError: (e: unknown) => void}} store
      * @param {(raw: unknown) => any} project
+     * @param {Array<Array<*>>} [pathSets] — falcor pathSets for v2 generic subscribe.
+     *   If omitted, the iframe treats `path` as a v1 hand-enriched path
+     *   (only .labels and .selection.labels are valid).
      */
-    register(path, store, project) {
-        this._paths.set(path, { store, project });
+    register(path, store, project, pathSets) {
+        this._paths.set(path, { store, project, pathSets });
     }
 
     /** Called by an ExternalStore when its listener count goes 0 → 1. */
@@ -70,10 +73,10 @@ export class SubscriptionManager {
 
     _sendSubscribe(path) {
         if (!this.iframe || !this.iframe.contentWindow) return;
-        this.iframe.contentWindow.postMessage(
-            { type: 'graphistry-subscribe', agent: 'graphistryjs', path },
-            '*'
-        );
+        const reg = this._paths.get(path);
+        const msg = { type: 'graphistry-subscribe', agent: 'graphistryjs', path };
+        if (reg && reg.pathSets) msg.pathSets = reg.pathSets;
+        this.iframe.contentWindow.postMessage(msg, '*');
     }
 
     _sendUnsubscribe(path) {

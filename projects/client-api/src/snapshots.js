@@ -113,18 +113,37 @@ export function projectLabels(raw) {
 
 /** @param {unknown} raw @returns {FiltersSnapshot} */
 export function projectFilters(raw) {
-    const data = raw || {};
-    const src = data.filters !== undefined ? data.filters : raw;
+    // Iframe walks the static prefix before posting, so `raw` is whatever
+    // lives at `workbooks.open.views.current.filters` — a falcor pseudo-array.
     let filters = [];
-    if (Array.isArray(src)) {
-        filters = src;
-    } else if (src && typeof src === 'object') {
-        const len = typeof src.length === 'number' ? src.length : -1;
+    if (Array.isArray(raw)) {
+        filters = raw;
+    } else if (raw && typeof raw === 'object') {
+        const len = typeof raw.length === 'number' ? raw.length : -1;
         if (len >= 0) {
-            for (let i = 0; i < len; i++) if (src[i]) filters.push(src[i]);
+            for (let i = 0; i < len; i++) if (raw[i]) filters.push(raw[i]);
         } else {
-            filters = Object.values(src).filter(Boolean);
+            // Fallback: integer-keyed sparse object.
+            const keys = Object.keys(raw).filter((k) => /^\d+$/.test(k)).map(Number).sort((a, b) => a - b);
+            for (const k of keys) if (raw[k]) filters.push(raw[k]);
         }
     }
     return { filters, ready: true, error: null };
 }
+
+// ---- Canonical pathSets for the generic subscribe channel (Protocol v2) ----
+// Each fragment lists the falcor pathSet(s) a client sends with its
+// graphistry-subscribe message. The iframe walks the static prefix of the
+// first pathSet before posting, so the corresponding project* fn above
+// receives the leaf subtree.
+
+export const FRAGMENT_FILTERS = [
+    [
+        'workbooks', 'open', 'views', 'current', 'filters',
+        { from: 0, to: 30 },
+        ['id', 'query', 'enabled', 'name', 'dataType', 'level'],
+    ],
+    [
+        'workbooks', 'open', 'views', 'current', 'filters', 'length',
+    ],
+];

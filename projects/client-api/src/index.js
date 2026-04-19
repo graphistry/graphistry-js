@@ -26,6 +26,7 @@ export {
     projectSelection,
     projectLabels,
     projectFilters,
+    FRAGMENT_FILTERS,
 } from './snapshots';
 
 // Canonical subscribe path strings (must match LocalDataSink.js on the viz side).
