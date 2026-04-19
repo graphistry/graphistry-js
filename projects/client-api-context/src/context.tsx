@@ -1,14 +1,10 @@
 // Graphistry React provider + scene component.
 //
-// Owns the subscription manager, the RPC client, the handshake, and the
-// controlled-domain set. Everything stateless/reusable lives in
-// @graphistry/client-api; this file is purely the React lifecycle glue.
+// Components only — hooks live in hooks.ts, shared types + Context live in
+// internal.ts. This split keeps Fast Refresh working when editing either.
 
 import {
-  createContext,
   useCallback,
-  useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -33,42 +29,15 @@ import {
   type LabelsSnapshot,
   type FiltersSnapshot,
 } from '@graphistry/client-api';
+import { Ctx, type ControlledDomain, type GraphistryHandle, type InternalContext } from './internal.js';
 import { GraphistryControlledError } from './errors.js';
 
 const SUBSCRIPTION_API_VERSION = 2;
 
-// Falcor paths for imperative ops. The iframe just proxies to the
-// withClientAPIRoutes-whitelisted model — these are the canonical paths.
 const PATH_VIEW = ['workbooks', 'open', 'views', 'current'] as const;
 const PATH_FILTERS_ADD = [...PATH_VIEW, 'filters', 'add'] as const;
 const PATH_FILTERS_RESET = [...PATH_VIEW, 'filters', 'reset'] as const;
 const PATH_SELECTION_SET_EXTERNAL = [...PATH_VIEW, 'selection', 'setExternal'] as const;
-
-export type ControlledDomain = 'filters' | 'exclusions' | 'encodings' | 'selection';
-
-export interface GraphistryHandle {
-  readonly rpc: RpcClient | null;
-  readonly ready: boolean;
-  readonly subscriptionAPIVersion: number | null;
-
-  addFilter(expr: string): Promise<unknown>;
-  resetFilters(): Promise<unknown>;
-  setSelectionExternal(points: readonly number[], edges: readonly number[], darken?: boolean): Promise<unknown>;
-}
-
-interface InternalContext {
-  stores: {
-    selection: ExternalStore<SelectionSnapshot>;
-    labels: ExternalStore<LabelsSnapshot>;
-    filters: ExternalStore<FiltersSnapshot>;
-  };
-  handle: GraphistryHandle;
-  controlled: ReadonlySet<ControlledDomain>;
-  registerIframe: (iframe: HTMLIFrameElement | null) => void;
-  sceneSrc: string;
-}
-
-const Ctx = createContext<InternalContext | null>(null);
 
 export interface GraphistryProviderProps {
   children?: ReactNode;
@@ -195,16 +164,6 @@ export function GraphistryProvider(props: GraphistryProviderProps) {
     };
   }, [rpcTimeoutMs]);
 
-  useEffect(() => {
-    return () => {
-      const iframe = iframeRef.current as (HTMLIFrameElement & { __graphistryCleanup?: () => void }) | null;
-      iframe?.__graphistryCleanup?.();
-      subs.current?.detachIframe();
-      rpc?.dispose();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handle = useMemo<GraphistryHandle>(() => ({
     rpc,
     ready: rpc !== null,
@@ -243,37 +202,34 @@ export function GraphistryProvider(props: GraphistryProviderProps) {
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
-export function useGraphistryInternal(): InternalContext {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useGraphistry* hooks must be used inside <GraphistryProvider>.');
-  return ctx;
-}
-
-export function useGraphistry(): GraphistryHandle {
-  return useGraphistryInternal().handle;
-}
-
 export interface GraphistrySceneProps extends React.IframeHTMLAttributes<HTMLIFrameElement> {
   src?: string;
 }
 
 export function GraphistryScene({ src, style, ...rest }: GraphistrySceneProps) {
-  const ctx = useGraphistryInternal();
+  // Only pull the stable bits out of context. `registerIframe` is a stable
+  // useCallback inside the Provider; `sceneSrc` only changes when the
+  // Provider's host/dataset props change. Depending on the whole `ctx`
+  // object would regenerate this component's ref callback on every
+  // Provider re-render, which in React 19 triggers re-attach cycles and
+  // an infinite setState loop through registerIframe → setRpc.
+  const ctx = useContextOrThrow();
+  const { registerIframe, sceneSrc: defaultSrc } = ctx;
   const ref = useRef<HTMLIFrameElement | null>(null);
 
   const setRef = useCallback((el: HTMLIFrameElement | null) => {
     if (ref.current && ref.current !== el) {
       (ref.current as HTMLIFrameElement & { __graphistryCleanup?: () => void }).__graphistryCleanup?.();
-      ctx.registerIframe(null);
+      registerIframe(null);
     }
     ref.current = el;
-    if (el) ctx.registerIframe(el);
-  }, [ctx]);
+    if (el) registerIframe(el);
+  }, [registerIframe]);
 
   return (
     <iframe
       ref={setRef}
-      src={src ?? ctx.sceneSrc}
+      src={src ?? defaultSrc}
       style={{ width: '100%', height: '100%', border: 'none', ...style }}
       allowFullScreen
       allow="fullscreen"
@@ -282,7 +238,11 @@ export function GraphistryScene({ src, style, ...rest }: GraphistrySceneProps) {
   );
 }
 
-/** Manual registration for callers mounting their own iframe. */
-export function useGraphistryScene(): (iframe: HTMLIFrameElement | null) => void {
-  return useGraphistryInternal().registerIframe;
+// Local import of useContext to avoid exporting a hook from this components-only file.
+// (A hook defined inside the file is fine for Fast Refresh; only hook *exports* break it.)
+import { useContext } from 'react';
+function useContextOrThrow(): InternalContext {
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error('GraphistryScene must be used inside <GraphistryProvider>.');
+  return ctx;
 }

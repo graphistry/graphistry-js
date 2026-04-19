@@ -15,7 +15,11 @@ import {
 } from '@graphistry/client-api-context';
 
 const qs = new URLSearchParams(window.location.search);
-const HOST = qs.get('host') ?? 'hub.graphistry.com';
+// Default to the same hostname this app is served from, on port 8491 — the
+// dev Graphistry port in Alex's Tailscale setup (see deploy.md). Override
+// with ?host=… to point anywhere else (e.g. hub.graphistry.com).
+const DEFAULT_HOST = `${window.location.hostname}:8491`;
+const HOST = qs.get('host') ?? DEFAULT_HOST;
 const DATASET = qs.get('dataset') ?? 'Miserables';
 
 function StatusDot({ tone }: { tone: 'ready' | 'pending' | 'error' }) {

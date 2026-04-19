@@ -2,10 +2,25 @@
 // useSyncExternalStore, rxjs, or falcor paths — just typed snapshots and
 // Promise-returning mutators.
 
-import { useSyncExternalStore } from 'react';
+import { useContext, useSyncExternalStore } from 'react';
 import type { SelectionSnapshot, LabelsSnapshot, FiltersSnapshot } from '@graphistry/client-api';
-import { useGraphistryInternal } from './context.js';
+import { Ctx, type GraphistryHandle, type InternalContext } from './internal.js';
 import { GraphistryControlledError } from './errors.js';
+
+function useGraphistryInternal(): InternalContext {
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error('useGraphistry* hooks must be used inside <GraphistryProvider>.');
+  return ctx;
+}
+
+export function useGraphistry(): GraphistryHandle {
+  return useGraphistryInternal().handle;
+}
+
+/** Manual registration for callers mounting their own iframe. */
+export function useGraphistryScene(): (iframe: HTMLIFrameElement | null) => void {
+  return useGraphistryInternal().registerIframe;
+}
 
 export function useSelection(): SelectionSnapshot {
   const { stores } = useGraphistryInternal();

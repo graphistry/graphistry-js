@@ -1,26 +1,25 @@
 // React provider + hooks over @graphistry/client-api.
-// The framework-agnostic primitives (ExternalStore, SubscriptionManager,
+// Framework-agnostic primitives (ExternalStore, SubscriptionManager,
 // projections, GraphistryRpcError, GraphistryPermissionError) live in
-// @graphistry/client-api and are re-exported here for one-import-site
-// convenience.
+// @graphistry/client-api; re-exported here for one-import convenience.
 
-export {
-  GraphistryProvider,
-  GraphistryScene,
-  useGraphistry,
-  useGraphistryScene,
-} from './context.js';
+export { GraphistryProvider, GraphistryScene } from './context.js';
 export type {
   GraphistryProviderProps,
   GraphistrySceneProps,
-  GraphistryHandle,
-  ControlledDomain,
 } from './context.js';
 
-export { useSelection, useLabels, useFilters } from './hooks.js';
+export {
+  useGraphistry,
+  useGraphistryScene,
+  useSelection,
+  useLabels,
+  useFilters,
+} from './hooks.js';
 export type { UseFiltersReturn } from './hooks.js';
 
-// Re-exports from @graphistry/client-api so consumers only import from here.
+export type { GraphistryHandle, ControlledDomain } from './internal.js';
+
 export {
   GraphistryRpcError,
   GraphistryPermissionError,
