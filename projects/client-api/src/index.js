@@ -6,7 +6,11 @@ import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
 import { Client as ClientBase, ClientPKey as ClientPKeyBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
 
 
-const CLIENT_SUBSCRIPTION_API_VERSION = 1;
+const CLIENT_SUBSCRIPTION_API_VERSION = 2;
+
+// Protocol v2: correlation-id RPC client for one-shot imperative calls
+// (handle.addFilter(expr) returns a real Promise). See ./rpc.js.
+export { createRpcClient, GraphistryRpcError } from './rpc';
 
 // Warning: must export variable seperately from declaration as workaround for JSDoc parsing error
 
