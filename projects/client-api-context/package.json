@@ -1,5 +1,5 @@
 {
-  "name": "@graphistry/g-context",
+  "name": "@graphistry/client-api-context",
   "version": "5.1.6",
   "description": "React provider + hooks over @graphistry/client-api",
   "type": "module",
@@ -26,7 +26,7 @@
     "type": "git",
     "url": "git+https://github.com/graphistry/graphistry-js.git"
   },
-  "homepage": "https://github.com/graphistry/graphistry-js/projects/g-context#readme",
+  "homepage": "https://github.com/graphistry/graphistry-js/projects/client-api-context#readme",
   "author": "Graphistry, Inc <https://graphistry.com>",
   "license": "Apache-2.0",
   "dependencies": {
