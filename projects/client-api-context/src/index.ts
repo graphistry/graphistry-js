@@ -15,8 +15,23 @@ export {
   useSelection,
   useLabels,
   useFilters,
+  useSceneSetter,
+  useSceneValue,
+  useSceneValues,
+  useColumns,
+  usePalettes,
+  useEncoding,
+  getEncodingMeta,
+  columnsForEncoding,
 } from './hooks.js';
-export type { UseFiltersReturn } from './hooks.js';
+export type {
+  UseFiltersReturn,
+  SceneReadState,
+  ColumnMeta,
+  Palette,
+  EncodingKind,
+  UseEncodingReturn,
+} from './hooks.js';
 
 export type { GraphistryHandle, ControlledDomain } from './internal.js';
 

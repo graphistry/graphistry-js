@@ -182,9 +182,31 @@ export function GraphistryProvider(props: GraphistryProviderProps) {
   // the whitelisted dataSource model; `falcor-update` events fire on the raw
   // model). Force a re-fetch on the relevant subscription so panels reflect
   // the new state.
+  //
+  // For filters specifically, the server's `filters.add` call returns
+  // `filters[N] = $ref(expressionsById[id])` but NOT the expression data
+  // itself. A bare `refresh()` re-subscribes on stale cache that still has
+  // the unresolved ref — the push arrives with `filters[N] = undefined`,
+  // projectFilters drops it, and the new filter never renders. Priming
+  // via an rpc.get (which invalidates the outer-model cache in
+  // LocalDataSink before dispatching the request) pulls the expression
+  // data through the server first, so the follow-up refresh's push has
+  // complete data.
   const refreshAfter = useCallback(<T,>(p: Promise<T>, path: string): Promise<T> => {
-    return p.then((v) => { subs.current?.refresh(path); return v; });
-  }, []);
+    return p.then(async (v) => {
+      if (path === PATH_FILTERS && rpc) {
+        try {
+          await rpc.get([
+            ...PATH_VIEW, 'filters',
+            { from: 0, to: 30 },
+            ['id', 'query', 'enabled', 'name', 'dataType', 'level'],
+          ]);
+        } catch (_) { /* best-effort prime — swallow */ }
+      }
+      subs.current?.refresh(path);
+      return v;
+    });
+  }, [rpc]);
 
   const handle = useMemo<GraphistryHandle>(() => ({
     rpc,

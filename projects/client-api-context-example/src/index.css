@@ -40,4 +40,46 @@ body {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   background: var(--color-ink);
   color: var(--color-text);
+  /* Lets native form controls (color picker popup, select dropdown, etc.)
+     render in the user's OS theme — the dark app panels sit on top of the
+     dark viz, but native popups float over the OS and should match. */
+  color-scheme: light dark;
+}
+
+/* Animated "arranging" state for the Arrange button. A 2px conic-gradient
+   ring with a bright comet orbiting the perimeter — you can track the
+   motion, not just sense it. Uses @property so --arrange-angle animates
+   smoothly (not as a stepped background-keyframe fallback). */
+@property --arrange-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.arrange-active {
+  border: 2px solid transparent;
+  /* Lowest-stop uses --color-border rather than transparent so the comet
+     fades into the surrounding UI tone instead of punching a black void
+     where the drawer's edge is — subtle, not absent. */
+  background:
+    linear-gradient(var(--color-elevated), var(--color-elevated)) padding-box,
+    conic-gradient(
+      from var(--arrange-angle),
+      var(--color-border) 0deg,
+      var(--color-point) 40deg,
+      var(--color-accent) 90deg,
+      #E8F7F5 130deg,
+      var(--color-accent) 170deg,
+      var(--color-point) 220deg,
+      var(--color-border) 300deg 360deg
+    ) border-box;
+  animation: arrange-spin 1.6s linear infinite;
+}
+
+@keyframes arrange-spin {
+  to { --arrange-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrange-active { animation: none; }
 }

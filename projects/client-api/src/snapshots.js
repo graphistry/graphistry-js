@@ -115,6 +115,10 @@ export function projectLabels(raw) {
 export function projectFilters(raw) {
     // Iframe walks the static prefix before posting, so `raw` is whatever
     // lives at `workbooks.open.views.current.filters` — a falcor pseudo-array.
+    const isValidFilter = (f) =>
+        f && typeof f === 'object'
+            && (typeof f.id === 'string' || f.query !== undefined || f.name !== undefined);
+
     let filters = [];
     if (Array.isArray(raw)) {
         filters = raw;
@@ -128,6 +132,11 @@ export function projectFilters(raw) {
             for (const k of keys) if (raw[k]) filters.push(raw[k]);
         }
     }
+    // Ignore iframe-side placeholder objects (unresolved $refs, bare
+    // `{$__path: ...}` cache nodes, etc). Real filters always carry at least
+    // an id / query / name. This stops intermediate falcor cache pushes
+    // from wiping the UI to empty between a real push and its follow-up.
+    filters = filters.filter(isValidFilter);
     return { filters, ready: true, error: null };
 }
 
