@@ -59,8 +59,15 @@ export function createRpcClient(iframe, { timeoutMs = 30000, window: win = globa
         clearTimeout(entry.timer);
         pending.delete(data.id);
         if (data.error) {
+            console.debug('[rpc] ←iframe error', entry.op, data.id, data.error);
             entry.reject(new GraphistryRpcError(data.error));
         } else {
+            let preview;
+            try {
+                const s = JSON.stringify(data.result);
+                preview = s === undefined ? '(undef)' : s.length > 200 ? s.slice(0, 200) + `…(+${s.length - 200})` : s;
+            } catch { preview = '(unserializable)'; }
+            console.debug('[rpc] ←iframe ok', entry.op, data.id, preview);
             entry.resolve(data.result);
         }
     };
@@ -81,6 +88,7 @@ export function createRpcClient(iframe, { timeoutMs = 30000, window: win = globa
             }));
         }
         const id = mintId();
+        console.debug('[rpc] →iframe', envelope.op, id, envelope.path ?? envelope.paths ?? '', envelope.args ?? '');
         return new Promise((resolve, reject) => {
             const timer = setTimeout(() => {
                 pending.delete(id);
