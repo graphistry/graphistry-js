@@ -34,6 +34,7 @@ export function useLabels(): LabelsSnapshot {
 
 export interface UseFiltersReturn extends FiltersSnapshot {
   add(expr: string): Promise<unknown>;
+  remove(id: string): Promise<unknown>;
   reset(): Promise<unknown>;
 }
 
@@ -48,6 +49,12 @@ export function useFilters(): UseFiltersReturn {
         return Promise.reject(new GraphistryControlledError('filters', 'filters'));
       }
       return handle.addFilter(expr);
+    },
+    remove: (id: string) => {
+      if (controlled.has('filters')) {
+        return Promise.reject(new GraphistryControlledError('filters', 'filters'));
+      }
+      return handle.removeFilter(id);
     },
     reset: () => {
       if (controlled.has('filters')) {

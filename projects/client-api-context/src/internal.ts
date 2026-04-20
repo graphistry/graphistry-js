@@ -18,6 +18,7 @@ export interface GraphistryHandle {
   readonly ready: boolean;
   readonly subscriptionAPIVersion: number | null;
   addFilter(expr: string): Promise<unknown>;
+  removeFilter(id: string): Promise<unknown>;
   resetFilters(): Promise<unknown>;
   setSelectionExternal(points: readonly number[], edges: readonly number[], darken?: boolean): Promise<unknown>;
 }

@@ -5,6 +5,7 @@
 
 import {
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -30,12 +31,13 @@ import {
   type FiltersSnapshot,
 } from '@graphistry/client-api';
 import { Ctx, type ControlledDomain, type GraphistryHandle, type InternalContext } from './internal.js';
-import { GraphistryControlledError } from './errors.js';
+import { GraphistryControlledError, GraphistryRpcError } from './errors.js';
 
 const SUBSCRIPTION_API_VERSION = 2;
 
 const PATH_VIEW = ['workbooks', 'open', 'views', 'current'] as const;
 const PATH_FILTERS_ADD = [...PATH_VIEW, 'filters', 'add'] as const;
+const PATH_FILTERS_REMOVE = [...PATH_VIEW, 'filters', 'remove'] as const;
 const PATH_FILTERS_RESET = [...PATH_VIEW, 'filters', 'reset'] as const;
 const PATH_SELECTION_SET_EXTERNAL = [...PATH_VIEW, 'selection', 'setExternal'] as const;
 
@@ -49,6 +51,9 @@ export interface GraphistryProviderProps {
   src?: string;
   /** Extra query-string params appended to the iframe URL. */
   params?: Record<string, string | number | boolean | undefined>;
+  /** Scene background color (hex, e.g. `#0B0C14`). Applied over RPC after the
+   *  iframe handshake completes (targets falcor path `scene.bg.color`). */
+  bg?: string;
   /** RPC timeout in ms. Default 30000. */
   rpcTimeoutMs?: number;
   /** When set, the filters domain is controlled — hook mutators throw. */
@@ -102,7 +107,10 @@ export function GraphistryProvider(props: GraphistryProviderProps) {
       onLastListener: () => manager.release(PATH_FILTERS),
     });
     // v1 hand-enriched paths: no pathSets — iframe uses its custom fragment + publishedPathUpdatedSubject.
-    manager.register(PATH_SELECTION_LABELS, selection, projectSelection);
+    // `withColumns: true` asks the iframe-side selection container to expand
+    // the label fragment to include the row's full column values, so panels
+    // can render per-node fields (see LocalDataSink.getSelectionLabelFragment).
+    manager.register(PATH_SELECTION_LABELS, selection, projectSelection, undefined, { withColumns: true });
     manager.register(PATH_LABELS, labels, projectLabels);
     // v2 generic path: pathSets sent to iframe, which opens model.get(...) internally.
     manager.register(PATH_FILTERS, filters, projectFilters, FRAGMENT_FILTERS);
@@ -142,27 +150,41 @@ export function GraphistryProvider(props: GraphistryProviderProps) {
       if (e.source !== iframe.contentWindow) return;
       const data = e.data as { type?: string; agent?: string; subscriptionAPIVersion?: number } | undefined;
       if (!data || data.agent !== 'graphistryjs' || data.type !== 'init') return;
+      console.debug('[ctx] ←iframe init; subscriptionAPIVersion=', data.subscriptionAPIVersion);
       if (typeof data.subscriptionAPIVersion === 'number') {
         setSubscriptionAPIVersion(data.subscriptionAPIVersion);
       }
+      console.debug('[ctx] →iframe graphistry-init-ack');
       iframe.contentWindow?.postMessage(
         { type: 'graphistry-init-ack', agent: 'graphistryjs', subscriptionAPIVersion: SUBSCRIPTION_API_VERSION },
         '*'
       );
     };
     window.addEventListener('message', onMessage);
-    const sendReady = () =>
+    const sendReady = (why: string) => {
+      console.debug('[ctx] →iframe ready (' + why + ')');
       iframe.contentWindow?.postMessage(
         { type: 'ready', agent: 'graphistryjs', subscriptionAPIVersion: SUBSCRIPTION_API_VERSION },
         '*'
       );
-    sendReady();
-    iframe.addEventListener('load', sendReady);
+    };
+    sendReady('register');
+    const onLoad = () => sendReady('iframe-load');
+    iframe.addEventListener('load', onLoad);
     (iframe as HTMLIFrameElement & { __graphistryCleanup?: () => void }).__graphistryCleanup = () => {
       window.removeEventListener('message', onMessage);
-      iframe.removeEventListener('load', sendReady);
+      iframe.removeEventListener('load', onLoad);
     };
   }, [rpcTimeoutMs]);
+
+  // After RPC mutations, the iframe's generic-subscribe push pipeline does
+  // not always observe the resulting falcor model change (RPC routes through
+  // the whitelisted dataSource model; `falcor-update` events fire on the raw
+  // model). Force a re-fetch on the relevant subscription so panels reflect
+  // the new state.
+  const refreshAfter = useCallback(<T,>(p: Promise<T>, path: string): Promise<T> => {
+    return p.then((v) => { subs.current?.refresh(path); return v; });
+  }, []);
 
   const handle = useMemo<GraphistryHandle>(() => ({
     rpc,
@@ -171,25 +193,55 @@ export function GraphistryProvider(props: GraphistryProviderProps) {
     addFilter: (expr) => {
       if (controlled.has('filters')) throw new GraphistryControlledError('filters', 'filters');
       if (!rpc) return Promise.reject(new Error('Graphistry iframe not yet mounted; wait for handle.ready.'));
-      return rpc.call(PATH_FILTERS_ADD, [expr]);
+      return refreshAfter(rpc.call(PATH_FILTERS_ADD, [expr]), PATH_FILTERS);
+    },
+    removeFilter: (id) => {
+      if (controlled.has('filters')) throw new GraphistryControlledError('filters', 'filters');
+      if (!rpc) return Promise.reject(new Error('Graphistry iframe not yet mounted; wait for handle.ready.'));
+      return refreshAfter(rpc.call(PATH_FILTERS_REMOVE, [id]), PATH_FILTERS);
     },
     resetFilters: () => {
       if (controlled.has('filters')) throw new GraphistryControlledError('filters', 'filters');
       if (!rpc) return Promise.reject(new Error('Graphistry iframe not yet mounted; wait for handle.ready.'));
-      return rpc.call(PATH_FILTERS_RESET, []);
+      return refreshAfter(rpc.call(PATH_FILTERS_RESET, []), PATH_FILTERS);
     },
     setSelectionExternal: (points, edges, darken) => {
       if (controlled.has('selection')) throw new GraphistryControlledError('selection', 'selection');
       if (!rpc) return Promise.reject(new Error('Graphistry iframe not yet mounted; wait for handle.ready.'));
-      return rpc.call(PATH_SELECTION_SET_EXTERNAL, [Array.from(points), Array.from(edges), !!darken]);
+      return refreshAfter(rpc.call(PATH_SELECTION_SET_EXTERNAL, [Array.from(points), Array.from(edges), !!darken]), PATH_SELECTION_LABELS);
     },
-  }), [rpc, subscriptionAPIVersion, controlled]);
+  }), [rpc, subscriptionAPIVersion, controlled, refreshAfter]);
 
   const sceneSrc = useMemo(
     () => buildSceneSrc(props),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.host, props.dataset, props.src, props.params]
   );
+
+  // Scene-level RPC props get pushed into the falcor model once the iframe
+  // handshake completes. The live-reactive path is `scene.renderer.background.color`
+  // (see apps/core/viz/src/models/scene/scene.js — `scene.bg.color` is a $ref
+  // to `scene.renderer.background`, not the color leaf, so writing there
+  // does not propagate to the rendering component).
+  //
+  // Gated on subscriptionAPIVersion rather than just `rpc` because `rpc` is
+  // non-null the moment registerIframe runs (before iframe.contentWindow has
+  // loaded its LocalDataSink listener). Firing too early drops the message
+  // into a pre-handshake void — same failure mode as early subscribes.
+  const { bg } = props;
+  useEffect(() => {
+    if (!rpc || subscriptionAPIVersion === null || bg === undefined) return;
+    console.debug('[GraphistryProvider] →iframe set scene.renderer.background.color =', bg);
+    rpc.set({
+      paths: [[...PATH_VIEW, 'scene', 'renderer', 'background', 'color']],
+      jsonGraph: { workbooks: { open: { views: { current: { scene: { renderer: { background: { color: bg } } } } } } } },
+    }).catch((err) => {
+      // StrictMode disposes the first rpc before its response lands; second
+      // mount carries a fresh rpc and resolves normally.
+      if (err instanceof GraphistryRpcError && err.kind === 'disposed') return;
+      console.warn('[GraphistryProvider] bg set failed:', err);
+    });
+  }, [rpc, subscriptionAPIVersion, bg]);
 
   const value = useMemo<InternalContext>(() => ({
     stores,
