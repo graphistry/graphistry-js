@@ -3,16 +3,32 @@
 @theme {
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* ---- Dashboard palette (surfaces, chrome) ---- */
-  --color-dashboard-dark: #0B0C14;
-  --color-dashboard-surface: #161B2E;
-  --color-dashboard-header: #242B42;
-  --color-dashboard-border: #323B54;
+  /* Desaturated midnight-purple surface stack. Panels are translucent
+     (`bg-surface/85` + backdrop-blur) and sit above the viz canvas painted
+     in `ink`. `ink` carries a touch more purple than the rest so the viz
+     bg blends with the panel tones without reading as color. */
+  --color-ink:            #0A0814;
+  --color-surface:        #161428;
+  --color-elevated:       #1F1C34;
+  --color-hover:          #2B2644;
+  --color-border:         #2C2840;
+  --color-border-strong:  #3E3959;
 
-  /* ---- Brand palette (accents) ---- */
-  --color-brand-teal: #4FD1C5;
-  --color-brand-purple: #6B5AED;
-  --color-brand-green: #48BB78;
+  /* Accents pulled off their pure saturation — still readable as teal /
+     purple / semantic without the neon. */
+  --color-accent:         #6DC9C1;
+  --color-point:          #9285CC;
+  --color-edge:           #6DC9C1;
+  --color-ok:             #7ED4A3;
+  --color-warn:           #E0A65C;
+  --color-err:            #D85656;
+
+  /* Off-white with a subtle warm purple cast, dimming through two muted
+     steps. Prefer `text-dim` for secondary labels, `text-faint` for
+     column keys / annotations. */
+  --color-text:           #EDE9F3;
+  --color-text-dim:       #A8A3B8;
+  --color-text-faint:     #726E82;
 }
 
 html, body, #root {
@@ -22,6 +38,6 @@ html, body, #root {
 body {
   margin: 0;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  background: var(--color-dashboard-dark);
-  color: #F8FAFC;
+  background: var(--color-ink);
+  color: var(--color-text);
 }
