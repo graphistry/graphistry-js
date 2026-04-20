@@ -11,12 +11,14 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    // Forwards browser console.* and unhandled errors to this dev-server's
-    // stdout, so coding agents editing on the server can see runtime
-    // behavior without needing browser devtools on the Mac.
+    // Forwards browser console.* + onerror + unhandledrejection to this
+    // dev-server's stdout, so coding agents editing on the server can see
+    // runtime behavior without needing browser devtools on the Mac.
     consoleForward({
       levels: ['error', 'warn', 'info', 'log', 'debug'],
-      unhandledErrors: true,
+      captureErrors: true,
+      captureRejections: true,
+      prefix: 'browser',
     }),
   ],
   resolve: {
