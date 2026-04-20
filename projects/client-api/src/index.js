@@ -6,7 +6,33 @@ import { $ref, $atom, $value } from '@graphistry/falcor-json-graph';
 import { Client as ClientBase, ClientPKey as ClientPKeyBase, Dataset as DatasetBase, File as FileBase, EdgeFile as EdgeFileBase, NodeFile as NodeFileBase } from '@graphistry/js-upload-api';
 
 
-const CLIENT_SUBSCRIPTION_API_VERSION = 1;
+const CLIENT_SUBSCRIPTION_API_VERSION = 2;
+
+// Protocol v2: correlation-id RPC client for one-shot imperative calls
+// (handle.addFilter(expr) returns a real Promise). See ./rpc.js.
+export { createRpcClient, GraphistryRpcError } from './rpc';
+
+// Protocol v2: framework-agnostic store + subscription manager + typed
+// errors + snapshot projections. The React adaptation lives in
+// @graphistry/client-api-context; these modules are reusable from any
+// framework.
+export { ExternalStore } from './externalStore';
+export { SubscriptionManager } from './subscriptions';
+export { GraphistryPermissionError } from './errors';
+export {
+    initialSelection,
+    initialLabels,
+    initialFilters,
+    projectSelection,
+    projectLabels,
+    projectFilters,
+    FRAGMENT_FILTERS,
+} from './snapshots';
+
+// Canonical subscribe path strings (must match LocalDataSink.js on the viz side).
+export const PATH_SELECTION_LABELS = '.selection.labels';
+export const PATH_LABELS = '.labels';
+export const PATH_FILTERS = '.filters';
 
 // Warning: must export variable seperately from declaration as workaround for JSDoc parsing error
 

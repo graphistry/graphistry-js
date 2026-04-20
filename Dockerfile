@@ -1,4 +1,4 @@
-FROM node:16.13.0-slim as base
+FROM node:16-bullseye-slim as base
 WORKDIR /opt/graphistry-js
 
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \

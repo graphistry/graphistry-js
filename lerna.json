@@ -2,6 +2,8 @@
   "version": "5.1.6",
   "packages": [
     "projects/client-api",
+    "projects/client-api-context",
+    "projects/client-api-context-example",
     "projects/client-api-react",
     "projects/cra-test",
     "projects/cra-test-18",

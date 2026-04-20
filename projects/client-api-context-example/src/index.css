@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Desaturated midnight-purple surface stack. Panels are translucent
+     (`bg-surface/85` + backdrop-blur) and sit above the viz canvas painted
+     in `ink`. `ink` carries a touch more purple than the rest so the viz
+     bg blends with the panel tones without reading as color. */
+  --color-ink:            #0A0814;
+  --color-surface:        #161428;
+  --color-elevated:       #1F1C34;
+  --color-hover:          #2B2644;
+  --color-border:         #2C2840;
+  --color-border-strong:  #3E3959;
+
+  /* Accents pulled off their pure saturation — still readable as teal /
+     purple / semantic without the neon. */
+  --color-accent:         #6DC9C1;
+  --color-point:          #9285CC;
+  --color-edge:           #6DC9C1;
+  --color-ok:             #7ED4A3;
+  --color-warn:           #E0A65C;
+  --color-err:            #D85656;
+
+  /* Off-white with a subtle warm purple cast, dimming through two muted
+     steps. Prefer `text-dim` for secondary labels, `text-faint` for
+     column keys / annotations. */
+  --color-text:           #EDE9F3;
+  --color-text-dim:       #A8A3B8;
+  --color-text-faint:     #726E82;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-text);
+  /* Lets native form controls (color picker popup, select dropdown, etc.)
+     render in the user's OS theme — the dark app panels sit on top of the
+     dark viz, but native popups float over the OS and should match. */
+  color-scheme: light dark;
+}
+
+/* Animated "arranging" state for the Arrange button. A 2px conic-gradient
+   ring with a bright comet orbiting the perimeter — you can track the
+   motion, not just sense it. Uses @property so --arrange-angle animates
+   smoothly (not as a stepped background-keyframe fallback). */
+@property --arrange-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.arrange-active {
+  border: 2px solid transparent;
+  /* Lowest-stop uses --color-border rather than transparent so the comet
+     fades into the surrounding UI tone instead of punching a black void
+     where the drawer's edge is — subtle, not absent. */
+  background:
+    linear-gradient(var(--color-elevated), var(--color-elevated)) padding-box,
+    conic-gradient(
+      from var(--arrange-angle),
+      var(--color-border) 0deg,
+      var(--color-point) 40deg,
+      var(--color-accent) 90deg,
+      #E8F7F5 130deg,
+      var(--color-accent) 170deg,
+      var(--color-point) 220deg,
+      var(--color-border) 300deg 360deg
+    ) border-box;
+  animation: arrange-spin 1.6s linear infinite;
+}
+
+@keyframes arrange-spin {
+  to { --arrange-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrange-active { animation: none; }
+}
