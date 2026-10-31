@@ -1344,6 +1344,9 @@ const G_API_SETTINGS = {
     'pointSize': ['view', 'scene.renderer.points.scaling'],
     'neighbhorhoodHighlight': ['view', 'scene.renderer.points.neighborhoodHighlight'],
     'neighbhorhoodHighlightHops': ['view', 'scene.renderer.points.neighborhoodHighlightHops'],
+    // Correctly spelled keys; the misspelled keys above are kept as deprecated aliases.
+    'neighborhoodHighlight': ['view', 'scene.renderer.points.neighborhoodHighlight'],
+    'neighborhoodHighlightHops': ['view', 'scene.renderer.points.neighborhoodHighlightHops'],
 
     //models/camera.js
     'zoom': ['view', 'camera.zoom'],
@@ -1424,6 +1427,9 @@ const G_API_SETTINGS = {
  */
 export function updateSetting(name, val) {
     console.debug('updating setting called', { G_API_SETTINGS, name, val });
+    if (name === 'neighbhorhoodHighlight' || name === 'neighbhorhoodHighlightHops') {
+        console.warn(`Setting "${name}" is deprecated, use "${name.replace('neighbhorhood', 'neighborhood')}" instead.`);
+    }
     if (G_API_SETTINGS[name] === undefined) {
         throw new Error(`Property "${name}" is not a valid setting, available are: ${Object.keys(G_API_SETTINGS).join(', ')}`);
     }
